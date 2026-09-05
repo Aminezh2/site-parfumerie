@@ -1,14 +1,18 @@
+import dynamic from "next/dynamic";
+
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import HeroCinematic from "@/components/sections/HeroCinematic";
 import BrandIntro from "@/components/sections/BrandIntro";
-import ImageStory from "@/components/sections/ImageStory";
-import DecantSelectionSection from "@/components/sections/DecantSelectionSection";
-import FeaturedCollection from "@/components/sections/FeaturedCollection";
-import FragranceDiscovery from "@/components/sections/FragranceDiscovery";
-import TrustSection from "@/components/sections/TrustSection";
-import BrandStory from "@/components/sections/BrandStory";
-import FinalCTA from "@/components/sections/FinalCTA";
+
+// Lazy loading for sections below the fold
+const ImageStory = dynamic(() => import("@/components/sections/ImageStory"));
+const DecantSelectionSection = dynamic(() => import("@/components/sections/DecantSelectionSection"));
+const FeaturedCollection = dynamic(() => import("@/components/sections/FeaturedCollection"));
+const FragranceDiscovery = dynamic(() => import("@/components/sections/FragranceDiscovery"));
+const TrustSection = dynamic(() => import("@/components/sections/TrustSection"));
+const BrandStory = dynamic(() => import("@/components/sections/BrandStory"));
+const FinalCTA = dynamic(() => import("@/components/sections/FinalCTA"));
 
 export default function Home() {
   return (
