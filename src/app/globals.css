@@ -1,0 +1,113 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-brand-black: #050505;
+  --color-brand-gold: #D4AF37;
+  --color-brand-gold-light: #F2E3C6;
+  --color-brand-ivory: #FAF9F6;
+  --color-brand-bronze: #8B6508;
+  --color-brand-brown: #1C0F04;
+
+  --font-serif: var(--font-playfair);
+  --font-sans: var(--font-inter);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-playfair);
+  
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  
+  /* Utilities for layout */
+  --spacing-section: 8rem;
+}
+
+:root {
+  /* Default to dark cinematic theme */
+  --background: #050505;
+  --foreground: #FAF9F6;
+  
+  --primary: #D4AF37;
+  --primary-foreground: #050505;
+  
+  --secondary: #1C0F04;
+  --secondary-foreground: #FAF9F6;
+  
+  --muted: #1a1a1a;
+  --muted-foreground: #9ca3af;
+  
+  --accent: #2a2a2a;
+  --accent-foreground: #F2E3C6;
+  
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #D4AF37;
+  
+  --radius: 0rem; /* Sharp edges for luxury */
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground antialiased selection:bg-brand-gold selection:text-brand-black;
+  }
+  html {
+    @apply font-sans;
+    scroll-behavior: smooth;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif font-medium;
+  }
+}
+
+/* Custom scrollbar for luxury feel */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #050505;
+}
+::-webkit-scrollbar-thumb {
+  background: #333;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #D4AF37;
+}
+
+/* Utilities for animations */
+.text-balance {
+  text-wrap: balance;
+}
+
+/* Video clip container */
+.clip-path-inset {
+  clip-path: inset(0 0 0 0);
+}
