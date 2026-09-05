@@ -6,7 +6,7 @@ import HeroCinematic from "@/components/sections/HeroCinematic";
 import BrandIntro from "@/components/sections/BrandIntro";
 
 // Lazy loading for sections below the fold
-const ImageStory = dynamic(() => import("@/components/sections/ImageStory"));
+
 const DecantSelectionSection = dynamic(() => import("@/components/sections/DecantSelectionSection"));
 const FeaturedCollection = dynamic(() => import("@/components/sections/FeaturedCollection"));
 const FragranceDiscovery = dynamic(() => import("@/components/sections/FragranceDiscovery"));
@@ -20,7 +20,7 @@ export default function Home() {
       <Navbar />
       <HeroCinematic />
       <BrandIntro />
-      <ImageStory />
+
       <DecantSelectionSection />
       <FeaturedCollection />
       <FragranceDiscovery />
