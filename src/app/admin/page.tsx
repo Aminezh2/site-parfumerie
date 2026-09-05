@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { PerfumeItem, OrderItem } from "@/lib/db";
+import { PerfumeItem, OrderItem, SupportMessage } from "@/lib/db";
 import {
   ShoppingBag,
   PlusCircle,
@@ -27,14 +27,17 @@ import {
   ShieldCheck,
   ToggleLeft,
   ToggleRight,
+  MessageSquare,
 } from "lucide-react";
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState<"orders" | "add-product" | "inventory">("orders");
+  const [activeTab, setActiveTab] = useState<"orders" | "add-product" | "inventory" | "support">("orders");
   
   const [products, setProducts] = useState<PerfumeItem[]>([]);
   const [orders, setOrders] = useState<OrderItem[]>([]);
+  const [supportMessages, setSupportMessages] = useState<SupportMessage[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [supportLoading, setSupportLoading] = useState<boolean>(false);
   const [notification, setNotification] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
   // Form State for Adding Perfume
@@ -85,13 +88,60 @@ export default function AdminDashboard() {
     }
   };
 
+  const fetchSupport = async (silent = false) => {
+    if (!silent) setSupportLoading(true);
+    try {
+      const res = await fetch("/api/support", { cache: "no-store" });
+      if (res.ok) setSupportMessages(await res.json());
+    } catch {
+      if (!silent) showNotification("Erreur de chargement du support", "error");
+    } finally {
+      if (!silent) setSupportLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (activeTab === "support") {
+      fetchSupport();
+      const interval = setInterval(() => {
+        fetchSupport(true);
+      }, 3500);
+      return () => clearInterval(interval);
+    }
+  }, [activeTab]);
+
   const showNotification = (message: string, type: "success" | "error" = "success") => {
     setNotification({ message, type });
     setTimeout(() => setNotification(null), 4000);
+  };
+
+  const handleReply = async (id: string, content: string) => {
+    try {
+      const res = await fetch(`/api/support/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content }),
+      });
+      if (res.ok) {
+        showNotification("Réponse envoyée");
+        fetchSupport();
+      }
+    } catch (err) { showNotification("Erreur", "error"); }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Supprimer ce message ?")) return;
+    try {
+      const res = await fetch(`/api/support/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        showNotification("Message supprimé");
+        fetchSupport();
+      }
+    } catch (err) { showNotification("Erreur", "error"); }
   };
 
   // Image Upload Handler
@@ -421,6 +471,17 @@ export default function AdminDashboard() {
           >
             <Package className="w-4 h-4" />
             <span>3. Gestion du Catalogue ({products.length})</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("support")}
+            className={`px-6 py-4 text-xs uppercase tracking-[0.2em] font-medium transition-all flex items-center gap-2 border-b-2 whitespace-nowrap ${
+              activeTab === "support"
+                ? "border-brand-gold text-brand-gold bg-brand-gold/5"
+                : "border-transparent text-white/60 hover:text-white"
+            }`}
+          >
+            <MessageSquare className="w-4 h-4" />
+            <span>💬 Support</span>
           </button>
         </div>
 
@@ -887,7 +948,125 @@ export default function AdminDashboard() {
               </table>
             </div>
           </div>
+        ) }
+        {/* TAB 4: SUPPORT */}
+        {activeTab === "support" && (
+          <div className="max-w-4xl mx-auto space-y-6">
+            <div className="flex items-center justify-between bg-white/[0.02] border border-white/10 p-6 rounded-sm">
+              <div>
+                <h2 className="font-serif text-2xl text-white font-light">Messages du Support Client</h2>
+                <p className="text-xs text-white/50 mt-1">
+                  Consultez les demandes des clients en temps réel et répondez directement.
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="flex items-center gap-2 text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-full">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  Synchronisation active (3s)
+                </span>
+                <button
+                  onClick={() => fetchSupport()}
+                  className="px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs rounded-sm transition-colors"
+                >
+                  Actualiser
+                </button>
+              </div>
+            </div>
+
+            {supportLoading && supportMessages.length === 0 ? (
+              <div className="p-12 text-center text-white/50 border border-white/10 bg-white/[0.01]">
+                <p className="animate-pulse text-sm">Chargement des messages...</p>
+              </div>
+            ) : supportMessages.length === 0 ? (
+              <div className="p-12 text-center border border-white/10 bg-white/[0.01] rounded-sm">
+                <p className="text-white/40 text-sm font-serif">Aucun message de support pour le moment.</p>
+                <p className="text-xs text-white/30 mt-1">Les questions posées sur la page /support apparaîtront instantanément ici.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {supportMessages.map((msg) => {
+                  const isClient = msg.role === "client";
+                  return (
+                    <div
+                      key={msg.id}
+                      className={`p-5 rounded-sm border transition-all ${
+                        isClient
+                          ? "bg-white/[0.03] border-brand-gold/30 shadow-lg"
+                          : "bg-white/[0.01] border-white/10 ml-6"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full ${
+                              isClient
+                                ? "bg-brand-gold/20 text-brand-gold border border-brand-gold/30"
+                                : "bg-white/10 text-white/70 border border-white/20"
+                            }`}
+                          >
+                            {isClient ? "👤 Client" : "👑 Vous (Support Admin)"}
+                          </span>
+                          <span className="text-xs text-white/40">
+                            {new Date(msg.created_at).toLocaleString("fr-FR", {
+                              day: "2-digit",
+                              month: "short",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </span>
+                        </div>
+
+                        <button
+                          onClick={() => handleDelete(msg.id)}
+                          className="text-xs text-rose-400 hover:text-rose-300 hover:underline px-2 py-1"
+                        >
+                          Supprimer
+                        </button>
+                      </div>
+
+                      <p className="text-sm text-white/90 whitespace-pre-wrap leading-relaxed">
+                        {msg.content}
+                      </p>
+
+                      {isClient && (
+                        <div className="mt-4 pt-3 border-t border-white/10 flex gap-2">
+                          <input
+                            id={`reply-${msg.id}`}
+                            type="text"
+                            placeholder="Tapez votre réponse au client..."
+                            className="flex-1 bg-black/60 border border-white/20 focus:border-brand-gold text-white text-xs px-3 py-2 rounded-sm focus:outline-none"
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                const el = e.currentTarget;
+                                if (el.value.trim()) {
+                                  handleReply(msg.id, el.value.trim());
+                                  el.value = "";
+                                }
+                              }
+                            }}
+                          />
+                          <button
+                            onClick={() => {
+                              const el = document.getElementById(`reply-${msg.id}`) as HTMLInputElement;
+                              if (el && el.value.trim()) {
+                                handleReply(msg.id, el.value.trim());
+                                el.value = "";
+                              }
+                            }}
+                            className="px-4 py-2 bg-brand-gold hover:bg-brand-gold/90 text-brand-black text-xs font-semibold uppercase tracking-wider rounded-sm transition-colors"
+                          >
+                            Répondre
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         )}
+
 
       </main>
     </div>

@@ -3,13 +3,12 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
-import { Search, ShoppingBag, Heart, Menu, X } from "lucide-react";
+import { Search, ShoppingBag, Menu, X } from "lucide-react";
 
 const navLinks = [
   { href: "/collection", label: "Collection" },
   { href: "/homme", label: "Homme" },
   { href: "/femme", label: "Femme" },
-  { href: "/unisexe", label: "Unisexe" },
 ];
 
 export default function Navbar() {
@@ -77,13 +76,10 @@ export default function Navbar() {
 
           {/* Desktop Links (Right) */}
           <nav className="hidden md:flex items-center gap-8 text-sm uppercase tracking-widest text-white">
-            <Link href="/unisexe" className="hover:text-brand-gold transition-colors">Unisexe</Link>
+            <Link href="/support" className="hover:text-brand-gold transition-colors">Support</Link>
             <div className="flex items-center gap-5 ml-4">
               <button aria-label="Search" className="hover:text-brand-gold transition-colors">
                 <Search className="w-5 h-5" />
-              </button>
-              <button aria-label="Wishlist" className="hover:text-brand-gold transition-colors">
-                <Heart className="w-5 h-5" />
               </button>
               <button
                 aria-label="Cart"
@@ -165,16 +161,25 @@ export default function Navbar() {
                 </span>
               </Link>
             ))}
+            <Link
+              href="/support"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block group"
+            >
+              <span
+                className={`block font-serif text-4xl text-white group-hover:text-brand-gold transition-all duration-300 py-3 border-b border-white/5 group-hover:pl-3 ${
+                  isMobileMenuOpen ? "translate-x-0 opacity-100" : "-translate-x-4 opacity-0"
+                }`}
+                style={{ transitionDelay: isMobileMenuOpen ? `${navLinks.length * 70 + 100}ms` : "0ms", transitionProperty: "transform, opacity, padding, color" }}
+              >
+                Support
+              </span>
+            </Link>
           </div>
         </nav>
 
         {/* Bottom Actions */}
         <div className="px-8 pb-12 flex items-center gap-6 border-t border-white/5 pt-6">
-          <button aria-label="Wishlist" className="text-white/60 hover:text-brand-gold transition-colors flex items-center gap-2 text-sm uppercase tracking-widest">
-            <Heart className="w-5 h-5" />
-            <span>Favoris</span>
-          </button>
-          <span className="text-white/20">|</span>
           <button
             aria-label="Cart"
             onClick={() => {

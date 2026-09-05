@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Image from "next/image";
+
 
 export default function BrandStory() {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -43,16 +43,7 @@ export default function BrandStory() {
           </p>
         </div>
 
-        <div className="relative w-full h-[50vh] md:h-[70vh] overflow-hidden story-text-reveal">
-          <Image
-            src="/assets/images/footer_pic.jpeg"
-            alt="La philosophie Zakaria"
-            fill
-            sizes="100vw"
-            className="object-cover opacity-60"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-transparent to-brand-black" />
-        </div>
+
       </div>
     </section>
   );

@@ -123,12 +123,12 @@ export default function DecantSelectionSection() {
               Chaque décant est soigneusement prélevé à la seringue stérile directement depuis le flacon authentique du fabricant. Aucun ajustement ni dilution.
             </p>
           </div>
-          <a
-            href="#contact"
+          <Link
+            href="/support"
             className="whitespace-nowrap px-6 py-3 border border-brand-gold text-brand-gold hover:bg-brand-gold hover:text-brand-black transition-colors text-xs uppercase tracking-widest font-medium"
           >
             Besoin de conseil ?
-          </a>
+          </Link>
         </div>
 
       </div>

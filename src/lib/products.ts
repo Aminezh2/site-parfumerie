@@ -136,7 +136,7 @@ export const PRODUCTS: Perfume[] = [
     category: "femme",
     type: "Extrait de Parfum",
     family: "Ambré Boisé",
-    image: "/assets/images/Brandinfo.jpeg",
+    image: "/assets/images/Brandinfo.jpg",
     badge: "Niche Étoilée",
     description: "Une alchimie poétique où le jasmin et le safran s'accordent aux notes minérales de l'ambre gris.",
     topNotes: "Safran doré, Jasmin grandiflorum",

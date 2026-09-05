@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Image from "next/image";
 
 export default function FragranceDiscovery() {
@@ -15,10 +16,14 @@ export default function FragranceDiscovery() {
           Une sélection pensée selon vos goûts, votre personnalité et vos envies. Laissez-nous vous guider vers votre prochaine signature olfactive.
         </p>
         
-        <button className="w-full sm:w-auto px-10 py-5 bg-white text-brand-black hover:bg-brand-gold transition-colors duration-500 uppercase tracking-widest text-xs font-medium">
+        <Link
+          href="/collection"
+          className="inline-block w-full sm:w-auto px-10 py-5 bg-white text-brand-black hover:bg-brand-gold transition-colors duration-500 uppercase tracking-widest text-xs font-medium"
+        >
           Trouver mon parfum
-        </button>
+        </Link>
       </div>
     </section>
   );
 }
+

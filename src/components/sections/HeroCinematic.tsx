@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Link from "next/link";
 
 export default function HeroCinematic() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -94,12 +95,18 @@ export default function HeroCinematic() {
         </p>
         
         <div className="flex flex-col sm:flex-row gap-6">
-          <button className="px-8 py-4 bg-brand-gold/90 backdrop-blur-md text-brand-black hover:bg-brand-gold transition-all duration-500 uppercase tracking-widest text-xs font-medium hover:shadow-[0_0_20px_rgba(212,175,55,0.4)]">
+          <Link
+            href="/collection"
+            className="px-8 py-4 bg-brand-gold/90 backdrop-blur-md text-brand-black hover:bg-brand-gold transition-all duration-500 uppercase tracking-widest text-xs font-medium hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] text-center"
+          >
             Découvrir la collection
-          </button>
-          <button className="px-8 py-4 border border-white/20 bg-white/5 backdrop-blur-md text-white hover:bg-white/10 transition-all duration-500 uppercase tracking-widest text-xs font-medium hover:border-white/40">
+          </Link>
+          <Link
+            href="/collection"
+            className="px-8 py-4 border border-white/20 bg-white/5 backdrop-blur-md text-white hover:bg-white/10 transition-all duration-500 uppercase tracking-widest text-xs font-medium hover:border-white/40 text-center"
+          >
             Explorer
-          </button>
+          </Link>
         </div>
       </div>
     </section>

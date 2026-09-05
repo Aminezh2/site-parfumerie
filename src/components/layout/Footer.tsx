@@ -25,7 +25,7 @@ export default function Footer() {
               <li><Link href="/collection" className="hover:text-white transition-colors">Toute la collection</Link></li>
               <li><Link href="/homme" className="hover:text-white transition-colors">Parfums Homme</Link></li>
               <li><Link href="/femme" className="hover:text-white transition-colors">Parfums Femme</Link></li>
-              <li><Link href="/unisexe" className="hover:text-white transition-colors">Parfums Unisexe</Link></li>
+
               <li><Link href="/decants" className="hover:text-white transition-colors">Échantillons & Décants</Link></li>
             </ul>
           </div>

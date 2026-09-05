@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function FinalCTA() {
   return (
@@ -21,10 +22,14 @@ export default function FinalCTA() {
           <span className="italic font-light text-brand-gold">olfactive vous attend.</span>
         </h2>
         
-        <button className="mt-8 px-12 py-5 bg-transparent border border-brand-gold text-brand-gold hover:bg-brand-gold hover:text-brand-black transition-colors duration-500 uppercase tracking-widest text-xs font-medium">
+        <Link
+          href="/collection"
+          className="inline-block mt-8 px-12 py-5 bg-transparent border border-brand-gold text-brand-gold hover:bg-brand-gold hover:text-brand-black transition-colors duration-500 uppercase tracking-widest text-xs font-medium"
+        >
           Découvrir la collection
-        </button>
+        </Link>
       </div>
     </section>
   );
 }
+

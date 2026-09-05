@@ -306,3 +306,67 @@ export function deleteOrder(id: string): boolean {
   if (filtered.length === orders.length) return false;
   return saveOrders(filtered);
 }
+// Support messages
+export interface SupportMessage {
+  id: string;
+  content: string;
+  role: 'client' | 'admin';
+  created_at: string;
+}
+
+const SUPPORT_FILE = path.join(DATA_DIR, "support_messages.json");
+
+function ensureSupportFile() {
+  if (!fs.existsSync(SUPPORT_FILE)) {
+    fs.writeFileSync(SUPPORT_FILE, JSON.stringify([], null, 2));
+  }
+}
+
+export function getSupportMessages(): SupportMessage[] {
+  ensureSupportFile();
+  try {
+    const data = fs.readFileSync(SUPPORT_FILE, "utf-8");
+    return JSON.parse(data);
+  } catch (e) {
+    console.error("Error reading support messages", e);
+    return [];
+  }
+}
+
+export function addSupportMessage(msg: Omit<SupportMessage, "id" | "created_at">): SupportMessage {
+  ensureSupportFile();
+  const messages = getSupportMessages();
+  const newMsg: SupportMessage = {
+    ...msg,
+    id: `msg-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+    created_at: new Date().toISOString(),
+  };
+  messages.push(newMsg);
+  fs.writeFileSync(SUPPORT_FILE, JSON.stringify(messages, null, 2));
+  return newMsg;
+}
+
+export function replySupportMessage(id: string, reply: string): SupportMessage | null {
+  ensureSupportFile();
+  const messages = getSupportMessages();
+  const index = messages.findIndex((m) => m.id === id && m.role === "client");
+  if (index === -1) return null;
+  const adminMsg: SupportMessage = {
+    id: `msg-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+    content: reply,
+    role: "admin",
+    created_at: new Date().toISOString(),
+  };
+  messages.splice(index + 1, 0, adminMsg);
+  fs.writeFileSync(SUPPORT_FILE, JSON.stringify(messages, null, 2));
+  return adminMsg;
+}
+
+export function deleteSupportMessage(id: string): boolean {
+  ensureSupportFile();
+  const messages = getSupportMessages();
+  const filtered = messages.filter((m) => m.id !== id);
+  if (filtered.length === messages.length) return false;
+  fs.writeFileSync(SUPPORT_FILE, JSON.stringify(filtered, null, 2));
+  return true;
+}
