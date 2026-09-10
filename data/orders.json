@@ -29,7 +29,7 @@
     "price": 70,
     "quantity": 1,
     "totalAmount": 70,
-    "status": "En attente",
+    "status": "Confirmée",
     "id": "ORD-7261",
     "createdAt": "2026-09-03T16:57:02.733Z"
   },

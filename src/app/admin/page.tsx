@@ -28,6 +28,7 @@ import {
   ToggleLeft,
   ToggleRight,
   MessageSquare,
+  LogOut,
 } from "lucide-react";
 
 export default function AdminDashboard() {
@@ -379,13 +380,27 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          <button
-            onClick={fetchData}
-            className="flex items-center gap-2 text-xs uppercase tracking-widest text-brand-gold hover:text-white px-4 py-2 border border-brand-gold/30 hover:border-brand-gold transition-colors"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
-            <span>Actualiser les données</span>
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={fetchData}
+              className="flex items-center gap-2 text-xs uppercase tracking-widest text-brand-gold hover:text-white px-3.5 py-2 border border-brand-gold/30 hover:border-brand-gold transition-colors rounded-lg cursor-pointer"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
+              <span className="hidden sm:inline">Actualiser</span>
+            </button>
+
+            <button
+              onClick={async () => {
+                await fetch("/api/auth", { method: "DELETE" });
+                window.location.href = "/login";
+              }}
+              className="flex items-center gap-2 text-xs uppercase tracking-widest text-rose-400 hover:text-white hover:bg-rose-500/20 px-3.5 py-2 border border-rose-500/30 transition-colors rounded-lg cursor-pointer"
+              title="Se déconnecter"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Déconnexion</span>
+            </button>
+          </div>
         </div>
       </header>
 

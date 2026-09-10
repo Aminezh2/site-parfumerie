@@ -1,5 +1,20 @@
 [
   {
+    "name": "Valentino",
+    "brand": "Valentino",
+    "category": "femme",
+    "type": "Eau de Parfum",
+    "family": "Boisé / Floral",
+    "image": "/uploads/perfume-1789069581033.avif",
+    "description": "Parfum original authentique prélevé directement du flacon fabricant.",
+    "price5ml": 60,
+    "price10ml": 120,
+    "inStock": false,
+    "badge": "",
+    "id": "perfume-1789069586585-iqb4x",
+    "createdAt": "2026-09-10T19:46:26.585Z"
+  },
+  {
     "name": "L'INTERDIT",
     "brand": "GIVENCHY",
     "category": "femme",

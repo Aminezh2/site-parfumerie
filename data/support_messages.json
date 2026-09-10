@@ -10,5 +10,17 @@
     "content": "How can i Help you sure ?",
     "role": "admin",
     "created_at": "2026-09-05T23:56:00.018Z"
+  },
+  {
+    "content": "Hi i need help",
+    "role": "client",
+    "id": "msg-1788652678367-obyis",
+    "created_at": "2026-09-05T23:57:58.367Z"
+  },
+  {
+    "id": "msg-1788652698274-jr2f8",
+    "content": "Hi how can i help youn?",
+    "role": "admin",
+    "created_at": "2026-09-05T23:58:18.274Z"
   }
 ]
