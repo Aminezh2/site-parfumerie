@@ -5,7 +5,7 @@ export interface PerfumeItem {
   id: string;
   name: string;
   brand: string;
-  category: "homme" | "femme" | "unisexe";
+  category: "homme" | "femme" | "unisexe" | "pack";
   type: string;
   family: string;
   image: string;
@@ -29,7 +29,7 @@ export interface OrderItem {
   perfumeId: string;
   perfumeName: string;
   brand: string;
-  category: "homme" | "femme" | "unisexe";
+  category: "homme" | "femme" | "unisexe" | "pack";
   format: "5ml" | "10ml";
   price: number;
   quantity: number;

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ShieldCheck, Truck, Headphones, Sparkles } from "lucide-react";
+import { Sparkles, ExternalLink } from "lucide-react";
 
 export default function Footer() {
   const router = useRouter();
@@ -63,6 +63,16 @@ export default function Footer() {
                   Parfums Femme
                 </Link>
               </li>
+              <li>
+                <Link href="/unisexe" className="hover:text-brand-gold transition-colors">
+                  Parfums Unisexe
+                </Link>
+              </li>
+              <li>
+                <Link href="/packs" className="hover:text-brand-gold transition-colors">
+                  Packs &amp; Coffrets
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -90,24 +100,70 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Col 4: Garanties */}
+          {/* Col 4: Réseaux Sociaux (Instagram & TikTok) */}
           <div>
             <h3 className="font-serif text-base mb-4 text-brand-gold uppercase tracking-wider font-semibold">
-              Nos Garanties
+              Suivez-nous
             </h3>
-            <div className="space-y-3 text-xs text-white/70">
-              <div className="flex items-start gap-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                <span>100% Jus Original prélevé directement du flacon fabricant.</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <Truck className="w-4 h-4 text-brand-gold shrink-0 mt-0.5" />
-                <span>Livraison rapide partout au Maroc avec paiement en espèces (COD).</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <Headphones className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" />
-                <span>Assistance directe et suivi WhatsApp 7j/7.</span>
-              </div>
+            <p className="text-white/60 text-xs mb-4">
+              Rejoignez notre communauté sur les réseaux pour découvrir nos nouveautés et arrivages exclusifs.
+            </p>
+
+            <div className="space-y-3">
+              {/* Instagram */}
+              <a
+                href="https://instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-center justify-between p-3 bg-white/[0.04] border border-white/10 hover:border-brand-gold/60 rounded-xl transition-all duration-300 hover:bg-white/[0.08]"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 flex items-center justify-center text-white shadow-md">
+                    <svg className="w-4 h-4 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
+                      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                    </svg>
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-white group-hover:text-brand-gold transition-colors block">
+                      Instagram
+                    </span>
+                    <span className="text-[10px] text-white/50 font-mono">
+                      @zakaria.fragrances
+                    </span>
+                  </div>
+                </div>
+                <ExternalLink className="w-3.5 h-3.5 text-white/40 group-hover:text-brand-gold transition-colors" />
+              </a>
+
+              {/* TikTok */}
+              <a
+                href="https://tiktok.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-center justify-between p-3 bg-white/[0.04] border border-white/10 hover:border-brand-gold/60 rounded-xl transition-all duration-300 hover:bg-white/[0.08]"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-black border border-white/20 flex items-center justify-center text-white shadow-md">
+                    <svg
+                      className="w-4 h-4 fill-current text-white"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.89 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 0 0-.79-.05A6.34 6.34 0 0 0 3 15.67 6.34 6.34 0 0 0 9.34 22a6.34 6.34 0 0 0 6.34-6.33V9.05a8.16 8.16 0 0 0 5-1.68v-3.7a4.85 4.85 0 0 1-1.09-.98Z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-white group-hover:text-brand-gold transition-colors block">
+                      TikTok
+                    </span>
+                    <span className="text-[10px] text-white/50 font-mono">
+                      @zakaria.fragrances
+                    </span>
+                  </div>
+                </div>
+                <ExternalLink className="w-3.5 h-3.5 text-white/40 group-hover:text-brand-gold transition-colors" />
+              </a>
             </div>
           </div>
         </div>

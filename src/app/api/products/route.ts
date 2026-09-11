@@ -15,22 +15,28 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { name, brand, category, type, family, image, description, price5ml, price10ml, inStock, badge } = body;
 
-    if (!name || !category || !price5ml || !price10ml) {
+    // For packs, price5ml is the pack price (required), price10ml is optional
+    if (!name || !category || !price5ml) {
       return NextResponse.json({ error: "Champs obligatoires manquants" }, { status: 400 });
+    }
+
+    // For regular perfumes (not packs), price10ml is also required
+    if (category !== "pack" && !price10ml) {
+      return NextResponse.json({ error: "Le prix 10ml est obligatoire pour les parfums" }, { status: 400 });
     }
 
     const newProduct = addProduct({
       name,
-      brand: brand || "Parfum Original",
-      category: category as "homme" | "femme" | "unisexe",
-      type: type || "Eau de Parfum",
-      family: family || "Boisé / Floral",
+      brand: brand || "Zakaria Fragrances",
+      category: category as "homme" | "femme" | "unisexe" | "pack",
+      type: type || (category === "pack" ? "Pack Découverte" : "Eau de Parfum"),
+      family: family || (category === "pack" ? "Sélection Exclusive" : "Boisé / Floral"),
       image: image || "/assets/images/dior.jpg",
-      description: description || "Parfum original authentique prélevé directement du flacon fabricant.",
+      description: description || (category === "pack" ? "Pack exclusif de décants sélectionnés par nos experts." : "Parfum original authentique prélevé directement du flacon fabricant."),
       price5ml: Number(price5ml),
-      price10ml: Number(price10ml),
+      price10ml: category === "pack" ? Number(price5ml) : Number(price10ml),
       inStock: inStock !== undefined ? Boolean(inStock) : true,
-      badge: badge || "",
+      badge: badge || (category === "pack" ? "Pack Exclusif" : ""),
     });
 
     return NextResponse.json(newProduct, { status: 201 });

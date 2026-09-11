@@ -42,7 +42,7 @@ export default function BrandStory() {
 
       <div className="container mx-auto px-5 sm:px-8 md:px-12 relative z-10">
         <div className="flex flex-col items-center text-center max-w-3xl mx-auto">
-          
+
           {/* Quote Icon */}
           <div className="story-text-reveal w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-brand-gold/10 border border-brand-gold/20 flex items-center justify-center mb-6 text-brand-gold shadow-lg shadow-brand-gold/5">
             <Quote className="w-5 h-5 sm:w-6 sm:h-6 rotate-180" />
@@ -59,13 +59,13 @@ export default function BrandStory() {
 
           {/* Paragraph */}
           <p className="story-text-reveal text-white/70 text-xs sm:text-base md:text-lg font-light leading-relaxed mb-6 sm:mb-8 max-w-2xl px-2 sm:px-0">
-            L&apos;excellence réside dans le détail. Chez <strong className="text-white font-medium">Zakaria Fragrances</strong>, nous ne proposons pas de simples parfums, mais des œuvres d&apos;art olfactives. Chaque décant est la promesse d&apos;une émotion, d&apos;un souvenir persistant et d&apos;une aura inoubliable.
+            L&apos;excellence réside dans le détail. Chez <strong className="text-white font-medium">FSAHI Fragrances</strong>, nous ne proposons pas de simples parfums, mais des œuvres d&apos;art olfactives. Chaque décant est la promesse d&apos;une émotion, d&apos;un souvenir persistant et d&apos;une aura inoubliable.
           </p>
 
           {/* Signature badge */}
           <div className="story-text-reveal inline-flex items-center gap-2 text-[10px] sm:text-xs uppercase tracking-[0.2em] font-mono text-brand-gold/90 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/10">
             <Sparkles className="w-3.5 h-3.5 text-brand-gold" />
-            <span>Maison Zakaria Fragrances</span>
+            <span>Maison FSAHI Fragrances</span>
           </div>
         </div>
       </div>

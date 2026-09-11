@@ -32,7 +32,7 @@ import {
 } from "lucide-react";
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState<"orders" | "add-product" | "inventory" | "support">("orders");
+  const [activeTab, setActiveTab] = useState<"orders" | "add-product" | "add-pack" | "inventory" | "support">("orders");
   
   const [products, setProducts] = useState<PerfumeItem[]>([]);
   const [orders, setOrders] = useState<OrderItem[]>([]);
@@ -45,7 +45,7 @@ export default function AdminDashboard() {
   const [newPerfume, setNewPerfume] = useState({
     name: "",
     brand: "",
-    category: "homme" as "homme" | "femme",
+    category: "homme" as "homme" | "femme" | "unisexe",
     type: "Eau de Parfum",
     family: "Boisé / Floral",
     image: "",
@@ -55,6 +55,20 @@ export default function AdminDashboard() {
     badge: "",
     description: "",
   });
+
+  // Form State for Adding Pack
+  const [newPack, setNewPack] = useState({
+    name: "",
+    brand: "",
+    description: "",
+    image: "",
+    packPrice: "",
+    contents: "",
+    inStock: true,
+    badge: "Pack Exclusif",
+  });
+  const [uploadingPackImage, setUploadingPackImage] = useState(false);
+  const [packImagePreview, setPackImagePreview] = useState<string>("");
   const [uploadingImage, setUploadingImage] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
@@ -202,7 +216,6 @@ export default function AdminDashboard() {
 
       if (res.ok) {
         showNotification(`Parfum "${newPerfume.name}" ajouté avec succès à la section ${newPerfume.category.toUpperCase()} !`);
-        // Reset Form
         setNewPerfume({
           name: "",
           brand: "",
@@ -224,6 +237,69 @@ export default function AdminDashboard() {
         showNotification("Erreur lors de la création du parfum", "error");
       }
     } catch (err) {
+      showNotification("Erreur serveur", "error");
+    }
+  };
+
+  // Image Upload Handler for Pack
+  const handlePackImageFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPackImagePreview(URL.createObjectURL(file));
+    setUploadingPackImage(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      if (res.ok) {
+        const data = await res.json();
+        setNewPack((prev) => ({ ...prev, image: data.url }));
+        showNotification("Image du pack téléchargée !");
+      } else {
+        showNotification("Erreur lors du téléchargement", "error");
+      }
+    } catch {
+      showNotification("Erreur de connexion", "error");
+    } finally {
+      setUploadingPackImage(false);
+    }
+  };
+
+  // Submit New Pack
+  const handleAddPackSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newPack.name || !newPack.packPrice || !newPack.description) {
+      showNotification("Veuillez remplir le nom, la description et le prix du pack", "error");
+      return;
+    }
+    try {
+      const res = await fetch("/api/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: newPack.name,
+          brand: newPack.brand || "Zakaria Fragrances",
+          category: "pack",
+          type: "Pack Découverte",
+          family: newPack.contents || "Sélection Exclusive",
+          image: newPack.image || "/assets/images/dior.jpg",
+          description: newPack.description,
+          price5ml: Number(newPack.packPrice),
+          price10ml: Number(newPack.packPrice),
+          inStock: newPack.inStock,
+          badge: newPack.badge || "Pack Exclusif",
+        }),
+      });
+      if (res.ok) {
+        showNotification(`Pack "${newPack.name}" ajouté avec succès au catalogue Packs !`);
+        setNewPack({ name: "", brand: "", description: "", image: "", packPrice: "", contents: "", inStock: true, badge: "Pack Exclusif" });
+        setPackImagePreview("");
+        fetchData();
+        setActiveTab("inventory");
+      } else {
+        showNotification("Erreur lors de la création du pack", "error");
+      }
+    } catch {
       showNotification("Erreur serveur", "error");
     }
   };
@@ -345,6 +421,8 @@ export default function AdminDashboard() {
   const pendingOrdersCount = orders.filter((o) => o.status === "En attente").length;
   const hommeProductsCount = products.filter((p) => p.category === "homme").length;
   const femmeProductsCount = products.filter((p) => p.category === "femme").length;
+  const unisexeProductsCount = products.filter((p) => p.category === "unisexe").length;
+  const packsCount = products.filter((p) => p.category === "pack").length;
 
   return (
     <div className="min-h-screen bg-brand-black text-white w-full">
@@ -428,20 +506,20 @@ export default function AdminDashboard() {
 
           <div className="p-5 bg-white/[0.02] border border-white/10 rounded-sm">
             <div className="flex items-center justify-between text-white/50 text-xs uppercase tracking-wider mb-2">
-              <span>Parfums Homme</span>
+              <span>Homme / Femme</span>
               <Package className="w-4 h-4 text-brand-gold" />
             </div>
-            <div className="font-serif text-3xl text-white">{hommeProductsCount}</div>
-            <div className="text-[10px] text-white/40 mt-1">Décants 5ml &amp; 10ml Homme</div>
+            <div className="font-serif text-3xl text-white">{hommeProductsCount + femmeProductsCount}</div>
+            <div className="text-[10px] text-white/40 mt-1">{hommeProductsCount} Homme · {femmeProductsCount} Femme</div>
           </div>
 
           <div className="p-5 bg-white/[0.02] border border-white/10 rounded-sm">
             <div className="flex items-center justify-between text-white/50 text-xs uppercase tracking-wider mb-2">
-              <span>Parfums Femme</span>
+              <span>Unisexe &amp; Packs</span>
               <Sparkles className="w-4 h-4 text-brand-gold" />
             </div>
-            <div className="font-serif text-3xl text-white">{femmeProductsCount}</div>
-            <div className="text-[10px] text-white/40 mt-1">Décants 5ml &amp; 10ml Femme</div>
+            <div className="font-serif text-3xl text-white">{unisexeProductsCount + packsCount}</div>
+            <div className="text-[10px] text-white/40 mt-1">{unisexeProductsCount} Unisexe · {packsCount} Packs</div>
           </div>
         </div>
 
@@ -474,6 +552,18 @@ export default function AdminDashboard() {
           >
             <PlusCircle className="w-4 h-4" />
             <span>2. Ajouter un Parfum</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("add-pack")}
+            className={`px-6 py-4 text-xs uppercase tracking-[0.2em] font-medium transition-all flex items-center gap-2 border-b-2 whitespace-nowrap ${
+              activeTab === "add-pack"
+                ? "border-purple-400 text-purple-400 bg-purple-400/5"
+                : "border-transparent text-white/60 hover:text-white"
+            }`}
+          >
+            <Package className="w-4 h-4" />
+            <span>🎁 Ajouter un Pack</span>
           </button>
 
           <button
@@ -640,12 +730,12 @@ export default function AdminDashboard() {
             </div>
 
             <form onSubmit={handleAddProductSubmit} className="space-y-6">
-              {/* Category Selector (Homme / Femme) */}
+              {/* Category Selector (Homme / Femme / Unisexe) */}
               <div>
                 <label className="text-xs uppercase tracking-widest text-brand-gold block mb-2 font-medium">
                   Catégorie du Parfum *
                 </label>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-3">
                   <button
                     type="button"
                     onClick={() => setNewPerfume((prev) => ({ ...prev, category: "homme" }))}
@@ -655,7 +745,7 @@ export default function AdminDashboard() {
                         : "bg-white/5 border-white/10 text-white/70 hover:border-white/30"
                     }`}
                   >
-                    🧔 Section Homme
+                    🧔 Homme
                   </button>
                   <button
                     type="button"
@@ -666,7 +756,18 @@ export default function AdminDashboard() {
                         : "bg-white/5 border-white/10 text-white/70 hover:border-white/30"
                     }`}
                   >
-                    👩 Section Femme
+                    👩 Femme
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setNewPerfume((prev) => ({ ...prev, category: "unisexe" }))}
+                    className={`py-3 px-4 border text-xs uppercase tracking-widest font-medium transition-all ${
+                      newPerfume.category === "unisexe"
+                        ? "bg-purple-500 text-white border-purple-500 shadow-lg"
+                        : "bg-white/5 border-white/10 text-white/70 hover:border-purple-400/50"
+                    }`}
+                  >
+                    ✨ Unisexe
                   </button>
                 </div>
               </div>
@@ -795,6 +896,152 @@ export default function AdminDashboard() {
           </div>
         )}
 
+        {/* TAB ADD-PACK: AJOUTER UN PACK */}
+        {activeTab === "add-pack" && (
+          <div className="max-w-3xl mx-auto bg-white/[0.02] border border-purple-500/20 p-8 md:p-10 rounded-sm">
+            {/* Header */}
+            <div className="mb-8 pb-4 border-b border-purple-500/20">
+              <div className="flex items-center gap-3 mb-2">
+                <span className="text-2xl">🎁</span>
+                <h2 className="font-serif text-2xl text-white">Ajouter un Pack Exclusif</h2>
+                <span className="text-[10px] tracking-widest uppercase px-2 py-0.5 bg-purple-500/20 text-purple-300 border border-purple-500/30">Spécial</span>
+              </div>
+              <p className="text-white/60 text-xs leading-relaxed">
+                Créez un pack découverte unique avec une <strong className="text-purple-300">description personnalisée</strong>, une image attrayante et un <strong className="text-purple-300">prix pack unique</strong>. Les packs s&apos;affichent dans la section dédiée.
+              </p>
+            </div>
+
+            <form onSubmit={handleAddPackSubmit} className="space-y-6">
+              {/* Pack Name & Brand */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                  <label className="text-xs uppercase tracking-wider text-white/80 block mb-2">Nom du Pack *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="ex: Pack Prestige Nuit, Trio Découverte..."
+                    value={newPack.name}
+                    onChange={(e) => setNewPack((prev) => ({ ...prev, name: e.target.value }))}
+                    className="w-full bg-white/5 border border-white/15 text-white px-4 py-3 text-xs focus:outline-none focus:border-purple-400"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs uppercase tracking-wider text-white/80 block mb-2">Marque / Créateur</label>
+                  <input
+                    type="text"
+                    placeholder="ex: Zakaria Fragrances"
+                    value={newPack.brand}
+                    onChange={(e) => setNewPack((prev) => ({ ...prev, brand: e.target.value }))}
+                    className="w-full bg-white/5 border border-white/15 text-white px-4 py-3 text-xs focus:outline-none focus:border-purple-400"
+                  />
+                </div>
+              </div>
+
+              {/* Description */}
+              <div>
+                <label className="text-xs uppercase tracking-wider text-white/80 block mb-2">Description du Pack * <span className="text-purple-300">(visible sur la page packs)</span></label>
+                <textarea
+                  required
+                  rows={4}
+                  placeholder="ex: Un trio de décants soigneusement sélectionnés pour les amateurs de parfums boisés et épicés. Comprend Sauvage Dior, Bleu de Chanel et Aventus Creed..."
+                  value={newPack.description}
+                  onChange={(e) => setNewPack((prev) => ({ ...prev, description: e.target.value }))}
+                  className="w-full bg-white/5 border border-white/15 text-white px-4 py-3 text-xs focus:outline-none focus:border-purple-400 resize-none"
+                />
+              </div>
+
+              {/* Pack Contents */}
+              <div>
+                <label className="text-xs uppercase tracking-wider text-white/80 block mb-2">Contenu du Pack <span className="text-white/40">(parfums inclus)</span></label>
+                <input
+                  type="text"
+                  placeholder="ex: Sauvage Dior 5ml + Phantom Paco Rabanne 5ml + Aventus Creed 5ml"
+                  value={newPack.contents}
+                  onChange={(e) => setNewPack((prev) => ({ ...prev, contents: e.target.value }))}
+                  className="w-full bg-white/5 border border-white/15 text-white px-4 py-3 text-xs focus:outline-none focus:border-purple-400"
+                />
+              </div>
+
+              {/* Pack Price */}
+              <div className="p-4 bg-purple-500/5 border border-purple-500/20 space-y-3">
+                <span className="text-purple-300 text-xs uppercase tracking-widest font-medium block">Prix du Pack (DH) *</span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div>
+                    <label className="text-xs uppercase text-white/70 block mb-1">Prix Total du Pack (DH) *</label>
+                    <input
+                      type="number"
+                      required
+                      placeholder="ex: 350"
+                      value={newPack.packPrice}
+                      onChange={(e) => setNewPack((prev) => ({ ...prev, packPrice: e.target.value }))}
+                      className="w-full bg-black border border-white/20 text-white px-4 py-3 text-sm focus:outline-none focus:border-purple-400"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs uppercase text-white/70 block mb-1">Badge d&apos;affichage</label>
+                    <input
+                      type="text"
+                      placeholder="ex: Pack Exclusif, Best Value..."
+                      value={newPack.badge}
+                      onChange={(e) => setNewPack((prev) => ({ ...prev, badge: e.target.value }))}
+                      className="w-full bg-black border border-white/20 text-white px-4 py-3 text-sm focus:outline-none focus:border-purple-400"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Photo Upload */}
+              <div>
+                <label className="text-xs uppercase tracking-wider text-white/80 block mb-2">Photo du Pack</label>
+                <div className="flex flex-col sm:flex-row gap-4 items-center">
+                  <label className="w-full sm:w-auto px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs uppercase tracking-widest cursor-pointer flex items-center justify-center gap-2 transition-colors">
+                    <Upload className="w-4 h-4 text-purple-400" />
+                    <span>{uploadingPackImage ? "Téléchargement..." : "Choisir une image..."}</span>
+                    <input type="file" accept="image/*" onChange={handlePackImageFileChange} className="hidden" />
+                  </label>
+                  <span className="text-xs text-white/40 uppercase">ou URL :</span>
+                  <input
+                    type="text"
+                    placeholder="https://... ou /assets/images/..."
+                    value={newPack.image}
+                    onChange={(e) => setNewPack((prev) => ({ ...prev, image: e.target.value }))}
+                    className="flex-1 w-full bg-white/5 border border-white/15 text-white px-4 py-2.5 text-xs focus:outline-none focus:border-purple-400"
+                  />
+                </div>
+                {packImagePreview && (
+                  <div className="mt-4 relative w-32 h-32 border border-purple-400/40 rounded-sm overflow-hidden">
+                    <Image src={packImagePreview} alt="Aperçu pack" fill className="object-cover" />
+                  </div>
+                )}
+              </div>
+
+              {/* Stock Availability */}
+              <div className="flex items-center gap-4 p-4 bg-white/5 border border-white/10">
+                <span className="text-xs uppercase tracking-wider text-white">Disponibilité initiale :</span>
+                <button
+                  type="button"
+                  onClick={() => setNewPack((prev) => ({ ...prev, inStock: !prev.inStock }))}
+                  className={`px-4 py-2 text-xs uppercase tracking-widest font-medium transition-colors ${
+                    newPack.inStock
+                      ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
+                      : "bg-rose-500/20 text-rose-300 border border-rose-500/40"
+                  }`}
+                >
+                  {newPack.inStock ? "✅ Disponible" : "❌ Épuisé"}
+                </button>
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                className="w-full py-4 bg-purple-600 hover:bg-purple-500 text-white font-medium uppercase tracking-[0.2em] text-xs transition-colors duration-300 shadow-xl border border-purple-400/30"
+              >
+                🎁 Créer le Pack dans le Catalogue
+              </button>
+            </form>
+          </div>
+        )}
+
         {/* TAB 3: GESTION DU CATALOGUE (Stock & Prix) */}
         {activeTab === "inventory" && (
           <div>
@@ -803,7 +1050,7 @@ export default function AdminDashboard() {
               <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0">
                 <button
                   onClick={() => setInventoryCategoryFilter("all")}
-                  className={`px-3 py-1.5 text-xs uppercase tracking-wider transition-all ${
+                  className={`px-3 py-1.5 text-xs uppercase tracking-wider transition-all whitespace-nowrap ${
                     inventoryCategoryFilter === "all" ? "bg-brand-gold text-brand-black font-semibold" : "bg-white/5 text-white/70"
                   }`}
                 >
@@ -811,7 +1058,7 @@ export default function AdminDashboard() {
                 </button>
                 <button
                   onClick={() => setInventoryCategoryFilter("homme")}
-                  className={`px-3 py-1.5 text-xs uppercase tracking-wider transition-all ${
+                  className={`px-3 py-1.5 text-xs uppercase tracking-wider transition-all whitespace-nowrap ${
                     inventoryCategoryFilter === "homme" ? "bg-brand-gold text-brand-black font-semibold" : "bg-white/5 text-white/70"
                   }`}
                 >
@@ -819,11 +1066,27 @@ export default function AdminDashboard() {
                 </button>
                 <button
                   onClick={() => setInventoryCategoryFilter("femme")}
-                  className={`px-3 py-1.5 text-xs uppercase tracking-wider transition-all ${
+                  className={`px-3 py-1.5 text-xs uppercase tracking-wider transition-all whitespace-nowrap ${
                     inventoryCategoryFilter === "femme" ? "bg-brand-gold text-brand-black font-semibold" : "bg-white/5 text-white/70"
                   }`}
                 >
                   Femme ({femmeProductsCount})
+                </button>
+                <button
+                  onClick={() => setInventoryCategoryFilter("unisexe")}
+                  className={`px-3 py-1.5 text-xs uppercase tracking-wider transition-all whitespace-nowrap ${
+                    inventoryCategoryFilter === "unisexe" ? "bg-purple-500 text-white font-semibold" : "bg-white/5 text-white/70"
+                  }`}
+                >
+                  Unisexe ({unisexeProductsCount})
+                </button>
+                <button
+                  onClick={() => setInventoryCategoryFilter("pack")}
+                  className={`px-3 py-1.5 text-xs uppercase tracking-wider transition-all whitespace-nowrap ${
+                    inventoryCategoryFilter === "pack" ? "bg-purple-700 text-white font-semibold" : "bg-white/5 text-white/70"
+                  }`}
+                >
+                  🎁 Packs ({packsCount})
                 </button>
               </div>
 
@@ -874,9 +1137,13 @@ export default function AdminDashboard() {
                           <span className={`px-2.5 py-1 text-[10px] uppercase tracking-wider border font-medium ${
                             p.category === "homme"
                               ? "bg-blue-500/10 text-blue-300 border-blue-500/30"
-                              : "bg-pink-500/10 text-pink-300 border-pink-500/30"
+                              : p.category === "femme"
+                              ? "bg-pink-500/10 text-pink-300 border-pink-500/30"
+                              : p.category === "unisexe"
+                              ? "bg-purple-500/10 text-purple-300 border-purple-500/30"
+                              : "bg-amber-500/10 text-amber-300 border-amber-500/30"
                           }`}>
-                            {p.category}
+                            {p.category === "pack" ? "🎁 Pack" : p.category}
                           </span>
                         </td>
 

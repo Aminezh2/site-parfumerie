@@ -12,7 +12,7 @@ import OrderModal from "@/components/ui/OrderModal";
 import { Sparkles, ShieldCheck, Filter, Search, ArrowLeft } from "lucide-react";
 
 interface CategoryShowcaseProps {
-  category: "homme" | "femme" | "unisexe" | "all";
+  category: "homme" | "femme" | "unisexe" | "pack" | "all";
   title: string;
   subtitle: string;
   description: string;

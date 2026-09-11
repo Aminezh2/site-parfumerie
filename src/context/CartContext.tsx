@@ -11,7 +11,7 @@ export interface CartItem {
   format: "5ml" | "10ml";
   price: number;
   image: string;
-  category: "homme" | "femme" | "unisexe";
+  category: "homme" | "femme" | "unisexe" | "pack";
   quantity: number;
 }
 

@@ -53,11 +53,10 @@ export default function Navbar() {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out ${
-          isScrolled
-            ? "bg-[#090909]/90 backdrop-blur-md border-b border-white/10 py-3.5 shadow-xl"
-            : "bg-transparent py-5 sm:py-6"
-        }`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out ${isScrolled
+          ? "bg-[#090909]/90 backdrop-blur-md border-b border-white/10 py-3.5 shadow-xl"
+          : "bg-transparent py-5 sm:py-6"
+          }`}
       >
         <div className="container mx-auto px-5 sm:px-8 md:px-12 flex items-center justify-between">
           {/* Mobile: Menu (Left) */}
@@ -93,7 +92,7 @@ export default function Navbar() {
               onClick={() => setIsMobileMenuOpen(false)}
             >
               <span className="font-serif text-lg sm:text-2xl md:text-3xl text-white tracking-wider group-hover:text-brand-gold-light transition-colors">
-                Zakaria Fragrances
+                FSAHI FRAGRANCES
               </span>
               <span className="text-[0.55rem] sm:text-[0.65rem] text-brand-gold tracking-[0.25em] uppercase mt-0.5 font-mono">
                 Perfumes &amp; Decants
@@ -157,9 +156,8 @@ export default function Navbar() {
 
       {/* Mobile Full-Screen Menu Overlay */}
       <div
-        className={`fixed inset-0 z-[100] flex flex-col bg-[#0a0a0a] transition-all duration-500 ease-in-out ${
-          isMobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-        }`}
+        className={`fixed inset-0 z-[100] flex flex-col bg-[#0a0a0a] transition-all duration-500 ease-in-out ${isMobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          }`}
       >
         {/* Decorative top bar */}
         <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-brand-gold/50 to-transparent" />
@@ -192,9 +190,8 @@ export default function Navbar() {
                 className="block group"
               >
                 <span
-                  className={`block font-serif text-3xl sm:text-4xl text-white group-hover:text-brand-gold transition-all duration-300 py-3.5 border-b border-white/5 group-hover:pl-3 ${
-                    isMobileMenuOpen ? "translate-x-0 opacity-100" : "-translate-x-4 opacity-0"
-                  }`}
+                  className={`block font-serif text-3xl sm:text-4xl text-white group-hover:text-brand-gold transition-all duration-300 py-3.5 border-b border-white/5 group-hover:pl-3 ${isMobileMenuOpen ? "translate-x-0 opacity-100" : "-translate-x-4 opacity-0"
+                    }`}
                   style={{
                     transitionDelay: isMobileMenuOpen ? `${index * 60 + 80}ms` : "0ms",
                     transitionProperty: "transform, opacity, padding, color",

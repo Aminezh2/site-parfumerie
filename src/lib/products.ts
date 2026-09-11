@@ -2,7 +2,7 @@ export interface Perfume {
   id: string;
   name: string;
   brand: string;
-  category: "homme" | "femme" | "unisexe";
+  category: "homme" | "femme" | "unisexe" | "pack";
   type: string;
   family: string;
   image: string;
@@ -201,6 +201,44 @@ export const PRODUCTS: Perfume[] = [
     price5ml: 185,
     price10ml: 330,
     rating: 4.8,
+    inStock: true,
+  },
+
+  // --- PACKS & COFFRETS ---
+  {
+    id: "pack-bestsellers-homme",
+    name: "Pack Bestsellers Homme (3 Décants)",
+    brand: "Zakaria Fragrances",
+    category: "pack",
+    type: "Coffret Découverte",
+    family: "Sélection Exclusive",
+    image: "/assets/images/1.jpeg",
+    badge: "Offre Spéciale",
+    description: "Le trio incontournable pour homme : Dior Sauvage EDP + Creed Aventus + Paco Rabanne Phantom en flacons atomiseurs verre hermétiques.",
+    topNotes: "Sauvage (Dior)",
+    heartNotes: "Aventus (Creed)",
+    baseNotes: "Phantom (Paco Rabanne)",
+    price5ml: 380,
+    price10ml: 690,
+    rating: 5.0,
+    inStock: true,
+  },
+  {
+    id: "coffret-prestige-niche",
+    name: "Coffret Niche Prestige (3 Décants)",
+    brand: "Zakaria Fragrances",
+    category: "pack",
+    type: "Coffret Luxe",
+    family: "Collection Privée",
+    image: "/assets/images/Perfume_bottle_on_black_pedestal_202609010307.jpeg",
+    badge: "Prestige",
+    description: "Une sélection d'exception pour les amateurs de grands jus : Tom Ford Tobacco Vanille + Le Labo Santal 33 + Creed Aventus.",
+    topNotes: "Tobacco Vanille (Tom Ford)",
+    heartNotes: "Santal 33 (Le Labo)",
+    baseNotes: "Aventus (Creed)",
+    price5ml: 490,
+    price10ml: 890,
+    rating: 5.0,
     inStock: true,
   }
 ];
