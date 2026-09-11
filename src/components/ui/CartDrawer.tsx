@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import { getWhatsAppUrl } from "@/lib/whatsapp";
+import { MOROCCAN_CITIES } from "@/lib/cities";
 import { X, Trash2, Plus, Minus, ShoppingBag, ShieldCheck, Truck, ArrowRight, CheckCircle2, ExternalLink } from "lucide-react";
 
 export default function CartDrawer() {
@@ -248,13 +249,18 @@ export default function CartDrawer() {
                   <label className="text-xs text-white/80 uppercase tracking-wider block mb-1 font-medium">
                     Ville
                   </label>
-                  <input
-                    type="text"
-                    placeholder="Casablanca, Rabat..."
+                  <select
                     value={customerCity}
                     onChange={(e) => setCustomerCity(e.target.value)}
-                    className="w-full bg-white/5 border border-white/20 rounded-lg text-white px-3.5 py-2.5 text-xs placeholder:text-white/30 focus:outline-none focus:border-brand-gold"
-                  />
+                    className="w-full bg-white/5 border border-white/20 rounded-lg text-white px-3 py-2 text-xs focus:outline-none focus:border-brand-gold appearance-none"
+                  >
+                    <option value="" disabled className="bg-brand-black text-white/50">Sélectionnez une ville</option>
+                    {MOROCCAN_CITIES.map((city) => (
+                      <option key={city} value={city} className="bg-brand-black text-white">
+                        {city}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label className="text-xs text-white/80 uppercase tracking-wider block mb-1 font-medium">

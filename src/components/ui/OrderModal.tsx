@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { PerfumeItem } from "@/lib/db";
 import { getWhatsAppUrl } from "@/lib/whatsapp";
+import { MOROCCAN_CITIES } from "@/lib/cities";
 import { X, CheckCircle2, ShoppingBag, ShieldCheck, Truck, ExternalLink, Droplets } from "lucide-react";
 
 interface OrderModalProps {
@@ -202,13 +203,18 @@ export default function OrderModal({ perfume, initialFormat = "5ml", onClose }: 
                   <label className="text-[11px] text-white/80 uppercase tracking-wider block mb-1 font-medium font-mono">
                     Ville
                   </label>
-                  <input
-                    type="text"
-                    placeholder="Casablanca..."
+                  <select
                     value={customerCity}
                     onChange={(e) => setCustomerCity(e.target.value)}
-                    className="w-full bg-white/5 border border-white/20 rounded-xl text-white px-3 py-2.5 text-xs placeholder:text-white/30 focus:outline-none focus:border-brand-gold transition-colors"
-                  />
+                    className="w-full bg-white/5 border border-white/20 rounded-xl text-white px-3 py-2 text-xs focus:outline-none focus:border-brand-gold transition-colors appearance-none"
+                  >
+                    <option value="" disabled className="bg-brand-black text-white/50">Sélectionnez une ville</option>
+                    {MOROCCAN_CITIES.map((city) => (
+                      <option key={city} value={city} className="bg-brand-black text-white">
+                        {city}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label className="text-[11px] text-white/80 uppercase tracking-wider block mb-1 font-medium font-mono">
