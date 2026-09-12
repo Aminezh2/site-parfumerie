@@ -64,11 +64,6 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/unisexe" className="hover:text-brand-gold transition-colors">
-                  Parfums Unisexe
-                </Link>
-              </li>
-              <li>
                 <Link href="/packs" className="hover:text-brand-gold transition-colors">
                   Packs &amp; Coffrets
                 </Link>
