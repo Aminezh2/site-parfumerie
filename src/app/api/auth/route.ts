@@ -6,7 +6,7 @@ export async function POST(request: Request) {
     const { password } = await request.json();
     
     // Mot de passe sécurisé (configurable via .env avec fallback)
-    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "zakaria2026";
+    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "Zakaria_2026@";
 
     if (password === ADMIN_PASSWORD) {
       // Définir un cookie sécurisé HttpOnly
