@@ -19,6 +19,14 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   title: "Zakaria Fragrances | The Art of Fragrance",
   description: "Des parfums originaux, choisis selon vos envies. A premium selection of authentic fragrances.",
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
+  },
   openGraph: {
     title: "Zakaria Fragrances",
     description: "Des parfums originaux, choisis selon vos envies.",
