@@ -12,16 +12,16 @@
   --color-brand-bronze: #8B6508;
   --color-brand-brown: #1C0F04;
 
-  --font-serif: var(--font-playfair);
-  --font-sans: var(--font-inter);
+  --font-serif: 'Playfair Display Variable', 'Playfair Display', Georgia, serif;
+  --font-sans: 'Inter Variable', 'Inter', system-ui, sans-serif;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-inter);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-playfair);
+  --font-sans: 'Inter Variable', 'Inter', system-ui, sans-serif;
+  --font-mono: 'Courier New', monospace;
+  --font-heading: 'Playfair Display Variable', 'Playfair Display', Georgia, serif;
   
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
