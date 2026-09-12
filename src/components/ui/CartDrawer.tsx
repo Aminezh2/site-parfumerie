@@ -52,27 +52,25 @@ export default function CartDrawer() {
       // 2. Format WhatsApp Message for Store Owner
       let itemsListText = "";
       cart.forEach((item, index) => {
-        const itemTotal = item.price * item.quantity;
-        itemsListText += `  ${index + 1}. *${item.name}* (${item.brand})\n` +
-          `     • Contenance : *${item.format}* (${item.format === "5ml" ? "~75 pschitts" : "~150 pschitts"})\n` +
-          `     • Quantité : ${item.quantity}\n` +
-          `     • Prix unitaire : ${item.price} DH\n` +
-          `     • Sous-total : ${itemTotal} DH\n\n`;
+        itemsListText += `  ${index + 1}. ${item.name} (${item.brand}) | ${item.format} × ${item.quantity} — ${item.price * item.quantity} DH\n`;
       });
 
-      const message = `🚨 *NOUVELLE COMMANDE REÇUE (ZAKARIA FRAGRANCES)* 🚨\n\n` +
-        `🛍️ *PRODUITS CHOISIS (${totalItems} article${totalItems > 1 ? "s" : ""}) :*\n` +
-        `----------------------------------------\n` +
+      const message =
+        `━━━━━━━━━━━━━━━━━━━━━━\n` +
+        `🛍️ *FSAHI FRAGRANCES*\n` +
+        `━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+        `📦 *Détail de la commande :*\n` +
         itemsListText +
-        `----------------------------------------\n` +
-        `💰 *MONTANT TOTAL À ENCAISSER : ${totalPrice} DH*\n` +
-        `💳 *Mode de paiement :* Paiement à la livraison (Cash on Delivery)\n\n` +
-        `👤 *COORDONNÉES DU CLIENT :*\n` +
-        `• *Nom & Prénom :* ${customerName}\n` +
-        `• *Téléphone :* ${customerPhone}\n` +
-        `• *Ville :* ${customerCity}\n` +
-        `• *Adresse de livraison :* ${customerAddress || "Non spécifiée"}\n\n` +
-        `Envoyé depuis le site web Zakaria Fragrances. Merci de valider la livraison !`;
+        `\n💵 *Total à régler : ${totalPrice} DH*\n` +
+        `💳 Paiement à la livraison (cash)\n\n` +
+        `─────────────────────\n` +
+        `👤 *Informations client*\n` +
+        `Nom : ${customerName}\n` +
+        `Tél : ${customerPhone}\n` +
+        `Ville : ${customerCity}\n` +
+        `${customerAddress ? `Adresse : ${customerAddress}\n` : ""}` +
+        `─────────────────────\n` +
+        `_Merci de confirmer la commande dès que possible._`;
 
       const whatsappUrl = getWhatsAppUrl(message);
       setGeneratedWhatsAppUrl(whatsappUrl);

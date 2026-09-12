@@ -112,7 +112,7 @@ export default function Footer() {
             <div className="space-y-3">
               {/* Instagram */}
               <a
-                href="https://instagram.com"
+                href="https://www.instagram.com/fsahi__fragrances?stkn=cGc0cDg5Y2IwYzlh&utm_source=qr"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group flex items-center justify-between p-3 bg-white/[0.04] border border-white/10 hover:border-brand-gold/60 rounded-xl transition-all duration-300 hover:bg-white/[0.08]"
@@ -139,7 +139,7 @@ export default function Footer() {
 
               {/* TikTok */}
               <a
-                href="https://tiktok.com"
+                href="https://www.tiktok.com/@zakaria_fragrances"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group flex items-center justify-between p-3 bg-white/[0.04] border border-white/10 hover:border-brand-gold/60 rounded-xl transition-all duration-300 hover:bg-white/[0.08]"

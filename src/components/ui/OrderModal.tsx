@@ -53,23 +53,22 @@ export default function OrderModal({ perfume, initialFormat = "5ml", onClose }: 
       });
 
       // 2. Build WhatsApp order message for Store Owner
-      const message = `🚨 *COMMANDE DIRECTE REÇUE (ZAKARIA FRAGRANCES)* 🚨\n\n` +
-        `🛍️ *PRODUIT CHOISI :*\n` +
-        `----------------------------------------\n` +
-        `• *Parfum :* ${perfume.name}\n` +
-        `• *Marque :* ${perfume.brand}\n` +
-        `• *Catégorie :* ${perfume.type || "Eau de Parfum"}\n` +
-        `• *Format sélectionné :* *${orderFormat}* (${orderFormat === "5ml" ? "~75 pschitts" : "~150 pschitts"})\n` +
-        `• *Prix :* ${currentPrice} DH\n` +
-        `----------------------------------------\n\n` +
-        `💰 *MONTANT TOTAL À ENCAISSER : ${currentPrice} DH*\n` +
-        `💳 *Mode de paiement :* Paiement en espèces à la livraison (COD)\n\n` +
-        `👤 *COORDONNÉES DU CLIENT :*\n` +
-        `• *Nom & Prénom :* ${customerName}\n` +
-        `• *Téléphone :* ${customerPhone}\n` +
-        `• *Ville :* ${customerCity}\n` +
-        `• *Adresse de livraison :* ${customerAddress || "Non spécifiée"}\n\n` +
-        `Envoyé depuis le site web Zakaria Fragrances. Merci de valider la livraison !`;
+      const message =
+        `━━━━━━━━━━━━━━━━━━━━━━\n` +
+        `🛍️ *FSAHI FRAGRANCES*\n` +
+        `━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+        `📦 *Détail de la commande :*\n` +
+        `  • ${perfume.name} (${perfume.brand}) | ${orderFormat} — ${currentPrice} DH\n\n` +
+        `💵 *Total à régler : ${currentPrice} DH*\n` +
+        `💳 Paiement à la livraison (cash)\n\n` +
+        `─────────────────────\n` +
+        `👤 *Informations client*\n` +
+        `Nom : ${customerName}\n` +
+        `Tél : ${customerPhone}\n` +
+        `Ville : ${customerCity}\n` +
+        `${customerAddress ? `Adresse : ${customerAddress}\n` : ""}` +
+        `─────────────────────\n` +
+        `_Merci de confirmer la commande dès que possible._`;
 
       const whatsappUrl = getWhatsAppUrl(message);
       setGeneratedWhatsAppUrl(whatsappUrl);

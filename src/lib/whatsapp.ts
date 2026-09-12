@@ -1,5 +1,5 @@
 // Central WhatsApp configuration for Zakaria Fragrances
-export const DEFAULT_WHATSAPP_PHONE = "212694024691";
+export const DEFAULT_WHATSAPP_PHONE = "212627183698";
 
 /**
  * Sanitizes phone number to international digit-only format for WhatsApp wa.me links
