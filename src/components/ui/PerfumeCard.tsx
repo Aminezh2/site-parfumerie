@@ -29,7 +29,7 @@ export default function PerfumeCard({ item, onOrder, priority = false }: Perfume
             setIsDetailOpen(true);
           }
         }}
-        className={`group relative rounded-3xl overflow-hidden cursor-pointer transition-all duration-500 shadow-xl hover:shadow-2xl hover:-translate-y-2 flex flex-col justify-between border select-none min-h-[440px] sm:min-h-[480px] md:min-h-[520px] ${
+        className={`group relative rounded-3xl overflow-hidden cursor-pointer transition-all duration-500 shadow-xl hover:shadow-2xl hover:-translate-y-2 flex flex-col justify-between border select-none min-h-[380px] sm:min-h-[460px] md:min-h-[520px] ${
           isAvailable
             ? "border-white/15 hover:border-brand-gold/70 hover:shadow-[0_15px_40px_rgba(212,175,55,0.2)]"
             : "border-rose-500/30 opacity-85"
@@ -72,7 +72,7 @@ export default function PerfumeCard({ item, onOrder, priority = false }: Perfume
         <div className="relative z-10 m-3 sm:m-4 p-4 sm:p-5 bg-black/60 backdrop-blur-md rounded-2xl border border-white/10 group-hover:border-brand-gold/40 transition-all duration-300 flex flex-col gap-3 shadow-lg">
           {/* Perfume Name */}
           <div>
-            <h3 className="font-serif text-xl sm:text-2xl text-white font-bold leading-snug group-hover:text-brand-gold-light transition-colors line-clamp-1 drop-shadow-sm">
+            <h3 className="font-serif text-lg sm:text-xl md:text-2xl text-white font-bold leading-snug group-hover:text-brand-gold-light transition-colors line-clamp-1 drop-shadow-sm">
               {item.name}
             </h3>
             {item.family && (
@@ -89,7 +89,7 @@ export default function PerfumeCard({ item, onOrder, priority = false }: Perfume
                 Décants dès
               </span>
               <div className="flex items-baseline gap-1">
-                <span className="font-serif text-2xl sm:text-3xl font-bold text-brand-gold leading-none">
+                <span className="font-serif text-xl sm:text-2xl md:text-3xl font-bold text-brand-gold leading-none">
                   {item.price5ml}
                 </span>
                 <span className="text-xs text-brand-gold font-semibold">DH</span>
@@ -103,7 +103,7 @@ export default function PerfumeCard({ item, onOrder, priority = false }: Perfume
                 e.stopPropagation();
                 setIsDetailOpen(true);
               }}
-              className="px-4 py-2.5 bg-brand-gold hover:bg-brand-gold-light text-brand-black text-xs font-bold uppercase tracking-wider rounded-xl transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-brand-gold/40 hover:scale-105 active:scale-95 cursor-pointer"
+              className="px-3 sm:px-4 py-2 sm:py-2.5 bg-brand-gold hover:bg-brand-gold-light text-brand-black text-[11px] sm:text-xs font-bold uppercase tracking-wider rounded-xl transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-brand-gold/40 hover:scale-105 active:scale-95 cursor-pointer"
             >
               <span>Commander</span>
               <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
