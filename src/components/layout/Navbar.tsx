@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useCart } from "@/context/CartContext";
-import { Search, ShoppingBag, Menu, X } from "lucide-react";
+import { useTheme } from "@/context/ThemeContext";
+import { Search, ShoppingBag, Menu, X, Sun, Moon } from "lucide-react";
 
 const navLinks = [
   { href: "/collection", label: "Collection" },
@@ -15,17 +16,33 @@ const navLinks = [
 
 export default function Navbar() {
   const { totalItems, openCart } = useCart();
+  const { theme, toggleTheme } = useTheme();
   const router = useRouter();
+  const pathname = usePathname();
+  const isHomePage = pathname === "/";
   const [isScrolled, setIsScrolled] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(isHomePage ? 0 : 1);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      const scrollY = window.scrollY;
+      setIsScrolled(scrollY > 40);
+
+      if (isHomePage) {
+        // Hero brand text fades out smoothly during initial scroll.
+        // Header logo ONLY starts fading in after scrollY > 550px, reaching 1.0 around scrollY 770px.
+        const progress = Math.min(Math.max((scrollY - 550) / 220, 0), 1);
+        setScrollProgress(progress);
+      } else {
+        setScrollProgress(1);
+      }
     };
-    window.addEventListener("scroll", handleScroll);
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [isHomePage]);
 
   // Invisible secret keyboard combination for admin access: Ctrl + Shift + A (or Cmd + Shift + A)
   useEffect(() => {
@@ -84,18 +101,27 @@ export default function Navbar() {
             </Link>
           </nav>
 
-          {/* Logo (Center) */}
-          <div className="absolute left-1/2 -translate-x-1/2 text-center">
+          {/* Logo (Center): Completely hidden at top of Home page (scroll = 0), smoothly rises & fades into Header on scroll */}
+          <div
+            className="absolute left-1/2 text-center flex items-center justify-center transition-all duration-500 ease-out"
+            style={{
+              opacity: isHomePage ? scrollProgress : 1,
+              transform: isHomePage
+                ? `translate(-50%, ${(1 - scrollProgress) * 24}px)`
+                : "translate(-50%, 0px)",
+              pointerEvents: (!isHomePage || scrollProgress > 0.15) ? "auto" : "none",
+            }}
+          >
             <Link
               href="/"
-              className="flex flex-col items-center group"
+              className="flex flex-col text-center group select-none py-1"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              <span className="font-serif text-lg sm:text-2xl md:text-3xl text-white tracking-wider group-hover:text-brand-gold-light transition-colors">
+              <span className="font-serif text-xs sm:text-base md:text-lg text-white tracking-widest font-semibold group-hover:text-brand-gold-light transition-colors leading-tight whitespace-nowrap">
                 FSAHI FRAGRANCES
               </span>
-              <span className="text-[0.55rem] sm:text-[0.65rem] text-brand-gold tracking-[0.25em] uppercase mt-0.5 font-mono">
-                Perfumes &amp; Decants
+              <span className="text-[0.45rem] sm:text-[0.55rem] text-brand-gold tracking-[0.22em] uppercase font-mono mt-0.5 leading-none whitespace-nowrap">
+                PARFUMS ET DÉCANTS
               </span>
             </Link>
           </div>
@@ -106,6 +132,20 @@ export default function Navbar() {
               Support
             </Link>
             <div className="flex items-center gap-4 ml-3">
+              {/* Theme Toggle Button */}
+              <button
+                onClick={toggleTheme}
+                aria-label="Changer de thème"
+                title={theme === "dark" ? "Activer le thème clair" : "Activer le thème sombre"}
+                className="hover:text-brand-gold text-white/90 transition-all duration-300 p-1.5 rounded-full border border-white/10 hover:border-brand-gold/50 hover:bg-white/5 cursor-pointer flex items-center justify-center"
+              >
+                {theme === "dark" ? (
+                  <Sun className="w-4 h-4 text-brand-gold transition-transform duration-300 hover:rotate-45" />
+                ) : (
+                  <Moon className="w-4 h-4 text-brand-gold transition-transform duration-300 hover:-rotate-12" />
+                )}
+              </button>
+
               <Link
                 href="/collection"
                 aria-label="Recherche"
@@ -129,8 +169,20 @@ export default function Navbar() {
             </div>
           </nav>
 
-          {/* Mobile: Cart & Search (Right) */}
+          {/* Mobile: Theme Toggle, Search & Cart (Right) */}
           <div className="flex items-center gap-2.5 lg:hidden">
+            <button
+              onClick={toggleTheme}
+              aria-label="Changer de thème"
+              title={theme === "dark" ? "Activer le thème clair" : "Activer le thème sombre"}
+              className="text-white hover:text-brand-gold transition-colors p-1 cursor-pointer"
+            >
+              {theme === "dark" ? (
+                <Sun className="w-5 h-5 text-brand-gold" />
+              ) : (
+                <Moon className="w-5 h-5 text-brand-gold" />
+              )}
+            </button>
             <Link
               href="/collection"
               aria-label="Recherche"
@@ -164,10 +216,10 @@ export default function Navbar() {
 
         {/* Header with Logo and Close Button */}
         <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-white/10">
-          <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="flex flex-col">
-            <span className="font-serif text-xl text-white tracking-wider">Zakaria Fragrances</span>
-            <span className="text-[0.6rem] text-brand-gold tracking-[0.2em] uppercase mt-0.5 font-mono">
-              Perfumes &amp; Decants
+          <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="flex flex-col group">
+            <span className="font-serif text-base text-white tracking-wider font-semibold group-hover:text-brand-gold-light transition-colors">FSAHI FRAGRANCES</span>
+            <span className="text-[0.55rem] text-brand-gold tracking-[0.2em] uppercase font-mono leading-none">
+              PARFUMS ET DÉCANTS
             </span>
           </Link>
           <button
@@ -215,16 +267,25 @@ export default function Navbar() {
             className="text-white hover:text-brand-gold transition-colors flex items-center gap-2 text-xs uppercase tracking-widest cursor-pointer"
           >
             <ShoppingBag className="w-5 h-5 text-brand-gold" />
-            <span>Votre Panier ({totalItems})</span>
+            <span>Panier ({totalItems})</span>
           </button>
 
-          <Link
-            href="/support"
-            onClick={() => setIsMobileMenuOpen(false)}
-            className="text-xs uppercase tracking-widest text-brand-gold hover:underline"
+          <button
+            onClick={toggleTheme}
+            className="text-white hover:text-brand-gold transition-colors flex items-center gap-2 text-xs uppercase tracking-widest cursor-pointer"
           >
-            Besoin d&apos;aide ?
-          </Link>
+            {theme === "dark" ? (
+              <>
+                <Sun className="w-4 h-4 text-brand-gold" />
+                <span>Mode Clair</span>
+              </>
+            ) : (
+              <>
+                <Moon className="w-4 h-4 text-brand-gold" />
+                <span>Mode Sombre</span>
+              </>
+            )}
+          </button>
         </div>
 
         {/* Decorative bottom bar */}

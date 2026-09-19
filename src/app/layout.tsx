@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import "@fontsource-variable/inter";
 import "@fontsource-variable/playfair-display";
 import { CartProvider } from "@/context/CartContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 import CartDrawer from "@/components/ui/CartDrawer";
 import "./globals.css";
 
-
 export const metadata: Metadata = {
-  title: "Zakaria Fragrances | The Art of Fragrance",
-  description: "Des parfums originaux, choisis selon vos envies. A premium selection of authentic fragrances.",
+  title: "FSAHI FRAGRANCES | Parfums & Décants",
+  description: "Des parfums originaux, choisis selon vos envies. Une sélection d'exception en formats décants 5 ml & 10 ml.",
   icons: {
     icon: [
       { url: "/favicon.svg", type: "image/svg+xml" },
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     apple: "/favicon.svg",
   },
   openGraph: {
-    title: "Zakaria Fragrances",
+    title: "FSAHI FRAGRANCES | Parfums & Décants",
     description: "Des parfums originaux, choisis selon vos envies.",
     type: "website",
   },
@@ -30,14 +30,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className="scroll-smooth">
+    <html lang="fr" className="scroll-smooth dark">
       <body
-        className="antialiased bg-background text-foreground"
+        className="antialiased bg-background text-foreground transition-colors duration-500"
       >
-        <CartProvider>
-          {children}
-          <CartDrawer />
-        </CartProvider>
+        <ThemeProvider>
+          <CartProvider>
+            {children}
+            <CartDrawer />
+          </CartProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

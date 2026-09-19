@@ -25,13 +25,20 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-14">
           {/* Col 1: Brand Info */}
           <div className="md:col-span-1">
-            <Link href="/" className="inline-block mb-4">
-              <span className="font-serif text-2xl text-white tracking-wider block">
-                Zakaria Fragrances
-              </span>
-              <span className="text-[0.65rem] text-brand-gold tracking-[0.2em] uppercase mt-0.5 block font-mono">
-                Perfumes &amp; Decants
-              </span>
+            <Link href="/" className="inline-flex items-center gap-3 mb-4 group">
+              <img
+                src="/assets/images/ff-gold-logo.png"
+                alt="FSAHI Logo"
+                className="h-10 sm:h-12 w-auto object-contain drop-shadow-[0_2px_10px_rgba(212,175,55,0.4)] transition-transform duration-300 group-hover:scale-105"
+              />
+              <div className="flex flex-col text-left">
+                <span className="font-serif text-xl sm:text-2xl text-white tracking-wider block font-semibold group-hover:text-brand-gold-light transition-colors">
+                  FSAHI FRAGRANCES
+                </span>
+                <span className="text-[0.6rem] sm:text-[0.65rem] text-brand-gold tracking-[0.2em] uppercase mt-0.5 block font-mono">
+                  PARFUMS ET DÉCANTS
+                </span>
+              </div>
             </Link>
             <p className="text-white/60 text-xs sm:text-sm leading-relaxed max-w-xs mb-4">
               Des fragrances 100% originales sélectionnées avec rigueur en formats décants 5 ml &amp; 10 ml pour tester les plus grands parfums du monde.

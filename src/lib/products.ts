@@ -154,7 +154,7 @@ export const PRODUCTS: Perfume[] = [
     category: "femme",
     type: "Eau de Parfum Intense",
     family: "Chypré Oriental",
-    image: "/assets/images/Create_luxury_perfume_advertisin…_2K_202609010303.jpeg",
+    image: "/assets/images/2.jpeg",
     badge: "Élégance Absolue",
     description: "L'essence d'une femme libre et audacieuse. Un oriental au caractère affirmé et d'une étonnante fraîcheur.",
     topNotes: "Orange de Sicile, Bergamote de Calabre",

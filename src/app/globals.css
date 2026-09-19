@@ -72,6 +72,187 @@
   --radius: 0rem; /* Sharp edges for luxury */
 }
 
+/* Light Theme: Luminous Ivory & Gold */
+html.light {
+  --background: #FAF9F6;
+  --foreground: #121212;
+  
+  --primary: #B8860B;
+  --primary-foreground: #FFFFFF;
+  
+  --secondary: #F3EFE6;
+  --secondary-foreground: #121212;
+  
+  --muted: #EAE5D9;
+  --muted-foreground: #555555;
+  
+  --accent: #DFD9CB;
+  --accent-foreground: #8B6508;
+  
+  --border: rgba(0, 0, 0, 0.08);
+  --input: rgba(0, 0, 0, 0.1);
+  --ring: #B8860B;
+}
+
+/* Background overrides */
+html.light body,
+html.light main,
+html.light section,
+html.light footer,
+html.light .bg-brand-black,
+html.light .bg-\[\#020202\],
+html.light .bg-\[\#040404\],
+html.light .bg-\[\#050505\],
+html.light .bg-\[\#070707\],
+html.light .bg-\[\#080808\],
+html.light .bg-\[\#0a0a0a\],
+html.light .bg-\[\#0c0c0c\],
+html.light .bg-\[\#0d0d0d\],
+html.light .bg-\[\#0e0e0e\],
+html.light .bg-\[\#111111\],
+html.light .bg-\[\#121212\],
+html.light .bg-\[\#141414\] {
+  background-color: #FAF9F6 !important;
+  color: #121212;
+}
+
+/* Cards & Modals Backgrounds in Light Mode */
+html.light .bg-\[\#0a0a0a\]\/90,
+html.light .bg-\[\#090909\]\/90,
+html.light .bg-\[\#0e0e0e\]\/90,
+html.light .bg-\[\#121212\]\/95,
+html.light .bg-\[\#0d0d0d\],
+html.light .bg-\[\#0e0e0e\],
+html.light .bg-\[\#0a0a0a\],
+html.light .bg-black {
+  background-color: #FFFFFF !important;
+}
+
+/* Glassmorphism & semi-transparent overlays */
+html.light .bg-black\/85,
+html.light .bg-black\/80,
+html.light .bg-black\/70,
+html.light .bg-black\/60,
+html.light .bg-black\/50,
+html.light .bg-black\/40,
+html.light .bg-black\/30 {
+  background-color: rgba(255, 255, 255, 0.93) !important;
+  color: #121212 !important;
+}
+
+/* Perfume Card Full Background Light Mode Fade Overlay & Card Background */
+html.light .card-gradient-overlay {
+  background: linear-gradient(
+    to top,
+    rgba(250, 249, 246, 0.98) 0%,
+    rgba(250, 249, 246, 0.55) 45%,
+    transparent 100%
+  ) !important;
+}
+
+html.light .group.relative.rounded-3xl {
+  background-color: #FFFFFF !important;
+  border-color: rgba(184, 134, 11, 0.25) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
+}
+
+html.light .group.relative.rounded-3xl:hover {
+  border-color: rgba(184, 134, 11, 0.6) !important;
+  box-shadow: 0 15px 40px rgba(184, 134, 11, 0.15) !important;
+}
+
+/* Light mode card images: Crystal clear & bright */
+html.light .group.relative img {
+  filter: brightness(1.06) contrast(1.04) !important;
+}
+
+/* Light mode card badges */
+html.light .bg-black\/60 {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  color: #121212 !important;
+  border-color: rgba(184, 134, 11, 0.3) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06) !important;
+}
+
+html.light .bg-emerald-500\/20 {
+  background-color: rgba(16, 185, 129, 0.12) !important;
+  color: #047857 !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
+/* Light mode bottom card pill box */
+html.light .bg-black\/60.backdrop-blur-md {
+  background-color: rgba(255, 255, 255, 0.96) !important;
+  border-color: rgba(184, 134, 11, 0.25) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Text Colors */
+html.light .text-white {
+  color: #121212 !important;
+}
+
+html.light .text-white\/90,
+html.light .text-white\/85,
+html.light .text-white\/80 {
+  color: #222222 !important;
+}
+
+html.light .text-white\/70,
+html.light .text-white\/60 {
+  color: #444444 !important;
+}
+
+html.light .text-white\/50,
+html.light .text-white\/40,
+html.light .text-white\/30 {
+  color: #666666 !important;
+}
+
+/* Borders */
+html.light .border-white\/5,
+html.light .border-white\/10,
+html.light .border-white\/15,
+html.light .border-white\/20,
+html.light .border-white\/30 {
+  border-color: rgba(184, 134, 11, 0.2) !important;
+}
+
+/* Inputs & Dropdowns */
+html.light input,
+html.light select,
+html.light textarea {
+  background-color: #FFFFFF !important;
+  color: #121212 !important;
+  border-color: rgba(184, 134, 11, 0.3) !important;
+}
+
+html.light input::placeholder,
+html.light textarea::placeholder {
+  color: #777777 !important;
+}
+
+html.light option {
+  background-color: #FFFFFF !important;
+  color: #121212 !important;
+}
+
+/* Shimmer animation in Light mode */
+html.light .animate-shimmer-gold {
+  background: linear-gradient(
+    90deg,
+    #121212 0%,
+    #b8860b 25%,
+    #121212 50%,
+    #8b6508 75%,
+    #121212 100%
+  );
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -110,4 +291,59 @@
 /* Video clip container */
 .clip-path-inset {
   clip-path: inset(0 0 0 0);
+}
+
+/* Gold Sparkle & Shimmer Animations */
+@keyframes shimmer-gold {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes sparkle-twinkle {
+  0%, 100% {
+    opacity: 0.25;
+    transform: scale(0.6) rotate(0deg);
+    filter: drop-shadow(0 0 4px rgba(212, 175, 55, 0.4));
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.35) rotate(180deg);
+    filter: drop-shadow(0 0 18px rgba(255, 223, 110, 1));
+  }
+}
+
+.animate-shimmer-gold {
+  background: linear-gradient(
+    90deg,
+    #ffffff 0%,
+    #f3e5ab 20%,
+    #ffffff 40%,
+    #ffd700 70%,
+    #ffffff 100%
+  );
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shimmer-gold 5s linear infinite;
+}
+
+.animate-sparkle-twinkle-1 {
+  animation: sparkle-twinkle 2.4s ease-in-out infinite;
+}
+
+.animate-sparkle-twinkle-2 {
+  animation: sparkle-twinkle 3.1s ease-in-out infinite 0.7s;
+}
+
+.animate-sparkle-twinkle-3 {
+  animation: sparkle-twinkle 2.7s ease-in-out infinite 1.4s;
+}
+
+.animate-sparkle-twinkle-4 {
+  animation: sparkle-twinkle 3.6s ease-in-out infinite 0.3s;
 }

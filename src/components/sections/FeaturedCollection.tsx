@@ -64,10 +64,11 @@ export default function FeaturedCollection() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3.5 sm:gap-6 md:gap-8">
-          {featuredProducts.map((product) => (
+          {featuredProducts.map((product, index) => (
             <PerfumeCard
               key={product.id}
               item={product}
+              priority={index < 3}
               onOrder={(perfume, size) => openOrderModal(perfume, size)}
             />
           ))}
