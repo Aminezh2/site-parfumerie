@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { PerfumeItem } from "@/lib/db";
 import ProductDetailModal from "@/components/ui/ProductDetailModal";
-import { Droplets, Sparkles, ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 
 interface PerfumeCardProps {
   item: PerfumeItem;
@@ -29,7 +29,7 @@ export default function PerfumeCard({ item, onOrder, priority = false }: Perfume
             setIsDetailOpen(true);
           }
         }}
-        className={`group relative rounded-3xl overflow-hidden cursor-pointer transition-all duration-500 shadow-xl hover:shadow-2xl hover:-translate-y-2 flex flex-col justify-between border select-none min-h-[380px] sm:min-h-[460px] md:min-h-[520px] ${
+        className={`group relative rounded-2xl sm:rounded-3xl overflow-hidden cursor-pointer transition-all duration-500 shadow-xl hover:shadow-2xl hover:-translate-y-2 flex flex-col justify-between border select-none min-h-[330px] sm:min-h-[460px] md:min-h-[520px] ${
           isAvailable
             ? "border-white/15 hover:border-brand-gold/70 hover:shadow-[0_15px_40px_rgba(212,175,55,0.2)]"
             : "border-rose-500/30 opacity-85"
@@ -42,7 +42,7 @@ export default function PerfumeCard({ item, onOrder, priority = false }: Perfume
             alt={item.name}
             fill
             priority={priority}
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-108 opacity-100 brightness-[1.05] contrast-[1.02]"
           />
 
@@ -51,48 +51,48 @@ export default function PerfumeCard({ item, onOrder, priority = false }: Perfume
         </div>
 
         {/* Top Badges: Brand & Stock Status */}
-        <div className="relative z-10 p-4 flex items-center justify-between gap-2">
-          <span className="text-brand-gold text-xs tracking-[0.2em] uppercase font-mono font-bold bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-brand-gold/30 shadow-md">
+        <div className="relative z-10 p-2.5 sm:p-4 flex items-center justify-between gap-1">
+          <span className="text-brand-gold text-[9px] sm:text-xs tracking-[0.15em] sm:tracking-[0.2em] uppercase font-mono font-bold bg-black/75 backdrop-blur-md px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full border border-brand-gold/30 shadow-md truncate max-w-[65%] sm:max-w-none">
             {item.brand}
           </span>
 
           {isAvailable ? (
-            <span className="text-[10px] sm:text-xs tracking-wider uppercase px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold backdrop-blur-md flex items-center gap-1.5 shadow-md">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-[9px] sm:text-xs tracking-wider uppercase px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold backdrop-blur-md flex items-center gap-1 shrink-0 shadow-md">
+              <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-400 animate-pulse" />
               Stock
             </span>
           ) : (
-            <span className="text-[10px] sm:text-xs tracking-wider uppercase px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 font-bold backdrop-blur-md">
+            <span className="text-[9px] sm:text-xs tracking-wider uppercase px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 font-bold backdrop-blur-md shrink-0">
               Épuisé
             </span>
           )}
         </div>
 
         {/* Bottom Card Pill Box: Name, Family, Price & Action */}
-        <div className="relative z-10 m-3 sm:m-4 p-4 sm:p-5 bg-black/60 backdrop-blur-md rounded-2xl border border-white/10 group-hover:border-brand-gold/40 transition-all duration-300 flex flex-col gap-3 shadow-lg">
+        <div className="relative z-10 m-2 sm:m-4 p-3 sm:p-5 bg-black/70 sm:bg-black/60 backdrop-blur-md rounded-xl sm:rounded-2xl border border-white/10 group-hover:border-brand-gold/40 transition-all duration-300 flex flex-col gap-2 sm:gap-3 shadow-lg">
           {/* Perfume Name */}
           <div>
-            <h3 className="font-serif text-lg sm:text-xl md:text-2xl text-white font-bold leading-snug group-hover:text-brand-gold-light transition-colors line-clamp-1 drop-shadow-sm">
+            <h3 className="font-serif text-sm sm:text-xl md:text-2xl text-white font-bold leading-snug group-hover:text-brand-gold-light transition-colors line-clamp-1 drop-shadow-sm">
               {item.name}
             </h3>
             {item.family && (
-              <p className="text-white/75 text-xs font-light tracking-wide line-clamp-1 mt-0.5">
+              <p className="text-white/75 text-[10px] sm:text-xs font-light tracking-wide line-clamp-1 mt-0.5">
                 {item.family}
               </p>
             )}
           </div>
 
           {/* Price & Action Button */}
-          <div className="pt-3 border-t border-white/15 flex items-center justify-between gap-2">
-            <div className="flex flex-col">
-              <span className="text-[10px] text-white/60 uppercase tracking-widest font-mono">
+          <div className="pt-2 sm:pt-3 border-t border-white/15 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="flex items-baseline justify-between sm:justify-start sm:flex-col">
+              <span className="text-[9px] sm:text-[10px] text-white/60 uppercase tracking-widest font-mono">
                 Décants dès
               </span>
               <div className="flex items-baseline gap-1">
-                <span className="font-serif text-xl sm:text-2xl md:text-3xl font-bold text-brand-gold leading-none">
+                <span className="font-serif text-base sm:text-2xl md:text-3xl font-bold text-brand-gold leading-none">
                   {item.price5ml}
                 </span>
-                <span className="text-xs text-brand-gold font-semibold">DH</span>
+                <span className="text-[10px] sm:text-xs text-brand-gold font-semibold">DH</span>
               </div>
             </div>
 
@@ -103,10 +103,10 @@ export default function PerfumeCard({ item, onOrder, priority = false }: Perfume
                 e.stopPropagation();
                 setIsDetailOpen(true);
               }}
-              className="px-3 sm:px-4 py-2 sm:py-2.5 bg-brand-gold hover:bg-brand-gold-light text-brand-black text-[11px] sm:text-xs font-bold uppercase tracking-wider rounded-xl transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-brand-gold/40 hover:scale-105 active:scale-95 cursor-pointer"
+              className="w-full sm:w-auto py-1.5 sm:py-2.5 px-3 sm:px-4 bg-brand-gold hover:bg-brand-gold-light text-brand-black text-[10px] sm:text-xs font-extrabold uppercase tracking-wider rounded-lg sm:rounded-xl transition-all duration-300 flex items-center justify-center gap-1.5 shadow-md hover:shadow-brand-gold/40 hover:scale-105 active:scale-95 cursor-pointer"
             >
               <span>Commander</span>
-              <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
+              <ArrowUpRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
             </button>
           </div>
         </div>
