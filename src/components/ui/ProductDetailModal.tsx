@@ -49,6 +49,12 @@ export default function ProductDetailModal({
   const unitPrice = selectedSize === "5ml" ? perfume.price5ml : perfume.price10ml;
   const totalPrice = unitPrice * quantity;
 
+  // Dynamic image: use size-specific photo if uploaded, otherwise fall back to cover
+  const currentImage =
+    selectedSize === "5ml"
+      ? perfume.image5ml || perfume.image
+      : perfume.image10ml || perfume.image;
+
   const handleAddToCart = () => {
     if (!isAvailable) return;
     addToCart(perfume, selectedSize, quantity);
@@ -76,11 +82,12 @@ export default function ProductDetailModal({
         {/* ── HERO BACKGROUND IMAGE ── */}
         <div className="relative w-full h-[52vw] max-h-[320px] min-h-[220px] overflow-hidden">
           <Image
-            src={perfume.image}
+            key={currentImage}
+            src={currentImage}
             alt={perfume.name}
             fill
             sizes="(max-width: 640px) 100vw, 560px"
-            className="object-cover object-center scale-105"
+            className="object-cover object-center scale-105 transition-opacity duration-500"
             priority
           />
           {/* Top dark fade for readability of close btn */}

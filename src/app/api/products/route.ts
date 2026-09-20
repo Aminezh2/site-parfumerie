@@ -13,7 +13,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, brand, category, type, family, image, description, price5ml, price10ml, inStock, badge } = body;
+    const { name, brand, category, type, family, image, image5ml, image10ml, description, price5ml, price10ml, inStock, badge } = body;
 
     // For packs, price5ml is the pack price (required), price10ml is optional
     if (!name || !category || !price5ml) {
@@ -32,6 +32,8 @@ export async function POST(request: Request) {
       type: type || (category === "pack" ? "Pack Découverte" : "Eau de Parfum"),
       family: family || (category === "pack" ? "Sélection Exclusive" : "Boisé / Floral"),
       image: image || "/assets/images/dior.jpg",
+      image5ml: image5ml || undefined,
+      image10ml: image10ml || undefined,
       description: description || (category === "pack" ? "Pack exclusif de décants sélectionnés par nos experts." : "Parfum original authentique prélevé directement du flacon fabricant."),
       price5ml: Number(price5ml),
       price10ml: category === "pack" ? Number(price5ml) : Number(price10ml),

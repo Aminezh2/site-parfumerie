@@ -8,7 +8,9 @@ export interface PerfumeItem {
   category: "homme" | "femme" | "unisexe" | "pack";
   type: string;
   family: string;
-  image: string;
+  image: string;        // Photo de couverture (affichée sur les cartes)
+  image5ml?: string;    // Photo spécifique au flacon 5ml (optionnelle)
+  image10ml?: string;   // Photo spécifique au flacon 10ml (optionnelle)
   badge?: string;
   description: string;
   topNotes?: string;
@@ -19,6 +21,7 @@ export interface PerfumeItem {
   inStock: boolean;
   createdAt: string;
 }
+
 
 export interface OrderItem {
   id: string;

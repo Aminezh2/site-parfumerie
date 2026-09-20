@@ -1,5 +1,22 @@
 [
   {
+    "name": "STRONGER WITH YOU",
+    "brand": "EMPORIO ARMANI",
+    "category": "homme",
+    "type": "Eau de Parfum",
+    "family": "Boisé / Floral",
+    "image": "/uploads/perfume-1789917666125.webp",
+    "image5ml": "/uploads/perfume-1789917671082.jpeg",
+    "image10ml": "/uploads/perfume-1789917673648.jpeg",
+    "description": "Parfum original authentique prélevé directement du flacon fabricant.",
+    "price5ml": 60,
+    "price10ml": 120,
+    "inStock": true,
+    "badge": "",
+    "id": "perfume-1789917676264-oeb86",
+    "createdAt": "2026-09-20T15:21:16.264Z"
+  },
+  {
     "name": "Valentino",
     "brand": "Valentino",
     "category": "femme",
@@ -21,6 +38,8 @@
     "type": "Eau de Parfum",
     "family": "Boisé / Floral",
     "image": "/uploads/perfume-1788368183308.webp",
+    "image5ml": "/uploads/perfume-1788368037420.webp",
+    "image10ml": "/uploads/perfume-1788454752099.webp",
     "description": "Parfum original authentique prélevé directement du flacon fabricant.",
     "price5ml": 90,
     "price10ml": 160,
@@ -30,21 +49,6 @@
     "createdAt": "2026-09-02T16:56:26.830Z"
   },
   {
-    "name": "Stronger with you",
-    "brand": "EMPORIO ARMANI",
-    "category": "homme",
-    "type": "Eau de Parfum",
-    "family": "Boisé / Floral",
-    "image": "/uploads/perfume-1788368037420.webp",
-    "description": "Parfum original authentique prélevé directement du flacon fabricant.",
-    "price5ml": 70,
-    "price10ml": 150,
-    "inStock": true,
-    "badge": "",
-    "id": "perfume-1788368044817-jyey5",
-    "createdAt": "2026-09-02T16:54:04.817Z"
-  },
-  {
     "id": "sauvage-dior",
     "name": "Sauvage",
     "brand": "Dior",
@@ -52,6 +56,8 @@
     "type": "Eau de Parfum",
     "family": "Boisé Épicé",
     "image": "/assets/images/sauvage.jpg",
+    "image5ml": "/assets/images/1.jpeg",
+    "image10ml": "/assets/images/2.jpeg",
     "badge": "Incontournable",
     "description": "Une fraîcheur succulente et épicée enrichie d'un absolu de vanille enveloppant.",
     "topNotes": "Bergamote de Calabre, Poivre de Sichuan",

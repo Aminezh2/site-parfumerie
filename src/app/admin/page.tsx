@@ -48,7 +48,9 @@ export default function AdminDashboard() {
     category: "homme" as "homme" | "femme" | "unisexe",
     type: "Eau de Parfum",
     family: "Boisé / Floral",
-    image: "",
+    image: "",       // Couverture (carte)
+    image5ml: "",   // Photo flacon 5ml
+    image10ml: "",  // Photo flacon 10ml
     price5ml: "",
     price10ml: "",
     inStock: true,
@@ -69,9 +71,16 @@ export default function AdminDashboard() {
   });
   const [uploadingPackImage, setUploadingPackImage] = useState(false);
   const [packImagePreview, setPackImagePreview] = useState<string>("");
+  // Cover image
   const [uploadingImage, setUploadingImage] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
+  // 5ml image
+  const [uploadingImage5ml, setUploadingImage5ml] = useState(false);
+  const [imagePreview5ml, setImagePreview5ml] = useState<string>("");
+  // 10ml image
+  const [uploadingImage10ml, setUploadingImage10ml] = useState(false);
+  const [imagePreview10ml, setImagePreview10ml] = useState<string>("");
 
   // Filters for Orders
   const [orderStatusFilter, setOrderStatusFilter] = useState<string>("all");
@@ -192,6 +201,64 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleImageFile5mlChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setImagePreview5ml(URL.createObjectURL(file));
+    setUploadingImage5ml(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setNewPerfume((prev) => ({ ...prev, image5ml: data.url }));
+        showNotification("Photo 5ml téléchargée avec succès !");
+      } else {
+        showNotification("Erreur lors du téléchargement 5ml", "error");
+      }
+    } catch (err) {
+      showNotification("Erreur de connexion lors de l'upload 5ml", "error");
+    } finally {
+      setUploadingImage5ml(false);
+    }
+  };
+
+  const handleImageFile10mlChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setImagePreview10ml(URL.createObjectURL(file));
+    setUploadingImage10ml(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setNewPerfume((prev) => ({ ...prev, image10ml: data.url }));
+        showNotification("Photo 10ml téléchargée avec succès !");
+      } else {
+        showNotification("Erreur lors du téléchargement 10ml", "error");
+      }
+    } catch (err) {
+      showNotification("Erreur de connexion lors de l'upload 10ml", "error");
+    } finally {
+      setUploadingImage10ml(false);
+    }
+  };
+
   // Submit New Product
   const handleAddProductSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -223,6 +290,8 @@ export default function AdminDashboard() {
           type: "Eau de Parfum",
           family: "Boisé / Floral",
           image: "",
+          image5ml: "",
+          image10ml: "",
           price5ml: "",
           price10ml: "",
           inStock: true,
@@ -230,6 +299,8 @@ export default function AdminDashboard() {
           description: "",
         });
         setImagePreview("");
+        setImagePreview5ml("");
+        setImagePreview10ml("");
         setImageFile(null);
         fetchData();
         setActiveTab("inventory");
@@ -838,35 +909,91 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Photo Upload or URL */}
-              <div>
-                <label className="text-xs uppercase tracking-wider text-white/80 block mb-2">
-                  Photo du Parfum
+              {/* Photo Uploads (Couverture, 5ml, 10ml) */}
+              <div className="space-y-4">
+                <label className="text-xs uppercase tracking-wider text-white/80 block border-b border-white/10 pb-2">
+                  Photos du Parfum (Couverture, 5ml, 10ml)
                 </label>
                 
-                <div className="flex flex-col sm:flex-row gap-4 items-center">
-                  <label className="w-full sm:w-auto px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs uppercase tracking-widest cursor-pointer flex items-center justify-center gap-2 transition-colors">
-                    <Upload className="w-4 h-4 text-brand-gold" />
-                    <span>{uploadingImage ? "Téléchargement..." : "Choisir un fichier..."}</span>
-                    <input type="file" accept="image/*" onChange={handleImageFileChange} className="hidden" />
-                  </label>
-
-                  <span className="text-xs text-white/40 uppercase">ou URL :</span>
-
-                  <input
-                    type="text"
-                    placeholder="https://... ou /assets/images/..."
-                    value={newPerfume.image}
-                    onChange={(e) => setNewPerfume((prev) => ({ ...prev, image: e.target.value }))}
-                    className="flex-1 w-full bg-white/5 border border-white/15 text-white px-4 py-2.5 text-xs focus:outline-none focus:border-brand-gold"
-                  />
-                </div>
-
-                {imagePreview && (
-                  <div className="mt-4 relative w-32 h-32 border border-brand-gold/40 rounded-sm overflow-hidden">
-                    <Image src={imagePreview} alt="Aperçu" fill className="object-cover" />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* Photo 1: Couverture */}
+                  <div className="p-4 bg-white/5 border border-white/10 flex flex-col justify-between space-y-3">
+                    <span className="text-xs font-semibold text-brand-gold uppercase tracking-wider">
+                      1. Photo Couverture (Carte) *
+                    </span>
+                    <div className="flex flex-col gap-2">
+                      <label className="w-full px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs uppercase tracking-widest cursor-pointer flex items-center justify-center gap-2 transition-colors">
+                        <Upload className="w-3.5 h-3.5 text-brand-gold" />
+                        <span>{uploadingImage ? "..." : "Télécharger"}</span>
+                        <input type="file" accept="image/*" onChange={handleImageFileChange} className="hidden" />
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="URL photo..."
+                        value={newPerfume.image}
+                        onChange={(e) => setNewPerfume((prev) => ({ ...prev, image: e.target.value }))}
+                        className="w-full bg-black/50 border border-white/15 text-white px-3 py-1.5 text-xs focus:outline-none focus:border-brand-gold"
+                      />
+                    </div>
+                    {(imagePreview || newPerfume.image) && (
+                      <div className="relative w-full h-28 border border-brand-gold/40 rounded-sm overflow-hidden">
+                        <Image src={imagePreview || newPerfume.image} alt="Couverture" fill className="object-cover" />
+                      </div>
+                    )}
                   </div>
-                )}
+
+                  {/* Photo 2: 5ml */}
+                  <div className="p-4 bg-white/5 border border-white/10 flex flex-col justify-between space-y-3">
+                    <span className="text-xs font-semibold text-brand-gold uppercase tracking-wider">
+                      2. Photo Flacon 5ml
+                    </span>
+                    <div className="flex flex-col gap-2">
+                      <label className="w-full px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs uppercase tracking-widest cursor-pointer flex items-center justify-center gap-2 transition-colors">
+                        <Upload className="w-3.5 h-3.5 text-brand-gold" />
+                        <span>{uploadingImage5ml ? "..." : "Télécharger 5ml"}</span>
+                        <input type="file" accept="image/*" onChange={handleImageFile5mlChange} className="hidden" />
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="URL photo 5ml..."
+                        value={newPerfume.image5ml}
+                        onChange={(e) => setNewPerfume((prev) => ({ ...prev, image5ml: e.target.value }))}
+                        className="w-full bg-black/50 border border-white/15 text-white px-3 py-1.5 text-xs focus:outline-none focus:border-brand-gold"
+                      />
+                    </div>
+                    {(imagePreview5ml || newPerfume.image5ml) && (
+                      <div className="relative w-full h-28 border border-brand-gold/40 rounded-sm overflow-hidden">
+                        <Image src={imagePreview5ml || newPerfume.image5ml} alt="Flacon 5ml" fill className="object-cover" />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Photo 3: 10ml */}
+                  <div className="p-4 bg-white/5 border border-white/10 flex flex-col justify-between space-y-3">
+                    <span className="text-xs font-semibold text-brand-gold uppercase tracking-wider">
+                      3. Photo Flacon 10ml
+                    </span>
+                    <div className="flex flex-col gap-2">
+                      <label className="w-full px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs uppercase tracking-widest cursor-pointer flex items-center justify-center gap-2 transition-colors">
+                        <Upload className="w-3.5 h-3.5 text-brand-gold" />
+                        <span>{uploadingImage10ml ? "..." : "Télécharger 10ml"}</span>
+                        <input type="file" accept="image/*" onChange={handleImageFile10mlChange} className="hidden" />
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="URL photo 10ml..."
+                        value={newPerfume.image10ml}
+                        onChange={(e) => setNewPerfume((prev) => ({ ...prev, image10ml: e.target.value }))}
+                        className="w-full bg-black/50 border border-white/15 text-white px-3 py-1.5 text-xs focus:outline-none focus:border-brand-gold"
+                      />
+                    </div>
+                    {(imagePreview10ml || newPerfume.image10ml) && (
+                      <div className="relative w-full h-28 border border-brand-gold/40 rounded-sm overflow-hidden">
+                        <Image src={imagePreview10ml || newPerfume.image10ml} alt="Flacon 10ml" fill className="object-cover" />
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
 
               {/* Stock Availability */}
