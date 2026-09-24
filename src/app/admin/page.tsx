@@ -92,6 +92,8 @@ export default function AdminDashboard() {
 
   // Editing state for inventory
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState<string>("");
+  const [editBrand, setEditBrand] = useState<string>("");
   const [editPrice5ml, setEditPrice5ml] = useState<string>("");
   const [editPrice10ml, setEditPrice10ml] = useState<string>("");
 
@@ -393,27 +395,34 @@ export default function AdminDashboard() {
     }
   };
 
-  // Save Price Edits
-  const handleSavePriceEdit = async (id: string) => {
-    if (!editPrice5ml || !editPrice10ml) return;
+  // Save Product Edits (Name, Brand, Prices)
+  const handleSaveProductEdit = async (id: string) => {
+    if (!editName.trim() || !editPrice5ml || !editPrice10ml) {
+      showNotification("Veuillez remplir au moins le nom et les prix", "error");
+      return;
+    }
 
     try {
       const res = await fetch(`/api/products/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          name: editName.trim(),
+          brand: editBrand.trim(),
           price5ml: Number(editPrice5ml),
           price10ml: Number(editPrice10ml),
         }),
       });
 
       if (res.ok) {
-        showNotification("Prix mis à jour avec succès !");
+        showNotification("Parfum mis à jour avec succès !");
         setEditingId(null);
         fetchData();
+      } else {
+        showNotification("Erreur de mise à jour du parfum", "error");
       }
     } catch (err) {
-      showNotification("Erreur de mise à jour des prix", "error");
+      showNotification("Erreur de mise à jour du parfum", "error");
     }
   };
 
@@ -1253,9 +1262,30 @@ export default function AdminDashboard() {
                           <div className="relative w-12 h-12 bg-black border border-white/10 shrink-0">
                             <Image src={p.image} alt={p.name} fill className="object-cover" />
                           </div>
-                          <div>
-                            <span className="font-serif text-sm text-white block">{p.name}</span>
-                            <span className="text-[10px] text-white/50">{p.brand}</span>
+                          <div className="flex-1 min-w-[140px]">
+                            {isEditing ? (
+                              <div className="space-y-1">
+                                <input
+                                  type="text"
+                                  value={editName}
+                                  onChange={(e) => setEditName(e.target.value)}
+                                  placeholder="Nom du parfum"
+                                  className="w-full bg-black border border-brand-gold text-white px-2 py-1 text-xs focus:outline-none"
+                                />
+                                <input
+                                  type="text"
+                                  value={editBrand}
+                                  onChange={(e) => setEditBrand(e.target.value)}
+                                  placeholder="Marque"
+                                  className="w-full bg-black border border-white/30 text-white/70 px-2 py-1 text-[10px] focus:outline-none"
+                                />
+                              </div>
+                            ) : (
+                              <>
+                                <span className="font-serif text-sm text-white block">{p.name}</span>
+                                <span className="text-[10px] text-white/50">{p.brand}</span>
+                              </>
+                            )}
                           </div>
                         </td>
 
@@ -1281,7 +1311,7 @@ export default function AdminDashboard() {
                               type="number"
                               value={editPrice5ml}
                               onChange={(e) => setEditPrice5ml(e.target.value)}
-                              className="w-20 bg-black border border-brand-gold text-white px-2 py-1 text-xs"
+                              className="w-20 bg-black border border-brand-gold text-white px-2 py-1 text-xs focus:outline-none"
                             />
                           ) : (
                             `${p.price5ml} DH`
@@ -1295,7 +1325,7 @@ export default function AdminDashboard() {
                               type="number"
                               value={editPrice10ml}
                               onChange={(e) => setEditPrice10ml(e.target.value)}
-                              className="w-20 bg-black border border-brand-gold text-white px-2 py-1 text-xs"
+                              className="w-20 bg-black border border-brand-gold text-white px-2 py-1 text-xs focus:outline-none"
                             />
                           ) : (
                             `${p.price10ml} DH`
@@ -1321,21 +1351,32 @@ export default function AdminDashboard() {
                         <td className="p-4 text-right">
                           <div className="flex items-center justify-end gap-2">
                             {isEditing ? (
-                              <button
-                                onClick={() => handleSavePriceEdit(p.id)}
-                                className="px-3 py-1 bg-brand-gold text-brand-black text-[10px] uppercase font-bold tracking-wider"
-                              >
-                                Enregistrer
-                              </button>
+                              <>
+                                <button
+                                  onClick={() => handleSaveProductEdit(p.id)}
+                                  className="px-3 py-1 bg-brand-gold text-brand-black text-[10px] uppercase font-bold tracking-wider hover:bg-white transition-colors"
+                                >
+                                  Enregistrer
+                                </button>
+                                <button
+                                  onClick={() => setEditingId(null)}
+                                  className="px-2 py-1 border border-white/20 text-white/60 hover:text-white text-[10px] uppercase tracking-wider transition-colors"
+                                  title="Annuler"
+                                >
+                                  Annuler
+                                </button>
+                              </>
                             ) : (
                               <button
                                 onClick={() => {
                                   setEditingId(p.id);
+                                  setEditName(p.name);
+                                  setEditBrand(p.brand || "");
                                   setEditPrice5ml(String(p.price5ml));
                                   setEditPrice10ml(String(p.price10ml));
                                 }}
                                 className="p-2 border border-white/20 text-white/70 hover:text-white hover:border-brand-gold transition-colors"
-                                title="Modifier le prix"
+                                title="Modifier le parfum"
                               >
                                 <Edit className="w-3.5 h-3.5" />
                               </button>
