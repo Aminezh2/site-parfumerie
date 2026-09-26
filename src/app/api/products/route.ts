@@ -15,14 +15,12 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { name, brand, category, type, family, image, image5ml, image10ml, description, price5ml, price10ml, inStock, badge } = body;
 
-    // For packs, price5ml is the pack price (required), price10ml is optional
-    if (!name || !category || !price5ml) {
-      return NextResponse.json({ error: "Champs obligatoires manquants" }, { status: 400 });
-    }
+    // Require name, category, and at least one valid price (> 0) for 5ml or 10ml
+    const p5 = price5ml ? Number(price5ml) : 0;
+    const p10 = price10ml ? Number(price10ml) : 0;
 
-    // For regular perfumes (not packs), price10ml is also required
-    if (category !== "pack" && !price10ml) {
-      return NextResponse.json({ error: "Le prix 10ml est obligatoire pour les parfums" }, { status: 400 });
+    if (!name || !category || (p5 <= 0 && p10 <= 0)) {
+      return NextResponse.json({ error: "Veuillez indiquer au moins le prix d'un format (5ml ou 10ml)" }, { status: 400 });
     }
 
     const newProduct = addProduct({
@@ -35,8 +33,8 @@ export async function POST(request: Request) {
       image5ml: image5ml || undefined,
       image10ml: image10ml || undefined,
       description: description || (category === "pack" ? "Pack exclusif de décants sélectionnés par nos experts." : "Parfum original authentique prélevé directement du flacon fabricant."),
-      price5ml: Number(price5ml),
-      price10ml: category === "pack" ? Number(price5ml) : Number(price10ml),
+      price5ml: p5,
+      price10ml: category === "pack" ? (p5 || p10) : p10,
       inStock: inStock !== undefined ? Boolean(inStock) : true,
       badge: badge || (category === "pack" ? "Pack Exclusif" : ""),
     });

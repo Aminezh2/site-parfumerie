@@ -265,8 +265,11 @@ export default function AdminDashboard() {
   const handleAddProductSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!newPerfume.name || !newPerfume.price5ml || !newPerfume.price10ml) {
-      showNotification("Veuillez remplir au moins le nom et les prix (5ml et 10ml)", "error");
+    const p5 = Number(newPerfume.price5ml) || 0;
+    const p10 = Number(newPerfume.price10ml) || 0;
+
+    if (!newPerfume.name || (p5 <= 0 && p10 <= 0)) {
+      showNotification("Veuillez remplir au moins le nom et le prix d'un format (5ml ou 10ml)", "error");
       return;
     }
 
@@ -278,8 +281,8 @@ export default function AdminDashboard() {
           ...newPerfume,
           brand: newPerfume.brand || "Parfum Original",
           image: newPerfume.image || "/assets/images/dior.jpg",
-          price5ml: Number(newPerfume.price5ml),
-          price10ml: Number(newPerfume.price10ml),
+          price5ml: p5,
+          price10ml: p10,
         }),
       });
 
@@ -397,8 +400,11 @@ export default function AdminDashboard() {
 
   // Save Product Edits (Name, Brand, Prices)
   const handleSaveProductEdit = async (id: string) => {
-    if (!editName.trim() || !editPrice5ml || !editPrice10ml) {
-      showNotification("Veuillez remplir au moins le nom et les prix", "error");
+    const p5 = editPrice5ml ? Number(editPrice5ml) : 0;
+    const p10 = editPrice10ml ? Number(editPrice10ml) : 0;
+
+    if (!editName.trim() || (p5 <= 0 && p10 <= 0)) {
+      showNotification("Veuillez remplir au moins le nom et le prix d'un format (5ml ou 10ml)", "error");
       return;
     }
 
@@ -409,8 +415,8 @@ export default function AdminDashboard() {
         body: JSON.stringify({
           name: editName.trim(),
           brand: editBrand.trim(),
-          price5ml: Number(editPrice5ml),
-          price10ml: Number(editPrice10ml),
+          price5ml: p5,
+          price10ml: p10,
         }),
       });
 
@@ -1311,10 +1317,15 @@ export default function AdminDashboard() {
                               type="number"
                               value={editPrice5ml}
                               onChange={(e) => setEditPrice5ml(e.target.value)}
+                              placeholder="0 (inactif)"
                               className="w-20 bg-black border border-brand-gold text-white px-2 py-1 text-xs focus:outline-none"
                             />
-                          ) : (
+                          ) : p.price5ml > 0 ? (
                             `${p.price5ml} DH`
+                          ) : (
+                            <span className="text-rose-400 font-sans text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-rose-500/10 border border-rose-500/20 rounded">
+                              Hors commande
+                            </span>
                           )}
                         </td>
 
@@ -1325,10 +1336,15 @@ export default function AdminDashboard() {
                               type="number"
                               value={editPrice10ml}
                               onChange={(e) => setEditPrice10ml(e.target.value)}
+                              placeholder="0 (inactif)"
                               className="w-20 bg-black border border-brand-gold text-white px-2 py-1 text-xs focus:outline-none"
                             />
-                          ) : (
+                          ) : p.price10ml > 0 ? (
                             `${p.price10ml} DH`
+                          ) : (
+                            <span className="text-rose-400 font-sans text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-rose-500/10 border border-rose-500/20 rounded">
+                              Hors commande
+                            </span>
                           )}
                         </td>
 

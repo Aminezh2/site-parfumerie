@@ -35,9 +35,16 @@ export default function ProductDetailModal({
   const [quantity, setQuantity] = useState(1);
   const [addedToast, setAddedToast] = useState(false);
 
+  const is5mlAvailable = (perfume?.price5ml || 0) > 0;
+  const is10mlAvailable = (perfume?.price10ml || 0) > 0;
+
   useEffect(() => {
-    if (isOpen) {
-      setSelectedSize("5ml");
+    if (isOpen && perfume) {
+      if (is5mlAvailable) {
+        setSelectedSize("5ml");
+      } else if (is10mlAvailable) {
+        setSelectedSize("10ml");
+      }
       setQuantity(1);
       setAddedToast(false);
     }
@@ -45,8 +52,9 @@ export default function ProductDetailModal({
 
   if (!isOpen || !perfume) return null;
 
-  const isAvailable = perfume.inStock !== false;
-  const unitPrice = selectedSize === "5ml" ? perfume.price5ml : perfume.price10ml;
+  const isSelectedSizeAvailable = selectedSize === "5ml" ? is5mlAvailable : is10mlAvailable;
+  const isAvailable = (perfume.inStock !== false) && isSelectedSizeAvailable;
+  const unitPrice = selectedSize === "5ml" ? (perfume.price5ml || 0) : (perfume.price10ml || 0);
   const totalPrice = unitPrice * quantity;
 
   // Dynamic image: use size-specific photo if uploaded, otherwise fall back to cover
@@ -183,28 +191,49 @@ export default function ProductDetailModal({
             <div className="grid grid-cols-2 gap-2">
               {(["5ml", "10ml"] as const).map((size) => {
                 const price = size === "5ml" ? perfume.price5ml : perfume.price10ml;
+                const isFormatAvailable = (price || 0) > 0;
                 const isSelected = selectedSize === size;
                 return (
                   <button
                     key={size}
                     type="button"
-                    onClick={() => setSelectedSize(size)}
-                    className={`p-3 rounded-xl text-left transition-all duration-200 border cursor-pointer flex items-center justify-between gap-2 ${
-                      isSelected
-                        ? "bg-brand-gold/15 border-brand-gold ring-1 ring-brand-gold/50 shadow-[0_0_14px_rgba(212,175,55,0.2)]"
-                        : "bg-white/[0.04] border-white/10 hover:border-white/25"
+                    disabled={!isFormatAvailable}
+                    onClick={() => isFormatAvailable && setSelectedSize(size)}
+                    className={`p-3 rounded-xl text-left transition-all duration-200 border flex items-center justify-between gap-2 ${
+                      !isFormatAvailable
+                        ? "bg-white/[0.02] border-white/5 opacity-40 cursor-not-allowed select-none"
+                        : isSelected
+                        ? "bg-brand-gold/15 border-brand-gold ring-1 ring-brand-gold/50 shadow-[0_0_14px_rgba(212,175,55,0.2)] cursor-pointer"
+                        : "bg-white/[0.04] border-white/10 hover:border-white/25 cursor-pointer"
                     }`}
                   >
                     <div>
-                      <div className="font-serif text-sm font-bold text-white">{size}</div>
+                      <div className="font-serif text-sm font-bold text-white flex items-center gap-1.5">
+                        <span>{size}</span>
+                        {!isFormatAvailable && (
+                          <span className="text-[8px] uppercase tracking-wider px-1.5 py-0.5 bg-rose-500/20 text-rose-300 border border-rose-500/30 rounded font-sans">
+                            Hors commande
+                          </span>
+                        )}
+                      </div>
                       <div className="font-mono text-brand-gold font-bold text-xs mt-0.5">
-                        {price} <span className="text-[9px] font-sans font-normal text-white/60">DH</span>
+                        {isFormatAvailable ? (
+                          <>
+                            {price} <span className="text-[9px] font-sans font-normal text-white/60">DH</span>
+                          </>
+                        ) : (
+                          <span className="text-white/40 text-[10px] font-sans font-normal italic">Non disponible</span>
+                        )}
                       </div>
                     </div>
                     <span className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
-                      isSelected ? "border-brand-gold bg-brand-gold text-black" : "border-white/25"
+                      !isFormatAvailable
+                        ? "border-white/10 bg-transparent text-white/20"
+                        : isSelected
+                        ? "border-brand-gold bg-brand-gold text-black"
+                        : "border-white/25"
                     }`}>
-                      {isSelected && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                      {isSelected && isFormatAvailable && <Check className="w-2.5 h-2.5 stroke-[3]" />}
                     </span>
                   </button>
                 );

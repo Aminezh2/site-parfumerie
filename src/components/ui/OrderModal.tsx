@@ -24,12 +24,14 @@ export default function OrderModal({ perfume, initialFormat = "5ml", onClose }: 
 
   if (!perfume) return null;
 
-  const orderFormat = initialFormat;
-  const currentPrice = orderFormat === "5ml" ? perfume.price5ml : perfume.price10ml;
+  const is5mlAvailable = (perfume.price5ml || 0) > 0;
+  const is10mlAvailable = (perfume.price10ml || 0) > 0;
+  const orderFormat = (initialFormat === "5ml" && is5mlAvailable) ? "5ml" : (is10mlAvailable ? "10ml" : "5ml");
+  const currentPrice = orderFormat === "5ml" ? (perfume.price5ml || 0) : (perfume.price10ml || 0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!customerName || !customerPhone) return;
+    if (!customerName || !customerPhone || currentPrice <= 0) return;
 
     setSubmitting(true);
     try {

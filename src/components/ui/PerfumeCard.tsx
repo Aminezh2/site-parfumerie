@@ -15,7 +15,9 @@ interface PerfumeCardProps {
 
 export default function PerfumeCard({ item, onOrder, priority = false }: PerfumeCardProps) {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
-  const isAvailable = item.inStock !== false;
+  const validPrices = [item.price5ml, item.price10ml].filter((p) => typeof p === "number" && p > 0);
+  const minPrice = validPrices.length > 0 ? Math.min(...validPrices) : 0;
+  const isAvailable = (item.inStock !== false) && validPrices.length > 0;
 
   return (
     <>
@@ -86,13 +88,21 @@ export default function PerfumeCard({ item, onOrder, priority = false }: Perfume
           <div className="pt-2 sm:pt-3 border-t border-white/15 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div className="flex items-baseline justify-between sm:justify-start sm:flex-col">
               <span className="text-[9px] sm:text-[10px] text-white/60 uppercase tracking-widest font-mono">
-                Décants dès
+                {minPrice > 0 ? "Décants dès" : "Disponibilité"}
               </span>
               <div className="flex items-baseline gap-1">
-                <span className="font-serif text-base sm:text-2xl md:text-3xl font-bold text-brand-gold leading-none">
-                  {item.price5ml}
-                </span>
-                <span className="text-[10px] sm:text-xs text-brand-gold font-semibold">DH</span>
+                {minPrice > 0 ? (
+                  <>
+                    <span className="font-serif text-base sm:text-2xl md:text-3xl font-bold text-brand-gold leading-none">
+                      {minPrice}
+                    </span>
+                    <span className="text-[10px] sm:text-xs text-brand-gold font-semibold">DH</span>
+                  </>
+                ) : (
+                  <span className="text-rose-400 font-sans text-xs uppercase font-bold tracking-wider">
+                    Hors commande
+                  </span>
+                )}
               </div>
             </div>
 
