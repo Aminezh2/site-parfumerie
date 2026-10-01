@@ -1,5 +1,20 @@
 [
   {
+    "name": "PACK 3 DECANT + 1 GRATUIT ",
+    "brand": "9 PM NIGHT CLUB + LIQUID BRUN + 9 PM ELIXIR",
+    "category": "pack",
+    "type": "Pack Découverte",
+    "family": "9 PM NIGHT CLUB 10ML + LIQUID BRUN 10ML + 9 PM ELIXIR 10ML + 10 ML Gratuit de votre choix",
+    "image": "/uploads/perfume-1790872379485.jpeg",
+    "description": "9 PM NIGHT CLUB 10ML + LIQUID BRUN 10ML + 9 PM ELIXIR 10ML + 10 ML Gratuit de votre choix",
+    "price5ml": 199,
+    "price10ml": 199,
+    "inStock": true,
+    "badge": "Pack Exclusif",
+    "id": "perfume-1790872388818-4z0cr",
+    "createdAt": "2026-10-01T16:33:08.818Z"
+  },
+  {
     "name": "35",
     "brand": "Parfum Original",
     "category": "homme",
@@ -9,7 +24,7 @@
     "image5ml": "https://res.cloudinary.com/cm3rqapt/image/upload/v1790212298/Perfume_and_travel_spray_bottles_20260924011121.jpg",
     "image10ml": "https://res.cloudinary.com/cm3rqapt/image/upload/v1790212224/Emporio_Armani_perfume_and_decan__20260924011007.jpg",
     "description": "Parfum original authentique prélevé directement du flacon fabricant.",
-    "price5ml": 50,
+    "price5ml": 0,
     "price10ml": 100,
     "inStock": true,
     "badge": "",

@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
-import { getWhatsAppUrl } from "@/lib/whatsapp";
 import { MOROCCAN_CITIES } from "@/lib/cities";
 import { X, Trash2, Plus, Minus, ShoppingBag, ShieldCheck, Truck, ArrowRight, CheckCircle2, ExternalLink } from "lucide-react";
 
@@ -17,7 +16,6 @@ export default function CartDrawer() {
   const [showCheckoutForm, setShowCheckoutForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [orderCompleted, setOrderCompleted] = useState(false);
-  const [generatedWhatsAppUrl, setGeneratedWhatsAppUrl] = useState("");
 
   if (!isCartOpen) return null;
 
@@ -49,39 +47,8 @@ export default function CartDrawer() {
         });
       }
 
-      // 2. Format WhatsApp Message for Store Owner
-      let itemsListText = "";
-      cart.forEach((item, index) => {
-        itemsListText += `  ${index + 1}. ${item.name} (${item.brand}) | ${item.format} × ${item.quantity} — ${item.price * item.quantity} DH\n`;
-      });
-
-      const message =
-        `━━━━━━━━━━━━━━━━━━━━━━\n` +
-        `🛍️ *FSAHI FRAGRANCES*\n` +
-        `━━━━━━━━━━━━━━━━━━━━━━\n\n` +
-        `📦 *Détail de la commande :*\n` +
-        itemsListText +
-        `\n💵 *Total à régler : ${totalPrice} DH*\n` +
-        `💳 Paiement à la livraison (cash)\n\n` +
-        `─────────────────────\n` +
-        `👤 *Informations client*\n` +
-        `Nom : ${customerName}\n` +
-        `Tél : ${customerPhone}\n` +
-        `Ville : ${customerCity}\n` +
-        `${customerAddress ? `Adresse : ${customerAddress}\n` : ""}` +
-        `─────────────────────\n` +
-        `_Merci de confirmer la commande dès que possible._`;
-
-      const whatsappUrl = getWhatsAppUrl(message);
-      setGeneratedWhatsAppUrl(whatsappUrl);
       setOrderCompleted(true);
       clearCart();
-
-      // 3. Launch WhatsApp URL
-      setTimeout(() => {
-        window.open(whatsappUrl, "_blank");
-      }, 500);
-
     } catch (err) {
       console.error("Order dispatch error:", err);
     } finally {
@@ -90,25 +57,25 @@ export default function CartDrawer() {
   };
 
   return (
-    <div className="fixed inset-0 z-[250] bg-black/80 backdrop-blur-sm flex justify-end animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[250] bg-background/80 backdrop-blur-sm flex justify-end animate-in fade-in duration-200">
       {/* Overlay backdrop */}
       <div className="absolute inset-0" onClick={closeCart} />
 
       {/* Drawer Container */}
-      <div className="relative w-full max-w-md bg-[#0e0e0e] border-l border-white/10 text-white h-full flex flex-col justify-between shadow-2xl z-10 animate-in slide-in-from-right duration-300">
+      <div className="relative w-full max-w-md bg-background border-l border-border text-foreground h-full flex flex-col justify-between shadow-2xl z-10 animate-in slide-in-from-right duration-300">
         
         {/* Drawer Header */}
-        <div className="p-5 border-b border-white/10 flex items-center justify-between bg-black/40">
+        <div className="p-5 border-b border-border flex items-center justify-between bg-background/40">
           <div className="flex items-center gap-2">
             <ShoppingBag className="w-5 h-5 text-brand-gold" />
-            <h3 className="font-serif text-lg text-white font-bold">Votre Panier</h3>
+            <h3 className="font-serif text-lg text-foreground font-bold">Votre Panier</h3>
             <span className="text-xs px-2 py-0.5 rounded-full bg-brand-gold/20 text-brand-gold font-mono font-medium">
               {totalItems}
             </span>
           </div>
           <button
             onClick={closeCart}
-            className="p-2 text-white/50 hover:text-white hover:bg-white/10 rounded-full transition-colors"
+            className="p-2 text-white/50 hover:text-foreground hover:bg-white/10 rounded-full transition-colors"
             aria-label="Fermer le panier"
           >
             <X className="w-5 h-5" />
@@ -120,21 +87,17 @@ export default function CartDrawer() {
           {orderCompleted ? (
             <div className="text-center py-12 space-y-4">
               <CheckCircle2 className="w-16 h-16 text-emerald-400 mx-auto animate-bounce" />
-              <h4 className="font-serif text-2xl text-white">Commande Enregistrée !</h4>
+              <h4 className="font-serif text-2xl text-foreground">Commande Enregistrée !</h4>
               <p className="text-xs text-white/70 max-w-xs mx-auto leading-relaxed">
-                Votre commande a bien été enregistrée en base de données. Redirection vers WhatsApp...
+                Votre commande a bien été enregistrée avec succès. Notre équipe vous contactera bientôt pour la confirmation.
               </p>
-
-              {/* Direct Fallback WhatsApp Button */}
-              <a
-                href={generatedWhatsAppUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-emerald-500 hover:bg-emerald-600 text-black font-bold uppercase tracking-wider text-xs rounded-xl shadow-lg transition-all"
+              
+              <button
+                onClick={closeCart}
+                className="mt-6 inline-flex items-center justify-center px-6 py-3 bg-white/10 hover:bg-white/20 text-foreground font-bold uppercase tracking-wider text-xs rounded-xl transition-all"
               >
-                <span>Envoyer ma commande sur WhatsApp</span>
-                <ExternalLink className="w-4 h-4" />
-              </a>
+                Fermer le panier
+              </button>
             </div>
           ) : cart.length === 0 ? (
             <div className="text-center py-20 space-y-4">
@@ -153,9 +116,9 @@ export default function CartDrawer() {
               {cart.map((item) => (
                 <div
                   key={item.cartItemId}
-                  className="p-3.5 bg-white/[0.03] border border-white/10 rounded-xl flex gap-3 items-center hover:border-brand-gold/30 transition-colors"
+                  className="p-3.5 bg-white/[0.03] border border-border rounded-xl flex gap-3 items-center hover:border-brand-gold/30 transition-colors"
                 >
-                  <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-black/60 shrink-0 border border-white/5">
+                  <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-background/60 shrink-0 border border-border">
                     <Image src={item.image} alt={item.name} fill className="object-cover" />
                   </div>
 
@@ -163,10 +126,10 @@ export default function CartDrawer() {
                     <span className="text-[10px] text-brand-gold uppercase font-mono tracking-wider block">
                       {item.brand}
                     </span>
-                    <h4 className="text-sm font-serif font-bold text-white truncate">{item.name}</h4>
+                    <h4 className="text-sm font-serif font-bold text-foreground truncate">{item.name}</h4>
                     <div className="text-xs text-white/60 flex items-center gap-2 mt-0.5">
                       <span className="px-1.5 py-0.2 rounded bg-white/10 text-[10px] uppercase font-mono text-white/90">
-                        {item.format}
+                        {item.category === "pack" ? "Pack Exclusif" : item.format}
                       </span>
                       <span>{item.price} DH / un.</span>
                     </div>
@@ -181,14 +144,14 @@ export default function CartDrawer() {
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
 
-                    <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-md p-1 text-xs">
+                    <div className="flex items-center gap-1.5 bg-white/5 border border-border rounded-md p-1 text-xs">
                       <button
                         onClick={() => updateQuantity(item.cartItemId, item.quantity - 1)}
                         className="w-5 h-5 flex items-center justify-center hover:bg-white/10 rounded text-white/70"
                       >
                         <Minus className="w-3 h-3" />
                       </button>
-                      <span className="w-4 text-center font-bold text-white">{item.quantity}</span>
+                      <span className="w-4 text-center font-bold text-foreground">{item.quantity}</span>
                       <button
                         onClick={() => updateQuantity(item.cartItemId, item.quantity + 1)}
                         className="w-5 h-5 flex items-center justify-center hover:bg-white/10 rounded text-white/70"
@@ -203,8 +166,8 @@ export default function CartDrawer() {
           ) : (
             /* Checkout Form */
             <form onSubmit={handleCheckoutSubmit} className="space-y-4 animate-in fade-in duration-200">
-              <div className="flex items-center justify-between pb-2 border-b border-white/10">
-                <h4 className="font-serif text-lg text-white">Informations de livraison</h4>
+              <div className="flex items-center justify-between pb-2 border-b border-border">
+                <h4 className="font-serif text-lg text-foreground">Informations de livraison</h4>
                 <button
                   type="button"
                   onClick={() => setShowCheckoutForm(false)}
@@ -224,7 +187,7 @@ export default function CartDrawer() {
                   placeholder="ex: Amine Bennani"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
-                  className="w-full bg-white/5 border border-white/20 rounded-lg text-white px-3.5 py-2.5 text-xs placeholder:text-white/30 focus:outline-none focus:border-brand-gold"
+                  className="w-full bg-white/5 border border-border rounded-lg text-foreground px-3.5 py-2.5 text-xs placeholder:text-white/30 focus:outline-none focus:border-brand-gold"
                 />
               </div>
 
@@ -238,7 +201,7 @@ export default function CartDrawer() {
                   placeholder="ex: 06 61 23 45 67"
                   value={customerPhone}
                   onChange={(e) => setCustomerPhone(e.target.value)}
-                  className="w-full bg-white/5 border border-white/20 rounded-lg text-white px-3.5 py-2.5 text-xs placeholder:text-white/30 focus:outline-none focus:border-brand-gold"
+                  className="w-full bg-white/5 border border-border rounded-lg text-foreground px-3.5 py-2.5 text-xs placeholder:text-white/30 focus:outline-none focus:border-brand-gold"
                 />
               </div>
 
@@ -250,11 +213,11 @@ export default function CartDrawer() {
                   <select
                     value={customerCity}
                     onChange={(e) => setCustomerCity(e.target.value)}
-                    className="w-full bg-white/5 border border-white/20 rounded-lg text-white px-3 py-2 text-xs focus:outline-none focus:border-brand-gold appearance-none"
+                    className="w-full bg-white/5 border border-border rounded-lg text-foreground px-3 py-2 text-xs focus:outline-none focus:border-brand-gold appearance-none"
                   >
-                    <option value="" disabled className="bg-brand-black text-white/50">Sélectionnez une ville</option>
+                    <option value="" disabled className="bg-background text-white/50">Sélectionnez une ville</option>
                     {MOROCCAN_CITIES.map((city) => (
-                      <option key={city} value={city} className="bg-brand-black text-white">
+                      <option key={city} value={city} className="bg-background text-foreground">
                         {city}
                       </option>
                     ))}
@@ -269,14 +232,14 @@ export default function CartDrawer() {
                     placeholder="Quartier, Rue..."
                     value={customerAddress}
                     onChange={(e) => setCustomerAddress(e.target.value)}
-                    className="w-full bg-white/5 border border-white/20 rounded-lg text-white px-3.5 py-2.5 text-xs placeholder:text-white/30 focus:outline-none focus:border-brand-gold"
+                    className="w-full bg-white/5 border border-border rounded-lg text-foreground px-3.5 py-2.5 text-xs placeholder:text-white/30 focus:outline-none focus:border-brand-gold"
                   />
                 </div>
               </div>
 
               <div className="p-3 bg-brand-gold/10 border border-brand-gold/30 rounded-lg text-xs text-brand-gold flex items-center gap-2">
                 <Truck className="w-4 h-4 shrink-0" />
-                <span>Paiement en espèces à la livraison. Validation rapide par WhatsApp.</span>
+                <span>Paiement en espèces à la livraison.</span>
               </div>
 
               <button
@@ -284,7 +247,7 @@ export default function CartDrawer() {
                 disabled={submitting}
                 className="w-full py-4 bg-gradient-to-r from-brand-gold to-amber-400 text-brand-black hover:brightness-110 font-bold uppercase tracking-[0.15em] text-xs transition-all rounded-lg shadow-lg shadow-brand-gold/10 mt-2 cursor-pointer"
               >
-                {submitting ? "Enregistrement en cours..." : "Valider & Commander sur WhatsApp"}
+                {submitting ? "Enregistrement en cours..." : "Valider & Commander"}
               </button>
             </form>
           )}
@@ -292,10 +255,10 @@ export default function CartDrawer() {
 
         {/* Drawer Footer */}
         {cart.length > 0 && !orderCompleted && (
-          <div className="p-5 border-t border-white/10 bg-black/60 space-y-4">
+          <div className="p-5 border-t border-border bg-background/60 space-y-4">
             <div className="flex items-center justify-between text-sm">
               <span className="text-white/60">Total du panier :</span>
-              <span className="font-serif text-2xl font-bold text-brand-gold">{totalPrice} DH</span>
+              <span className="font-serif text-2xl font-bold text-brand-gold">{totalPrice % 1 === 0 ? totalPrice : totalPrice.toFixed(2)} DH</span>
             </div>
 
             {!showCheckoutForm ? (
@@ -310,7 +273,7 @@ export default function CartDrawer() {
               <button
                 type="button"
                 onClick={() => setShowCheckoutForm(false)}
-                className="w-full py-2.5 bg-white/5 text-white/60 hover:text-white text-xs uppercase tracking-wider rounded-lg transition-colors"
+                className="w-full py-2.5 bg-white/5 text-white/60 hover:text-foreground text-xs uppercase tracking-wider rounded-lg transition-colors"
               >
                 Retour au panier
               </button>

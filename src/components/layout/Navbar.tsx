@@ -71,7 +71,7 @@ export default function Navbar() {
     <>
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out ${isScrolled
-          ? "bg-[#090909]/90 backdrop-blur-md border-b border-white/10 py-3.5 shadow-xl"
+          ? "bg-[#090909]/90 backdrop-blur-md border-b border-border py-3.5 shadow-xl"
           : "bg-transparent py-5 sm:py-6"
           }`}
       >
@@ -82,7 +82,7 @@ export default function Navbar() {
               aria-label="Menu"
               aria-expanded={isMobileMenuOpen}
               onClick={() => setIsMobileMenuOpen(true)}
-              className="text-white hover:text-brand-gold transition-colors p-1 cursor-pointer"
+              className="text-foreground hover:text-brand-gold transition-colors p-1 cursor-pointer"
             >
               <Menu className="w-6 h-6" />
             </button>
@@ -117,7 +117,7 @@ export default function Navbar() {
               className="flex flex-col text-center group select-none py-1"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              <span className="font-serif text-xs sm:text-base md:text-lg text-white tracking-widest font-semibold group-hover:text-brand-gold-light transition-colors leading-tight whitespace-nowrap">
+              <span className="font-serif text-xs sm:text-base md:text-lg text-foreground tracking-widest font-semibold group-hover:text-brand-gold-light transition-colors leading-tight whitespace-nowrap">
                 FSAHI FRAGRANCES
               </span>
               <span className="text-[0.45rem] sm:text-[0.55rem] text-brand-gold tracking-[0.22em] uppercase font-mono mt-0.5 leading-none whitespace-nowrap">
@@ -137,7 +137,7 @@ export default function Navbar() {
                 onClick={toggleTheme}
                 aria-label="Changer de thème"
                 title={theme === "dark" ? "Activer le thème clair" : "Activer le thème sombre"}
-                className="hover:text-brand-gold text-white/90 transition-all duration-300 p-1.5 rounded-full border border-white/10 hover:border-brand-gold/50 hover:bg-white/5 cursor-pointer flex items-center justify-center"
+                className="hover:text-brand-gold text-white/90 transition-all duration-300 p-1.5 rounded-full border border-border hover:border-brand-gold/50 hover:bg-white/5 cursor-pointer flex items-center justify-center"
               >
                 {theme === "dark" ? (
                   <Sun className="w-4 h-4 text-brand-gold transition-transform duration-300 hover:rotate-45" />
@@ -175,7 +175,7 @@ export default function Navbar() {
               onClick={toggleTheme}
               aria-label="Changer de thème"
               title={theme === "dark" ? "Activer le thème clair" : "Activer le thème sombre"}
-              className="text-white hover:text-brand-gold transition-colors p-1 cursor-pointer"
+              className="text-foreground hover:text-brand-gold transition-colors p-1 cursor-pointer"
             >
               {theme === "dark" ? (
                 <Sun className="w-5 h-5 text-brand-gold" />
@@ -186,14 +186,14 @@ export default function Navbar() {
             <Link
               href="/collection"
               aria-label="Recherche"
-              className="text-white hover:text-brand-gold transition-colors p-1"
+              className="text-foreground hover:text-brand-gold transition-colors p-1"
             >
               <Search className="w-5 h-5" />
             </Link>
             <button
               aria-label="Panier"
               onClick={openCart}
-              className="text-white hover:text-brand-gold transition-colors relative p-1 cursor-pointer"
+              className="text-foreground hover:text-brand-gold transition-colors relative p-1 cursor-pointer"
             >
               <ShoppingBag className="w-5 h-5" />
               {totalItems > 0 && (
@@ -208,16 +208,16 @@ export default function Navbar() {
 
       {/* Mobile Full-Screen Menu Overlay */}
       <div
-        className={`fixed inset-0 z-[100] flex flex-col bg-[#0a0a0a] transition-all duration-500 ease-in-out ${isMobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        className={`fixed inset-0 z-[100] flex flex-col bg-background transition-all duration-500 ease-in-out ${isMobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
           }`}
       >
         {/* Decorative top bar */}
         <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-brand-gold/50 to-transparent" />
 
         {/* Header with Logo and Close Button */}
-        <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-white/10">
+        <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-border">
           <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="flex flex-col group">
-            <span className="font-serif text-base text-white tracking-wider font-semibold group-hover:text-brand-gold-light transition-colors">FSAHI FRAGRANCES</span>
+            <span className="font-serif text-base text-foreground tracking-wider font-semibold group-hover:text-brand-gold-light transition-colors">FSAHI FRAGRANCES</span>
             <span className="text-[0.55rem] text-brand-gold tracking-[0.2em] uppercase font-mono leading-none">
               PARFUMS ET DÉCANTS
             </span>
@@ -225,7 +225,7 @@ export default function Navbar() {
           <button
             aria-label="Fermer le menu"
             onClick={() => setIsMobileMenuOpen(false)}
-            className="text-white hover:text-brand-gold transition-colors p-2 cursor-pointer"
+            className="text-foreground hover:text-brand-gold transition-colors p-2 cursor-pointer"
           >
             <X className="w-6 h-6" />
           </button>
@@ -242,7 +242,7 @@ export default function Navbar() {
                 className="block group"
               >
                 <span
-                  className={`block font-serif text-3xl sm:text-4xl text-white group-hover:text-brand-gold transition-all duration-300 py-3.5 border-b border-white/5 group-hover:pl-3 ${isMobileMenuOpen ? "translate-x-0 opacity-100" : "-translate-x-4 opacity-0"
+                  className={`block font-serif text-3xl sm:text-4xl text-foreground group-hover:text-brand-gold transition-all duration-300 py-3.5 border-b border-border group-hover:pl-3 ${isMobileMenuOpen ? "translate-x-0 opacity-100" : "-translate-x-4 opacity-0"
                     }`}
                   style={{
                     transitionDelay: isMobileMenuOpen ? `${index * 60 + 80}ms` : "0ms",
@@ -257,14 +257,14 @@ export default function Navbar() {
         </nav>
 
         {/* Bottom Actions */}
-        <div className="px-8 pb-10 flex items-center justify-between border-t border-white/10 pt-6">
+        <div className="px-8 pb-10 flex items-center justify-between border-t border-border pt-6">
           <button
             aria-label="Cart"
             onClick={() => {
               setIsMobileMenuOpen(false);
               openCart();
             }}
-            className="text-white hover:text-brand-gold transition-colors flex items-center gap-2 text-xs uppercase tracking-widest cursor-pointer"
+            className="text-foreground hover:text-brand-gold transition-colors flex items-center gap-2 text-xs uppercase tracking-widest cursor-pointer"
           >
             <ShoppingBag className="w-5 h-5 text-brand-gold" />
             <span>Panier ({totalItems})</span>
@@ -272,7 +272,7 @@ export default function Navbar() {
 
           <button
             onClick={toggleTheme}
-            className="text-white hover:text-brand-gold transition-colors flex items-center gap-2 text-xs uppercase tracking-widest cursor-pointer"
+            className="text-foreground hover:text-brand-gold transition-colors flex items-center gap-2 text-xs uppercase tracking-widest cursor-pointer"
           >
             {theme === "dark" ? (
               <>

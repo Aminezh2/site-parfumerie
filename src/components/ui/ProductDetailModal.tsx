@@ -21,7 +21,7 @@ interface ProductDetailModalProps {
   perfume: PerfumeItem | null;
   isOpen: boolean;
   onClose: () => void;
-  onOrder: (item: PerfumeItem, size: "5ml" | "10ml") => void;
+  onOrder: (item: PerfumeItem, size: "5ml" | "10ml", quantity: number) => void;
 }
 
 export default function ProductDetailModal({
@@ -55,7 +55,7 @@ export default function ProductDetailModal({
   const isSelectedSizeAvailable = selectedSize === "5ml" ? is5mlAvailable : is10mlAvailable;
   const isAvailable = (perfume.inStock !== false) && isSelectedSizeAvailable;
   const unitPrice = selectedSize === "5ml" ? (perfume.price5ml || 0) : (perfume.price10ml || 0);
-  const totalPrice = unitPrice * quantity;
+  const totalPrice = Math.round(unitPrice * quantity * 100) / 100;
 
   // Dynamic image: use size-specific photo if uploaded, otherwise fall back to cover
   const currentImage =
@@ -72,12 +72,12 @@ export default function ProductDetailModal({
 
   const handleQuickOrder = () => {
     if (!isAvailable) return;
-    onOrder(perfume, selectedSize);
+    onOrder(perfume, selectedSize, quantity);
   };
 
   return (
     <div
-      className="fixed inset-0 z-[220] flex items-center justify-center p-3 sm:p-5 md:p-8 overflow-y-auto bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-[220] flex items-center justify-center p-3 sm:p-5 md:p-8 overflow-y-auto bg-background/80 backdrop-blur-md animate-in fade-in duration-200"
       role="dialog"
       aria-modal="true"
     >
@@ -99,9 +99,9 @@ export default function ProductDetailModal({
             priority
           />
           {/* Top dark fade for readability of close btn */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent z-[1] pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-transparent to-transparent z-[1] pointer-events-none" />
           {/* Bottom fade into content card */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d] via-black/40 to-transparent z-[2] pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d] via-background/40 to-transparent z-[2] pointer-events-none" />
 
           {/* Ambient gold glow */}
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(212,175,55,0.18)_0%,_transparent_65%)] z-[1] pointer-events-none" />
@@ -109,14 +109,14 @@ export default function ProductDetailModal({
           {/* Close Button */}
           <button
             onClick={onClose}
-            className="absolute top-3 right-3 z-30 p-2 text-white/80 hover:text-white bg-black/60 hover:bg-black/90 rounded-full border border-white/15 backdrop-blur-md transition-all cursor-pointer active:scale-95"
+            className="absolute top-3 right-3 z-30 p-2 text-white/80 hover:text-foreground bg-background/60 hover:bg-background/90 rounded-full border border-border backdrop-blur-md transition-all cursor-pointer active:scale-95"
             aria-label="Fermer"
           >
             <X className="w-4 h-4" />
           </button>
 
           {/* 100% Original Badge */}
-          <div className="absolute top-3 left-3 z-30 bg-black/70 backdrop-blur-md px-2.5 py-1 rounded-full text-[9px] text-brand-gold border border-brand-gold/30 font-mono flex items-center gap-1.5">
+          <div className="absolute top-3 left-3 z-30 bg-background/70 backdrop-blur-md px-2.5 py-1 rounded-full text-[9px] text-brand-gold border border-brand-gold/30 font-mono flex items-center gap-1.5">
             <Award className="w-3 h-3 text-brand-gold" />
             <span>100% Original</span>
           </div>
@@ -153,7 +153,7 @@ export default function ProductDetailModal({
         </div>
 
         {/* ── CONTENT PANEL (sits below image, connected) ── */}
-        <div className="bg-[#0d0d0d] border-x border-b border-brand-gold/20 rounded-b-3xl px-5 sm:px-7 pt-3 pb-6 space-y-4">
+        <div className="bg-background border-x border-b border-brand-gold/20 rounded-b-3xl px-5 sm:px-7 pt-3 pb-6 space-y-4">
 
           {/* Brand & Name */}
           <div className="space-y-0.5">
@@ -167,11 +167,11 @@ export default function ProductDetailModal({
                 <span className="text-brand-gold text-[10px] font-mono">{selectedSize}</span>
               </div>
             </div>
-            <h2 className="font-serif text-2xl sm:text-3xl text-white font-bold leading-tight">
+            <h2 className="font-serif text-2xl sm:text-3xl text-foreground font-bold leading-tight">
               {perfume.name}
             </h2>
             <div className="flex flex-wrap gap-1.5 pt-0.5">
-              <span className="text-[9px] uppercase tracking-wider font-mono px-2 py-0.5 rounded-full bg-white/5 text-white/60 border border-white/10">
+              <span className="text-[9px] uppercase tracking-wider font-mono px-2 py-0.5 rounded-full bg-white/5 text-white/60 border border-border">
                 {perfume.type || "Eau de Parfum"}
               </span>
               <span className="text-[9px] uppercase tracking-wider font-mono px-2 py-0.5 rounded-full bg-brand-gold/10 text-brand-gold border border-brand-gold/25">
@@ -185,67 +185,82 @@ export default function ProductDetailModal({
             {perfume.description}
           </p>
 
-          {/* ── Size Selector ── */}
-          <div className="space-y-2">
-            <span className="text-white/50 uppercase tracking-wider font-mono text-[9px]">Contenance</span>
-            <div className="grid grid-cols-2 gap-2">
-              {(["5ml", "10ml"] as const).map((size) => {
-                const price = size === "5ml" ? perfume.price5ml : perfume.price10ml;
-                const isFormatAvailable = (price || 0) > 0;
-                const isSelected = selectedSize === size;
-                return (
-                  <button
-                    key={size}
-                    type="button"
-                    disabled={!isFormatAvailable}
-                    onClick={() => isFormatAvailable && setSelectedSize(size)}
-                    className={`p-3 rounded-xl text-left transition-all duration-200 border flex items-center justify-between gap-2 ${
-                      !isFormatAvailable
-                        ? "bg-white/[0.02] border-white/5 opacity-40 cursor-not-allowed select-none"
-                        : isSelected
-                        ? "bg-brand-gold/15 border-brand-gold ring-1 ring-brand-gold/50 shadow-[0_0_14px_rgba(212,175,55,0.2)] cursor-pointer"
-                        : "bg-white/[0.04] border-white/10 hover:border-white/25 cursor-pointer"
-                    }`}
-                  >
-                    <div>
-                      <div className="font-serif text-sm font-bold text-white flex items-center gap-1.5">
-                        <span>{size}</span>
-                        {!isFormatAvailable && (
-                          <span className="text-[8px] uppercase tracking-wider px-1.5 py-0.5 bg-rose-500/20 text-rose-300 border border-rose-500/30 rounded font-sans">
-                            Hors commande
-                          </span>
-                        )}
-                      </div>
-                      <div className="font-mono text-brand-gold font-bold text-xs mt-0.5">
-                        {isFormatAvailable ? (
-                          <>
-                            {price} <span className="text-[9px] font-sans font-normal text-white/60">DH</span>
-                          </>
-                        ) : (
-                          <span className="text-white/40 text-[10px] font-sans font-normal italic">Non disponible</span>
-                        )}
-                      </div>
-                    </div>
-                    <span className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
-                      !isFormatAvailable
-                        ? "border-white/10 bg-transparent text-white/20"
-                        : isSelected
-                        ? "border-brand-gold bg-brand-gold text-black"
-                        : "border-white/25"
-                    }`}>
-                      {isSelected && isFormatAvailable && <Check className="w-2.5 h-2.5 stroke-[3]" />}
-                    </span>
-                  </button>
-                );
-              })}
+          {/* ── Size Selector / Pack Badge ── */}
+          {perfume.category === "pack" ? (
+            <div className="p-3.5 bg-brand-gold/10 border border-brand-gold/30 rounded-xl flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-lg">🎁</span>
+                <div>
+                  <span className="text-xs text-foreground font-serif font-bold block">Pack Coffret Découverte</span>
+                  <span className="text-[10px] text-white/60 font-mono">Assortiment complet prêt à l'emploi</span>
+                </div>
+              </div>
+              <span className="text-xs font-mono font-bold text-brand-gold bg-brand-gold/20 px-2.5 py-1 rounded-md border border-brand-gold/40">
+                {unitPrice} DH
+              </span>
             </div>
-          </div>
+          ) : (
+            <div className="space-y-2">
+              <span className="text-white/50 uppercase tracking-wider font-mono text-[9px]">Contenance</span>
+              <div className="grid grid-cols-2 gap-2">
+                {(["5ml", "10ml"] as const).map((size) => {
+                  const price = size === "5ml" ? perfume.price5ml : perfume.price10ml;
+                  const isFormatAvailable = (price || 0) > 0;
+                  const isSelected = selectedSize === size;
+                  return (
+                    <button
+                      key={size}
+                      type="button"
+                      disabled={!isFormatAvailable}
+                      onClick={() => isFormatAvailable && setSelectedSize(size)}
+                      className={`p-3 rounded-xl text-left transition-all duration-200 border flex items-center justify-between gap-2 ${
+                        !isFormatAvailable
+                          ? "bg-white/[0.02] border-border opacity-40 cursor-not-allowed select-none"
+                          : isSelected
+                          ? "bg-brand-gold/15 border-brand-gold ring-1 ring-brand-gold/50 shadow-[0_0_14px_rgba(212,175,55,0.2)] cursor-pointer"
+                          : "bg-white/[0.04] border-border hover:border-border cursor-pointer"
+                      }`}
+                    >
+                      <div>
+                        <div className="font-serif text-sm font-bold text-foreground flex items-center gap-1.5">
+                          <span>{size}</span>
+                          {!isFormatAvailable && (
+                            <span className="text-[8px] uppercase tracking-wider px-1.5 py-0.5 bg-rose-500/20 text-rose-300 border border-rose-500/30 rounded font-sans">
+                              Hors commande
+                            </span>
+                          )}
+                        </div>
+                        <div className="font-mono text-brand-gold font-bold text-xs mt-0.5">
+                          {isFormatAvailable ? (
+                            <>
+                              {price} <span className="text-[9px] font-sans font-normal text-white/60">DH</span>
+                            </>
+                          ) : (
+                            <span className="text-white/40 text-[10px] font-sans font-normal italic">Non disponible</span>
+                          )}
+                        </div>
+                      </div>
+                      <span className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
+                        !isFormatAvailable
+                          ? "border-border bg-transparent text-white/20"
+                          : isSelected
+                          ? "border-brand-gold bg-brand-gold text-black"
+                          : "border-border"
+                      }`}>
+                        {isSelected && isFormatAvailable && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* ── Quantity & Total ── */}
-          <div className="flex items-center justify-between p-3 bg-white/[0.04] rounded-xl border border-white/10">
+          <div className="flex items-center justify-between p-3 bg-white/[0.04] rounded-xl border border-border">
             <div className="flex items-center gap-3">
               <span className="text-xs text-white/60 font-medium">Quantité</span>
-              <div className="flex items-center gap-0 bg-black/60 border border-white/15 rounded-lg overflow-hidden">
+              <div className="flex items-center gap-0 bg-background/60 border border-border rounded-lg overflow-hidden">
                 <button
                   type="button"
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -254,7 +269,7 @@ export default function ProductDetailModal({
                 >
                   <Minus className="w-3 h-3" />
                 </button>
-                <span className="w-8 text-center font-bold text-sm text-white font-mono">
+                <span className="w-8 text-center font-bold text-sm text-foreground font-mono">
                   {quantity}
                 </span>
                 <button
@@ -270,7 +285,7 @@ export default function ProductDetailModal({
             <div className="text-right">
               <span className="text-[9px] text-white/40 uppercase tracking-widest block font-mono">Total</span>
               <div className="font-serif text-xl font-bold text-brand-gold leading-none">
-                {totalPrice} <span className="text-xs font-sans font-normal text-white/70">DH</span>
+                {totalPrice % 1 === 0 ? totalPrice : totalPrice.toFixed(2)} <span className="text-xs font-sans font-normal text-white/70">DH</span>
               </div>
             </div>
           </div>
@@ -283,8 +298,8 @@ export default function ProductDetailModal({
               onClick={handleAddToCart}
               className={`py-3.5 px-3 font-bold text-xs uppercase tracking-wider rounded-xl transition-all duration-200 flex items-center justify-center gap-2 border cursor-pointer ${
                 isAvailable
-                  ? "bg-white/8 hover:bg-white/15 border-white/20 hover:border-brand-gold/40 text-white active:scale-[0.97]"
-                  : "bg-white/5 border-white/10 text-white/30 cursor-not-allowed"
+                  ? "bg-white/8 hover:bg-white/15 border-border hover:border-brand-gold/40 text-foreground active:scale-[0.97]"
+                  : "bg-white/5 border-border text-white/30 cursor-not-allowed"
               }`}
             >
               <ShoppingCart className="w-4 h-4 text-brand-gold shrink-0" />

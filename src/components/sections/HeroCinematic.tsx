@@ -60,7 +60,7 @@ export default function HeroCinematic() {
   return (
     <section
       ref={containerRef}
-      className="relative w-full h-screen overflow-hidden bg-brand-black"
+      className="relative w-full h-screen overflow-hidden bg-background"
     >
       {/* Video Background */}
       <video
@@ -73,8 +73,8 @@ export default function HeroCinematic() {
       // poster="/assets/images/perfume1.jpg" // We could use a poster
       />
 
-      {/* Dark Overlay for better text readability */}
-      <div className="absolute inset-0 bg-gradient-to-b from-brand-black/60 via-brand-black/20 to-brand-black/80" />
+      {/* Overlay for better text readability */}
+      <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/40 to-background/90" />
 
       {/* Text Content */}
       <div
@@ -96,7 +96,7 @@ export default function HeroCinematic() {
         </p>
 
         {/* Description */}
-        <p className="text-white/85 max-w-lg text-xs sm:text-sm md:text-base font-light tracking-wide mb-8 sm:mb-10 leading-relaxed px-4">
+        <p className="text-foreground max-w-lg text-xs sm:text-sm md:text-base font-light tracking-wide mb-8 sm:mb-10 leading-relaxed px-4">
           Des parfums originaux, choisis selon vos envies. Une expérience olfactive à la hauteur de votre exigence.
         </p>
 

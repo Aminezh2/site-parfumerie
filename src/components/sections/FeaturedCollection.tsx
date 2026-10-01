@@ -12,6 +12,7 @@ export default function FeaturedCollection() {
   const [productsList, setProductsList] = useState<PerfumeItem[]>(PRODUCTS as unknown as PerfumeItem[]);
   const [orderModalPerfume, setOrderModalPerfume] = useState<PerfumeItem | null>(null);
   const [orderFormat, setOrderFormat] = useState<"5ml" | "10ml">("5ml");
+  const [orderQuantity, setOrderQuantity] = useState(1);
 
   useEffect(() => {
     async function loadProducts() {
@@ -33,13 +34,14 @@ export default function FeaturedCollection() {
   // Show top 6 featured products (balanced 2x3 or 3x2 grid)
   const featuredProducts = productsList.slice(0, 6);
 
-  const openOrderModal = (item: PerfumeItem, size: "5ml" | "10ml") => {
+  const openOrderModal = (item: PerfumeItem, size: "5ml" | "10ml", qty: number = 1) => {
     setOrderModalPerfume(item);
     setOrderFormat(size);
+    setOrderQuantity(qty);
   };
 
   return (
-    <section className="py-16 sm:py-20 md:py-28 bg-brand-black text-white relative">
+    <section className="py-16 sm:py-20 md:py-28 bg-background text-foreground relative">
       <div className="container mx-auto px-5 sm:px-8 md:px-12">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 sm:mb-12 gap-5">
           <div>
@@ -56,7 +58,7 @@ export default function FeaturedCollection() {
           </div>
           <Link
             href="/collection"
-            className="inline-flex items-center gap-2 text-brand-gold text-xs tracking-widest uppercase hover:text-white transition-colors pb-1 border-b border-brand-gold hover:border-white font-medium shrink-0"
+            className="inline-flex items-center gap-2 text-brand-gold text-xs tracking-widest uppercase hover:text-foreground transition-colors pb-1 border-b border-brand-gold hover:border-white font-medium shrink-0"
           >
             <span>Voir toute la collection</span>
             <ArrowRight className="w-4 h-4" />
@@ -69,7 +71,7 @@ export default function FeaturedCollection() {
               key={product.id}
               item={product}
               priority={index < 3}
-              onOrder={(perfume, size) => openOrderModal(perfume, size)}
+              onOrder={(perfume, size, qty) => openOrderModal(perfume, size, qty)}
             />
           ))}
         </div>
@@ -78,6 +80,7 @@ export default function FeaturedCollection() {
       <OrderModal
         perfume={orderModalPerfume}
         initialFormat={orderFormat}
+        initialQuantity={orderQuantity}
         onClose={() => setOrderModalPerfume(null)}
       />
     </section>

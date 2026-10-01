@@ -100,13 +100,13 @@ export default function SupportPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#080808] text-white pt-24 pb-16 px-4 sm:px-6 relative overflow-hidden">
+    <div className="min-h-screen bg-background text-foreground pt-24 pb-16 px-4 sm:px-6 relative overflow-hidden">
       {/* Background Ambience */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-brand-gold/5 blur-[160px] rounded-full pointer-events-none" />
 
       <div className="max-w-4xl mx-auto relative z-10">
         {/* Header Navigation */}
-        <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/10">
+        <div className="flex items-center justify-between mb-8 pb-4 border-b border-border">
           <Link
             href="/"
             className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-brand-gold/80 hover:text-brand-gold transition-colors"
@@ -127,7 +127,7 @@ export default function SupportPage() {
               <Headphones className="w-3.5 h-3.5" />
               Service Client Prestige
             </div>
-            <h1 className="font-serif text-2xl sm:text-3xl font-light text-white tracking-wide">
+            <h1 className="font-serif text-2xl sm:text-3xl font-light text-foreground tracking-wide">
               Conseils & Assistance
             </h1>
             <p className="text-sm text-white/60 mt-1 max-w-xl">
@@ -148,15 +148,15 @@ export default function SupportPage() {
         </div>
 
         {/* Chat Container */}
-        <div className="bg-white/[0.02] border border-white/10 rounded-sm overflow-hidden flex flex-col h-[560px] shadow-2xl backdrop-blur-sm">
+        <div className="bg-white/[0.02] border border-border rounded-sm overflow-hidden flex flex-col h-[560px] shadow-2xl backdrop-blur-sm">
           {/* Chat Header Bar */}
-          <div className="px-6 py-4 bg-white/[0.03] border-b border-white/10 flex items-center justify-between">
+          <div className="px-6 py-4 bg-white/[0.03] border-b border-border flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-full bg-brand-gold/20 border border-brand-gold/30 flex items-center justify-center text-brand-gold">
                 <MessageSquare className="w-4 h-4" />
               </div>
               <div>
-                <h2 className="text-sm font-medium text-white">Discussion avec un Conseiller</h2>
+                <h2 className="text-sm font-medium text-foreground">Discussion avec un Conseiller</h2>
                 <p className="text-[11px] text-emerald-400 flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                   Conseillers disponibles
@@ -180,7 +180,7 @@ export default function SupportPage() {
               <div className="w-8 h-8 rounded-full bg-brand-gold/10 border border-brand-gold/30 flex-shrink-0 flex items-center justify-center text-brand-gold text-xs font-serif">
                 P
               </div>
-              <div className="bg-white/[0.04] border border-white/10 p-4 rounded-2xl rounded-tl-sm text-sm text-white/80 leading-relaxed shadow-sm">
+              <div className="bg-white/[0.04] border border-border p-4 rounded-2xl rounded-tl-sm text-sm text-white/80 leading-relaxed shadow-sm">
                 <p className="font-serif text-brand-gold text-xs uppercase tracking-wider mb-1">
                   Équipe Parfumerie
                 </p>
@@ -216,7 +216,7 @@ export default function SupportPage() {
                       className={`max-w-md p-4 rounded-2xl text-sm leading-relaxed shadow-md ${
                         isClient
                           ? "bg-brand-gold text-brand-black font-medium rounded-tr-sm"
-                          : "bg-white/[0.06] border border-brand-gold/20 text-white rounded-tl-sm"
+                          : "bg-white/[0.06] border border-brand-gold/20 text-foreground rounded-tl-sm"
                       }`}
                     >
                       <div className="flex items-center justify-between gap-4 mb-1">
@@ -244,7 +244,7 @@ export default function SupportPage() {
                     </div>
 
                     {isClient && (
-                      <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex-shrink-0 flex items-center justify-center text-white text-xs font-mono">
+                      <div className="w-8 h-8 rounded-full bg-white/10 border border-border flex-shrink-0 flex items-center justify-center text-foreground text-xs font-mono">
                         👤
                       </div>
                     )}
@@ -259,14 +259,14 @@ export default function SupportPage() {
           {/* Chat Input Bar */}
           <form
             onSubmit={handleSendMessage}
-            className="p-4 bg-white/[0.03] border-t border-white/10 flex items-center gap-3"
+            className="p-4 bg-white/[0.03] border-t border-border flex items-center gap-3"
           >
             <input
               type="text"
               placeholder="Écrivez votre message à notre équipe..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              className="flex-1 bg-black/60 border border-white/15 focus:border-brand-gold px-4 py-3 text-sm text-white placeholder:text-white/40 rounded-sm focus:outline-none transition-colors"
+              className="flex-1 bg-background/60 border border-border focus:border-brand-gold px-4 py-3 text-sm text-foreground placeholder:text-white/40 rounded-sm focus:outline-none transition-colors"
             />
             <button
               type="submit"
@@ -287,15 +287,15 @@ export default function SupportPage() {
 
         {/* Quick Help Hints */}
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="p-4 bg-white/[0.02] border border-white/5 rounded-sm">
+          <div className="p-4 bg-white/[0.02] border border-border rounded-sm">
             <h3 className="text-xs uppercase font-serif text-brand-gold mb-1">Authenticité</h3>
             <p className="text-xs text-white/50">Tous nos décants sont prélevés avec précision depuis les flacons originaux scellés.</p>
           </div>
-          <div className="p-4 bg-white/[0.02] border border-white/5 rounded-sm">
+          <div className="p-4 bg-white/[0.02] border border-border rounded-sm">
             <h3 className="text-xs uppercase font-serif text-brand-gold mb-1">Livraison Rapide</h3>
             <p className="text-xs text-white/50">Expédition soignée et sécurisée dans tout le Maroc avec suivi en temps réel.</p>
           </div>
-          <div className="p-4 bg-white/[0.02] border border-white/5 rounded-sm">
+          <div className="p-4 bg-white/[0.02] border border-border rounded-sm">
             <h3 className="text-xs uppercase font-serif text-brand-gold mb-1">Conseil Personnalisé</h3>
             <p className="text-xs text-white/50">Indiquez-nous vos préférences olfactives pour une recommandation sur-mesure.</p>
           </div>

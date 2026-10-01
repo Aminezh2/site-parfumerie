@@ -35,7 +35,7 @@ export default function BrandIntro() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="py-16 md:py-32 bg-brand-black text-white relative overflow-hidden">
+    <section ref={sectionRef} className="py-16 md:py-32 bg-background text-foreground relative overflow-hidden">
       <div className="container mx-auto px-6 md:px-12 flex flex-col lg:flex-row items-center gap-10 lg:gap-24">
 
         {/* Text Content */}
@@ -63,8 +63,8 @@ export default function BrandIntro() {
               priority
             />
             {/* Elegant overlay to blend image into dark background */}
-            <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-transparent to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-brand-black/50" />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-background/50" />
           </div>
         </div>
 

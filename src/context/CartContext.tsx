@@ -63,7 +63,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [cart, isInitialized]);
 
   const addToCart = (perfume: PerfumeItem, format: "5ml" | "10ml", quantity: number = 1) => {
-    const price = format === "5ml" ? perfume.price5ml : perfume.price10ml;
+    const rawPrice = format === "5ml" ? perfume.price5ml : perfume.price10ml;
+    const price = Math.round((rawPrice || 0) * 100) / 100;
     const cartItemId = `${perfume.id}-${format}`;
 
     setCart((prevCart) => {
@@ -112,7 +113,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const totalPrice = Math.round(cart.reduce((sum, item) => sum + item.price * item.quantity, 0) * 100) / 100;
 
   const openCart = () => setIsCartOpen(true);
   const closeCart = () => setIsCartOpen(false);

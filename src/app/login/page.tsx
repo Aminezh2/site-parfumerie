@@ -41,7 +41,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#070707] text-white flex flex-col items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-4 relative overflow-hidden">
       {/* Background ambient lighting */}
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-brand-gold/10 blur-[130px] rounded-full pointer-events-none" />
 
@@ -61,7 +61,7 @@ export default function LoginPage() {
           <div className="w-12 h-12 rounded-2xl bg-brand-gold/10 border border-brand-gold/30 flex items-center justify-center mx-auto mb-4 text-brand-gold shadow-[0_0_25px_rgba(212,175,55,0.2)]">
             <Lock className="w-6 h-6" />
           </div>
-          <h1 className="font-serif text-2xl sm:text-3xl text-white font-bold mb-1">
+          <h1 className="font-serif text-2xl sm:text-3xl text-foreground font-bold mb-1">
             Espace Administrateur
           </h1>
           <p className="text-xs text-white/50 font-mono tracking-widest uppercase">
@@ -94,14 +94,14 @@ export default function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-black/60 border border-white/15 focus:border-brand-gold text-white rounded-xl px-4 py-3 text-sm placeholder:text-white/30 focus:outline-none transition-colors pr-10 font-mono"
+                className="w-full bg-background/60 border border-border focus:border-brand-gold text-foreground rounded-xl px-4 py-3 text-sm placeholder:text-white/30 focus:outline-none transition-colors pr-10 font-mono"
                 placeholder="Entrez votre mot de passe"
                 autoFocus
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors p-1"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-foreground transition-colors p-1"
                 aria-label="Afficher le mot de passe"
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -117,7 +117,7 @@ export default function LoginPage() {
             {loading ? "Vérification en cours..." : "Connexion au Portail"}
           </button>
 
-          <div className="pt-2 flex items-center justify-center gap-2 text-[11px] text-white/40 border-t border-white/5">
+          <div className="pt-2 flex items-center justify-center gap-2 text-[11px] text-white/40 border-t border-border">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
             <span>Session sécurisée par jeton HttpOnly crypté</span>
           </div>

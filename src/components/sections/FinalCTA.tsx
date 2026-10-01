@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function FinalCTA() {
   return (
-    <section className="relative py-16 md:py-32 bg-[#020202] text-white overflow-hidden border-t border-white/5">
+    <section className="relative py-16 md:py-32 bg-background text-foreground overflow-hidden border-t border-border">
       {/* Subtle background element */}
       <div className="absolute inset-0 opacity-20 pointer-events-none mix-blend-screen">
          <Image 

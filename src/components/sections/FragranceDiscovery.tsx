@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export default function FragranceDiscovery() {
   return (
-    <section className="py-16 md:py-24 bg-[#0a0a0a] text-white border-y border-white/5">
+    <section className="py-16 md:py-24 bg-background text-foreground border-y border-border">
       <div className="container mx-auto px-6 md:px-12 text-center max-w-4xl">
         <span className="text-brand-gold text-xs tracking-[0.2em] uppercase mb-6 block">
           Le sur-mesure

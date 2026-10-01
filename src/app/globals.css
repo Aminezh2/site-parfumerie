@@ -92,6 +92,11 @@ html.light {
   --border: rgba(0, 0, 0, 0.08);
   --input: rgba(0, 0, 0, 0.1);
   --ring: #B8860B;
+
+  /* Force color flip for Tailwind v4 utility classes that use hardcoded colors */
+  --color-brand-black: #FAF9F6;
+  --color-black: #FAF9F6;
+  --color-white: #121212;
 }
 
 /* Background overrides */
@@ -207,6 +212,25 @@ html.light .text-white\/50,
 html.light .text-white\/40,
 html.light .text-white\/30 {
   color: #666666 !important;
+}
+
+html.light .text-white\/20,
+html.light .text-white\/10,
+html.light .text-white\/5,
+html.light .text-white\/\[0\.04\],
+html.light .text-white\/\[0\.03\] {
+  color: #999999 !important;
+}
+
+/* Semi-transparent Backgrounds in Light Mode */
+html.light .bg-white\/5,
+html.light .bg-white\/10,
+html.light .bg-white\/15,
+html.light .bg-white\/20,
+html.light .bg-white\/\[0\.03\],
+html.light .bg-white\/\[0\.04\],
+html.light .bg-white\/\[0\.08\] {
+  background-color: rgba(0, 0, 0, 0.04) !important;
 }
 
 /* Borders */
@@ -346,4 +370,11 @@ html.light .animate-shimmer-gold {
 
 .animate-sparkle-twinkle-4 {
   animation: sparkle-twinkle 3.6s ease-in-out infinite 0.3s;
+}
+/* Fix for inverted logo in light mode */
+html.light img.invert {
+  filter: none !important;
+}
+html.light .logo-invert {
+  filter: invert(0) !important;
 }

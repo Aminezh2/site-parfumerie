@@ -16,7 +16,7 @@ const FinalCTA = dynamic(() => import("@/components/sections/FinalCTA"));
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-brand-black w-full overflow-x-hidden">
+    <main className="min-h-screen bg-background w-full overflow-x-hidden">
       <Navbar />
       <HeroCinematic />
       <BrandIntro />

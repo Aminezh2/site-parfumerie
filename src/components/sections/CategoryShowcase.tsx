@@ -34,6 +34,7 @@ export default function CategoryShowcase({
   // Order Modal State
   const [orderModalPerfume, setOrderModalPerfume] = useState<PerfumeItem | null>(null);
   const [orderFormat, setOrderFormat] = useState<"5ml" | "10ml">("5ml");
+  const [orderQuantity, setOrderQuantity] = useState(1);
 
   // Fetch products from API
   useEffect(() => {
@@ -58,9 +59,11 @@ export default function CategoryShowcase({
     fetchProducts();
   }, []);
 
-  // Filter products by category
+  // Filter products by category (Unisex products appear in both Homme and Femme)
   const categoryProducts = productsList.filter((item) => {
     if (category === "all") return true;
+    if (category === "homme") return item.category === "homme" || item.category === "unisexe";
+    if (category === "femme") return item.category === "femme" || item.category === "unisexe";
     return item.category === category;
   });
 
@@ -77,17 +80,18 @@ export default function CategoryShowcase({
     return matchesFamily && matchesSearch;
   });
 
-  const openOrderModal = (item: PerfumeItem, size: "5ml" | "10ml") => {
+  const openOrderModal = (item: PerfumeItem, size: "5ml" | "10ml", qty: number = 1) => {
     setOrderModalPerfume(item);
     setOrderFormat(size);
+    setOrderQuantity(qty);
   };
 
   return (
-    <div className="min-h-screen bg-brand-black text-white w-full overflow-x-hidden">
+    <div className="min-h-screen bg-background text-foreground w-full overflow-x-hidden">
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative pt-28 pb-16 md:pt-40 md:pb-24 overflow-hidden border-b border-white/10">
+      <section className="relative pt-28 pb-16 md:pt-40 md:pb-24 overflow-hidden border-b border-border">
         <div className="absolute inset-0 z-0">
           <Image
             src={heroImage}
@@ -96,13 +100,13 @@ export default function CategoryShowcase({
             priority
             className="object-cover opacity-25 filter blur-[1px] scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-brand-black/85 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/85 to-transparent" />
         </div>
 
         <div className="container mx-auto px-5 sm:px-8 md:px-12 relative z-10">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-brand-gold hover:text-white transition-colors mb-6"
+            className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-brand-gold hover:text-foreground transition-colors mb-6"
           >
             <ArrowLeft className="w-4 h-4" />
             Retour à l&apos;accueil
@@ -118,7 +122,7 @@ export default function CategoryShowcase({
             {description}
           </p>
 
-          <div className="flex flex-wrap items-center gap-5 sm:gap-6 text-xs text-white/70 pt-4 border-t border-white/10">
+          <div className="flex flex-wrap items-center gap-5 sm:gap-6 text-xs text-white/70 pt-4 border-t border-border">
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-brand-gold" />
               <span>100% Jus Original Garanti</span>
@@ -132,7 +136,7 @@ export default function CategoryShowcase({
       </section>
 
       {/* Search & Filters Sticky Bar */}
-      <section className="py-4 sm:py-5 bg-[#0a0a0a]/90 border-b border-white/10 sticky top-[68px] sm:top-[76px] z-40 backdrop-blur-md">
+      <section className="py-4 sm:py-5 bg-[#0a0a0a]/90 border-b border-border sticky top-[68px] sm:top-[76px] z-40 backdrop-blur-md">
         <div className="container mx-auto px-5 sm:px-8 md:px-12 flex flex-col md:flex-row gap-3.5 items-center justify-between">
           {/* Family Filters */}
           <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-1 md:pb-0 scrollbar-none">
@@ -144,7 +148,7 @@ export default function CategoryShowcase({
                 className={`px-3.5 py-1.5 rounded-full text-xs tracking-wider uppercase whitespace-nowrap transition-all cursor-pointer ${
                   selectedFamily === fam
                     ? "bg-brand-gold text-brand-black font-bold shadow-md shadow-brand-gold/20"
-                    : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
+                    : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-foreground"
                 }`}
               >
                 {fam === "all" ? "Toutes les Familles" : fam}
@@ -160,16 +164,16 @@ export default function CategoryShowcase({
               placeholder="Rechercher un parfum, marque..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white/5 border border-white/15 text-white rounded-full pl-10 pr-4 py-2 text-xs placeholder:text-white/40 focus:outline-none focus:border-brand-gold transition-colors"
+              className="w-full bg-white/5 border border-border text-foreground rounded-full pl-10 pr-4 py-2 text-xs placeholder:text-white/40 focus:outline-none focus:border-brand-gold transition-colors"
             />
           </div>
         </div>
       </section>
 
       {/* Products Grid */}
-      <section className="py-14 sm:py-20 md:py-24 bg-brand-black">
+      <section className="py-14 sm:py-20 md:py-24 bg-background">
         <div className="container mx-auto px-5 sm:px-8 md:px-12">
-          <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/5">
+          <div className="flex items-center justify-between mb-8 pb-4 border-b border-border">
             <p className="text-white/50 text-xs tracking-widest uppercase font-mono">
               {filteredProducts.length} Fragrance{filteredProducts.length > 1 ? "s" : ""} disponible{filteredProducts.length > 1 ? "s" : ""}
             </p>
@@ -185,7 +189,7 @@ export default function CategoryShowcase({
               </span>
             </div>
           ) : filteredProducts.length === 0 ? (
-            <div className="text-center py-20 bg-white/[0.01] border border-white/5 rounded-2xl p-6">
+            <div className="text-center py-20 bg-white/[0.01] border border-border rounded-2xl p-6">
               <p className="text-white/60 font-light mb-4">Aucun parfum ne correspond à votre recherche.</p>
               <button
                 onClick={() => {
@@ -203,7 +207,7 @@ export default function CategoryShowcase({
                 <PerfumeCard
                   key={item.id}
                   item={item}
-                  onOrder={(perfume, size) => openOrderModal(perfume, size)}
+                  onOrder={(perfume, size, qty) => openOrderModal(perfume, size, qty)}
                 />
               ))}
             </div>
@@ -215,6 +219,7 @@ export default function CategoryShowcase({
       <OrderModal
         perfume={orderModalPerfume}
         initialFormat={orderFormat}
+        initialQuantity={orderQuantity}
         onClose={() => setOrderModalPerfume(null)}
       />
 

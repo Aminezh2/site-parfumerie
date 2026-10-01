@@ -33,7 +33,7 @@ import {
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<"orders" | "add-product" | "add-pack" | "inventory" | "support">("orders");
-  
+
   const [products, setProducts] = useState<PerfumeItem[]>([]);
   const [orders, setOrders] = useState<OrderItem[]>([]);
   const [supportMessages, setSupportMessages] = useState<SupportMessage[]>([]);
@@ -96,6 +96,7 @@ export default function AdminDashboard() {
   const [editBrand, setEditBrand] = useState<string>("");
   const [editPrice5ml, setEditPrice5ml] = useState<string>("");
   const [editPrice10ml, setEditPrice10ml] = useState<string>("");
+  const [editImage, setEditImage] = useState<string>("");
 
   // Fetch Data from API
   const fetchData = async () => {
@@ -398,7 +399,27 @@ export default function AdminDashboard() {
     }
   };
 
-  // Save Product Edits (Name, Brand, Prices)
+  // Handle image upload while editing an existing product
+  const handleEditImageFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      if (res.ok) {
+        const data = await res.json();
+        setEditImage(data.url);
+        showNotification("Photo mise à jour !");
+      } else {
+        showNotification("Erreur d'upload de la photo", "error");
+      }
+    } catch {
+      showNotification("Erreur lors de l'upload", "error");
+    }
+  };
+
+  // Save Product Edits (Name, Brand, Prices, Image)
   const handleSaveProductEdit = async (id: string) => {
     const p5 = editPrice5ml ? Number(editPrice5ml) : 0;
     const p10 = editPrice10ml ? Number(editPrice10ml) : 0;
@@ -417,6 +438,7 @@ export default function AdminDashboard() {
           brand: editBrand.trim(),
           price5ml: p5,
           price10ml: p10,
+          ...(editImage ? { image: editImage.trim() } : {}),
         }),
       });
 
@@ -493,7 +515,11 @@ export default function AdminDashboard() {
 
   // Filtered Products
   const filteredProducts = products.filter((p) => {
-    const matchesCategory = inventoryCategoryFilter === "all" || p.category === inventoryCategoryFilter;
+    const matchesCategory =
+      inventoryCategoryFilter === "all" ||
+      p.category === inventoryCategoryFilter ||
+      (inventoryCategoryFilter === "homme" && p.category === "unisexe") ||
+      (inventoryCategoryFilter === "femme" && p.category === "unisexe");
     const matchesSearch =
       p.name.toLowerCase().includes(inventorySearchQuery.toLowerCase()) ||
       p.brand.toLowerCase().includes(inventorySearchQuery.toLowerCase());
@@ -503,23 +529,23 @@ export default function AdminDashboard() {
   // Calculated Stats
   const totalRevenue = orders
     .filter((o) => o.status !== "Annulée")
-    .reduce((acc, o) => acc + o.totalAmount, 0);
+    .reduce((acc, o) => acc + (Number(o.totalAmount) || 0), 0);
+  const totalRevenueFormatted = totalRevenue % 1 === 0 ? totalRevenue : totalRevenue.toFixed(2);
   const pendingOrdersCount = orders.filter((o) => o.status === "En attente").length;
-  const hommeProductsCount = products.filter((p) => p.category === "homme").length;
-  const femmeProductsCount = products.filter((p) => p.category === "femme").length;
+  const hommeProductsCount = products.filter((p) => p.category === "homme" || p.category === "unisexe").length;
+  const femmeProductsCount = products.filter((p) => p.category === "femme" || p.category === "unisexe").length;
   const unisexeProductsCount = products.filter((p) => p.category === "unisexe").length;
   const packsCount = products.filter((p) => p.category === "pack").length;
 
   return (
-    <div className="min-h-screen bg-brand-black text-white w-full">
+    <div className="min-h-screen bg-background text-foreground w-full">
       {/* Toast Notification */}
       {notification && (
         <div
-          className={`fixed top-6 right-6 z-[200] px-6 py-4 rounded-sm border shadow-2xl backdrop-blur-lg flex items-center gap-3 transition-all animate-bounce ${
-            notification.type === "success"
+          className={`fixed top-6 right-6 z-[200] px-6 py-4 rounded-sm border shadow-2xl backdrop-blur-lg flex items-center gap-3 transition-all animate-bounce ${notification.type === "success"
               ? "bg-emerald-950/90 border-emerald-500 text-emerald-200"
               : "bg-rose-950/90 border-rose-500 text-rose-200"
-          }`}
+            }`}
         >
           {notification.type === "success" ? <CheckCircle2 className="w-5 h-5 text-emerald-400" /> : <AlertCircle className="w-5 h-5 text-rose-400" />}
           <span className="text-xs tracking-wider uppercase font-medium">{notification.message}</span>
@@ -527,18 +553,16 @@ export default function AdminDashboard() {
       )}
 
       {/* Top Header Navigation */}
-      <header className="border-b border-white/10 bg-[#0a0a0a] py-6 sticky top-0 z-40 backdrop-blur-md bg-opacity-90">
+      <header className="border-b border-border bg-background py-6 sticky top-0 z-40 backdrop-blur-md bg-opacity-90">
         <div className="container mx-auto px-6 md:px-12 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <Link href="/" className="p-2 bg-white/5 border border-white/10 hover:bg-white/10 text-white transition-colors">
+            <Link href="/" className="p-2 bg-white/5 border border-border hover:bg-white/10 text-foreground transition-colors">
               <ArrowLeft className="w-4 h-4" />
             </Link>
             <div>
-              <h1 className="font-serif text-2xl text-white flex items-center gap-2">
+              <h1 className="font-serif text-2xl text-foreground flex items-center gap-2">
                 <span>Espace Administration</span>
-                <span className="text-[10px] tracking-widest uppercase px-2 py-0.5 bg-brand-gold/20 text-brand-gold border border-brand-gold/30">
-                  Zakaria Fragrances
-                </span>
+
               </h1>
               <p className="text-white/50 text-xs font-light">Gestion des décants 5ml &amp; 10ml en temps réel</p>
             </div>
@@ -547,7 +571,7 @@ export default function AdminDashboard() {
           <div className="flex items-center gap-3">
             <button
               onClick={fetchData}
-              className="flex items-center gap-2 text-xs uppercase tracking-widest text-brand-gold hover:text-white px-3.5 py-2 border border-brand-gold/30 hover:border-brand-gold transition-colors rounded-lg cursor-pointer"
+              className="flex items-center gap-2 text-xs uppercase tracking-widest text-brand-gold hover:text-foreground px-3.5 py-2 border border-brand-gold/30 hover:border-brand-gold transition-colors rounded-lg cursor-pointer"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
               <span className="hidden sm:inline">Actualiser</span>
@@ -558,7 +582,7 @@ export default function AdminDashboard() {
                 await fetch("/api/auth", { method: "DELETE" });
                 window.location.href = "/login";
               }}
-              className="flex items-center gap-2 text-xs uppercase tracking-widest text-rose-400 hover:text-white hover:bg-rose-500/20 px-3.5 py-2 border border-rose-500/30 transition-colors rounded-lg cursor-pointer"
+              className="flex items-center gap-2 text-xs uppercase tracking-widest text-rose-400 hover:text-foreground hover:bg-rose-500/20 px-3.5 py-2 border border-rose-500/30 transition-colors rounded-lg cursor-pointer"
               title="Se déconnecter"
             >
               <LogOut className="w-3.5 h-3.5" />
@@ -569,55 +593,54 @@ export default function AdminDashboard() {
       </header>
 
       <main className="container mx-auto px-6 md:px-12 py-10">
-        
+
         {/* KPI Stats Bar */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-          <div className="p-5 bg-white/[0.02] border border-white/10 rounded-sm">
+          <div className="p-5 bg-white/[0.02] border border-border rounded-sm">
             <div className="flex items-center justify-between text-white/50 text-xs uppercase tracking-wider mb-2">
               <span>Commandes Totales</span>
               <ShoppingBag className="w-4 h-4 text-brand-gold" />
             </div>
-            <div className="font-serif text-3xl text-white">{orders.length}</div>
+            <div className="font-serif text-3xl text-foreground">{orders.length}</div>
             <div className="text-[10px] text-brand-gold mt-1">{pendingOrdersCount} en attente de confirmation</div>
           </div>
 
-          <div className="p-5 bg-white/[0.02] border border-white/10 rounded-sm">
+          <div className="p-5 bg-white/[0.02] border border-border rounded-sm">
             <div className="flex items-center justify-between text-white/50 text-xs uppercase tracking-wider mb-2">
               <span>Chiffre d'Affaires</span>
               <DollarSign className="w-4 h-4 text-emerald-400" />
             </div>
-            <div className="font-serif text-3xl text-emerald-400">{totalRevenue} DH</div>
+            <div className="font-serif text-3xl text-emerald-400">{totalRevenueFormatted} DH</div>
             <div className="text-[10px] text-white/40 mt-1">Sur les commandes confirmées</div>
           </div>
 
-          <div className="p-5 bg-white/[0.02] border border-white/10 rounded-sm">
+          <div className="p-5 bg-white/[0.02] border border-border rounded-sm">
             <div className="flex items-center justify-between text-white/50 text-xs uppercase tracking-wider mb-2">
               <span>Homme / Femme</span>
               <Package className="w-4 h-4 text-brand-gold" />
             </div>
-            <div className="font-serif text-3xl text-white">{hommeProductsCount + femmeProductsCount}</div>
+            <div className="font-serif text-3xl text-foreground">{hommeProductsCount + femmeProductsCount}</div>
             <div className="text-[10px] text-white/40 mt-1">{hommeProductsCount} Homme · {femmeProductsCount} Femme</div>
           </div>
 
-          <div className="p-5 bg-white/[0.02] border border-white/10 rounded-sm">
+          <div className="p-5 bg-white/[0.02] border border-border rounded-sm">
             <div className="flex items-center justify-between text-white/50 text-xs uppercase tracking-wider mb-2">
               <span>Unisexe &amp; Packs</span>
               <Sparkles className="w-4 h-4 text-brand-gold" />
             </div>
-            <div className="font-serif text-3xl text-white">{unisexeProductsCount + packsCount}</div>
+            <div className="font-serif text-3xl text-foreground">{unisexeProductsCount + packsCount}</div>
             <div className="text-[10px] text-white/40 mt-1">{unisexeProductsCount} Unisexe · {packsCount} Packs</div>
           </div>
         </div>
 
         {/* Dashboard Tabs Header */}
-        <div className="flex border-b border-white/10 mb-8 overflow-x-auto">
+        <div className="flex border-b border-border mb-8 overflow-x-auto">
           <button
             onClick={() => setActiveTab("orders")}
-            className={`px-6 py-4 text-xs uppercase tracking-[0.2em] font-medium transition-all flex items-center gap-2 border-b-2 whitespace-nowrap ${
-              activeTab === "orders"
+            className={`px-6 py-4 text-xs uppercase tracking-[0.2em] font-medium transition-all flex items-center gap-2 border-b-2 whitespace-nowrap ${activeTab === "orders"
                 ? "border-brand-gold text-brand-gold bg-brand-gold/5"
-                : "border-transparent text-white/60 hover:text-white"
-            }`}
+                : "border-transparent text-white/60 hover:text-foreground"
+              }`}
           >
             <ShoppingBag className="w-4 h-4" />
             <span>1. Commandes ({orders.length})</span>
@@ -630,11 +653,10 @@ export default function AdminDashboard() {
 
           <button
             onClick={() => setActiveTab("add-product")}
-            className={`px-6 py-4 text-xs uppercase tracking-[0.2em] font-medium transition-all flex items-center gap-2 border-b-2 whitespace-nowrap ${
-              activeTab === "add-product"
+            className={`px-6 py-4 text-xs uppercase tracking-[0.2em] font-medium transition-all flex items-center gap-2 border-b-2 whitespace-nowrap ${activeTab === "add-product"
                 ? "border-brand-gold text-brand-gold bg-brand-gold/5"
-                : "border-transparent text-white/60 hover:text-white"
-            }`}
+                : "border-transparent text-white/60 hover:text-foreground"
+              }`}
           >
             <PlusCircle className="w-4 h-4" />
             <span>2. Ajouter un Parfum</span>
@@ -642,11 +664,10 @@ export default function AdminDashboard() {
 
           <button
             onClick={() => setActiveTab("add-pack")}
-            className={`px-6 py-4 text-xs uppercase tracking-[0.2em] font-medium transition-all flex items-center gap-2 border-b-2 whitespace-nowrap ${
-              activeTab === "add-pack"
+            className={`px-6 py-4 text-xs uppercase tracking-[0.2em] font-medium transition-all flex items-center gap-2 border-b-2 whitespace-nowrap ${activeTab === "add-pack"
                 ? "border-purple-400 text-purple-400 bg-purple-400/5"
-                : "border-transparent text-white/60 hover:text-white"
-            }`}
+                : "border-transparent text-white/60 hover:text-foreground"
+              }`}
           >
             <Package className="w-4 h-4" />
             <span>🎁 Ajouter un Pack</span>
@@ -654,22 +675,20 @@ export default function AdminDashboard() {
 
           <button
             onClick={() => setActiveTab("inventory")}
-            className={`px-6 py-4 text-xs uppercase tracking-[0.2em] font-medium transition-all flex items-center gap-2 border-b-2 whitespace-nowrap ${
-              activeTab === "inventory"
+            className={`px-6 py-4 text-xs uppercase tracking-[0.2em] font-medium transition-all flex items-center gap-2 border-b-2 whitespace-nowrap ${activeTab === "inventory"
                 ? "border-brand-gold text-brand-gold bg-brand-gold/5"
-                : "border-transparent text-white/60 hover:text-white"
-            }`}
+                : "border-transparent text-white/60 hover:text-foreground"
+              }`}
           >
             <Package className="w-4 h-4" />
             <span>3. Gestion du Catalogue ({products.length})</span>
           </button>
           <button
             onClick={() => setActiveTab("support")}
-            className={`px-6 py-4 text-xs uppercase tracking-[0.2em] font-medium transition-all flex items-center gap-2 border-b-2 whitespace-nowrap ${
-              activeTab === "support"
+            className={`px-6 py-4 text-xs uppercase tracking-[0.2em] font-medium transition-all flex items-center gap-2 border-b-2 whitespace-nowrap ${activeTab === "support"
                 ? "border-brand-gold text-brand-gold bg-brand-gold/5"
-                : "border-transparent text-white/60 hover:text-white"
-            }`}
+                : "border-transparent text-white/60 hover:text-foreground"
+              }`}
           >
             <MessageSquare className="w-4 h-4" />
             <span>💬 Support</span>
@@ -680,17 +699,16 @@ export default function AdminDashboard() {
         {activeTab === "orders" && (
           <div>
             {/* Filter & Search Bar */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-between items-center mb-6 bg-white/[0.02] p-4 border border-white/10">
+            <div className="flex flex-col sm:flex-row gap-4 justify-between items-center mb-6 bg-white/[0.02] p-4 border border-border">
               <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0">
                 {["all", "En attente", "Confirmée", "En cours de livraison", "Livrée", "Annulée"].map((status) => (
                   <button
                     key={status}
                     onClick={() => setOrderStatusFilter(status)}
-                    className={`px-3 py-1.5 text-xs uppercase tracking-wider whitespace-nowrap transition-all ${
-                      orderStatusFilter === status
+                    className={`px-3 py-1.5 text-xs uppercase tracking-wider whitespace-nowrap transition-all ${orderStatusFilter === status
                         ? "bg-brand-gold text-brand-black font-semibold"
                         : "bg-white/5 text-white/70 hover:bg-white/10"
-                    }`}
+                      }`}
                   >
                     {status === "all" ? "Toutes les commandes" : status}
                   </button>
@@ -704,14 +722,14 @@ export default function AdminDashboard() {
                   placeholder="Rechercher client, tel..."
                   value={orderSearchQuery}
                   onChange={(e) => setOrderSearchQuery(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 text-white pl-9 pr-4 py-1.5 text-xs focus:outline-none focus:border-brand-gold"
+                  className="w-full bg-white/5 border border-border text-foreground pl-9 pr-4 py-1.5 text-xs focus:outline-none focus:border-brand-gold"
                 />
               </div>
             </div>
 
             {/* Orders Table */}
             {filteredOrders.length === 0 ? (
-              <div className="text-center py-16 border border-white/10 bg-white/[0.01]">
+              <div className="text-center py-16 border border-border bg-white/[0.01]">
                 <p className="text-white/50 text-sm">Aucune commande trouvée.</p>
               </div>
             ) : (
@@ -719,7 +737,7 @@ export default function AdminDashboard() {
                 {filteredOrders.map((order) => (
                   <div
                     key={order.id}
-                    className="p-6 bg-white/[0.02] border border-white/10 hover:border-brand-gold/40 transition-colors rounded-sm flex flex-col lg:flex-row justify-between gap-6 items-start lg:items-center"
+                    className="p-6 bg-white/[0.02] border border-border hover:border-brand-gold/40 transition-colors rounded-sm flex flex-col lg:flex-row justify-between gap-6 items-start lg:items-center"
                   >
                     {/* Customer & Perfume Info */}
                     <div className="flex-1 space-y-3">
@@ -727,17 +745,16 @@ export default function AdminDashboard() {
                         <span className="font-mono text-brand-gold text-sm font-semibold">{order.id}</span>
                         <span className="text-white/40 text-xs">• {new Date(order.createdAt).toLocaleString("fr-FR")}</span>
                         <span
-                          className={`px-2.5 py-0.5 text-[10px] uppercase tracking-wider border font-medium ${
-                            order.status === "Confirmée"
+                          className={`px-2.5 py-0.5 text-[10px] uppercase tracking-wider border font-medium ${order.status === "Confirmée"
                               ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
                               : order.status === "En attente"
-                              ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
-                              : order.status === "Livrée"
-                              ? "bg-blue-500/20 text-blue-300 border-blue-500/40"
-                              : order.status === "En cours de livraison"
-                              ? "bg-purple-500/20 text-purple-300 border-purple-500/40"
-                              : "bg-rose-500/20 text-rose-300 border-rose-500/40"
-                          }`}
+                                ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
+                                : order.status === "Livrée"
+                                  ? "bg-blue-500/20 text-blue-300 border-blue-500/40"
+                                  : order.status === "En cours de livraison"
+                                    ? "bg-purple-500/20 text-purple-300 border-purple-500/40"
+                                    : "bg-rose-500/20 text-rose-300 border-rose-500/40"
+                            }`}
                         >
                           {order.status}
                         </span>
@@ -745,7 +762,7 @@ export default function AdminDashboard() {
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                         <div className="space-y-1">
-                          <p className="flex items-center gap-2 text-white font-medium">
+                          <p className="flex items-center gap-2 text-foreground font-medium">
                             <User className="w-3.5 h-3.5 text-brand-gold" />
                             <span>{order.customerName}</span>
                           </p>
@@ -759,12 +776,12 @@ export default function AdminDashboard() {
                           </p>
                         </div>
 
-                        <div className="p-3 bg-white/5 border border-white/5 space-y-1">
+                        <div className="p-3 bg-white/5 border border-border space-y-1">
                           <p className="text-brand-gold font-medium">
                             {order.brand} - {order.perfumeName}
                           </p>
                           <p className="text-white/70">
-                            Format Décant : <strong className="text-white font-semibold">{order.format}</strong> ({order.quantity}x)
+                            Format Décant : <strong className="text-foreground font-semibold">{order.format}</strong> ({order.quantity}x)
                           </p>
                           <p className="text-emerald-400 font-serif text-sm font-semibold">
                             Total : {order.totalAmount} DH
@@ -774,13 +791,13 @@ export default function AdminDashboard() {
                     </div>
 
                     {/* Status Changer Actions */}
-                    <div className="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto pt-4 lg:pt-0 border-t lg:border-t-0 border-white/10">
+                    <div className="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto pt-4 lg:pt-0 border-t lg:border-t-0 border-border">
                       <div className="w-full sm:w-auto">
                         <label className="text-[10px] text-white/40 block uppercase mb-1">Changer statut :</label>
                         <select
                           value={order.status}
                           onChange={(e) => handleUpdateOrderStatus(order.id, e.target.value as OrderItem["status"])}
-                          className="bg-brand-black border border-white/20 text-white text-xs px-3 py-2 focus:outline-none focus:border-brand-gold w-full sm:w-44"
+                          className="bg-background border border-border text-foreground text-xs px-3 py-2 focus:outline-none focus:border-brand-gold w-full sm:w-44"
                         >
                           <option value="En attente">⏳ En attente</option>
                           <option value="Confirmée">✅ Confirmée</option>
@@ -807,9 +824,9 @@ export default function AdminDashboard() {
 
         {/* TAB 2: AJOUTER UN PARFUM */}
         {activeTab === "add-product" && (
-          <div className="max-w-3xl mx-auto bg-white/[0.02] border border-white/10 p-8 md:p-10 rounded-sm">
-            <div className="mb-8 pb-4 border-b border-white/10">
-              <h2 className="font-serif text-2xl text-white mb-2">Ajouter un Nouveau Parfum</h2>
+          <div className="max-w-3xl mx-auto bg-white/[0.02] border border-border p-8 md:p-10 rounded-sm">
+            <div className="mb-8 pb-4 border-b border-border">
+              <h2 className="font-serif text-2xl text-foreground mb-2">Ajouter un Nouveau Parfum</h2>
               <p className="text-white/60 text-xs">
                 Remplissez les détails du parfum. Il sera directement ajouté à la section <strong className="text-brand-gold">Homme</strong> ou <strong className="text-brand-gold">Femme</strong> et disponible en formats 5ml &amp; 10ml !
               </p>
@@ -825,33 +842,30 @@ export default function AdminDashboard() {
                   <button
                     type="button"
                     onClick={() => setNewPerfume((prev) => ({ ...prev, category: "homme" }))}
-                    className={`py-3 px-4 border text-xs uppercase tracking-widest font-medium transition-all ${
-                      newPerfume.category === "homme"
+                    className={`py-3 px-4 border text-xs uppercase tracking-widest font-medium transition-all ${newPerfume.category === "homme"
                         ? "bg-brand-gold text-brand-black border-brand-gold shadow-lg"
-                        : "bg-white/5 border-white/10 text-white/70 hover:border-white/30"
-                    }`}
+                        : "bg-white/5 border-border text-white/70 hover:border-border"
+                      }`}
                   >
                     🧔 Homme
                   </button>
                   <button
                     type="button"
                     onClick={() => setNewPerfume((prev) => ({ ...prev, category: "femme" }))}
-                    className={`py-3 px-4 border text-xs uppercase tracking-widest font-medium transition-all ${
-                      newPerfume.category === "femme"
+                    className={`py-3 px-4 border text-xs uppercase tracking-widest font-medium transition-all ${newPerfume.category === "femme"
                         ? "bg-brand-gold text-brand-black border-brand-gold shadow-lg"
-                        : "bg-white/5 border-white/10 text-white/70 hover:border-white/30"
-                    }`}
+                        : "bg-white/5 border-border text-white/70 hover:border-border"
+                      }`}
                   >
                     👩 Femme
                   </button>
                   <button
                     type="button"
                     onClick={() => setNewPerfume((prev) => ({ ...prev, category: "unisexe" }))}
-                    className={`py-3 px-4 border text-xs uppercase tracking-widest font-medium transition-all ${
-                      newPerfume.category === "unisexe"
-                        ? "bg-purple-500 text-white border-purple-500 shadow-lg"
-                        : "bg-white/5 border-white/10 text-white/70 hover:border-purple-400/50"
-                    }`}
+                    className={`py-3 px-4 border text-xs uppercase tracking-widest font-medium transition-all ${newPerfume.category === "unisexe"
+                        ? "bg-purple-500 text-foreground border-purple-500 shadow-lg"
+                        : "bg-white/5 border-border text-white/70 hover:border-purple-400/50"
+                      }`}
                   >
                     ✨ Unisexe
                   </button>
@@ -870,7 +884,7 @@ export default function AdminDashboard() {
                     placeholder="ex: Sauvage Elixir, Scandal..."
                     value={newPerfume.name}
                     onChange={(e) => setNewPerfume((prev) => ({ ...prev, name: e.target.value }))}
-                    className="w-full bg-white/5 border border-white/15 text-white px-4 py-3 text-xs focus:outline-none focus:border-brand-gold"
+                    className="w-full bg-white/5 border border-border text-foreground px-4 py-3 text-xs focus:outline-none focus:border-brand-gold"
                   />
                 </div>
 
@@ -883,7 +897,7 @@ export default function AdminDashboard() {
                     placeholder="ex: Dior, Paco Rabanne, Chanel..."
                     value={newPerfume.brand}
                     onChange={(e) => setNewPerfume((prev) => ({ ...prev, brand: e.target.value }))}
-                    className="w-full bg-white/5 border border-white/15 text-white px-4 py-3 text-xs focus:outline-none focus:border-brand-gold"
+                    className="w-full bg-white/5 border border-border text-foreground px-4 py-3 text-xs focus:outline-none focus:border-brand-gold"
                   />
                 </div>
               </div>
@@ -904,7 +918,7 @@ export default function AdminDashboard() {
                       placeholder="ex: 130"
                       value={newPerfume.price5ml}
                       onChange={(e) => setNewPerfume((prev) => ({ ...prev, price5ml: e.target.value }))}
-                      className="w-full bg-black border border-white/20 text-white px-4 py-3 text-sm focus:outline-none focus:border-brand-gold"
+                      className="w-full bg-background border border-border text-foreground px-4 py-3 text-sm focus:outline-none focus:border-brand-gold"
                     />
                   </div>
 
@@ -918,7 +932,7 @@ export default function AdminDashboard() {
                       placeholder="ex: 230"
                       value={newPerfume.price10ml}
                       onChange={(e) => setNewPerfume((prev) => ({ ...prev, price10ml: e.target.value }))}
-                      className="w-full bg-black border border-white/20 text-white px-4 py-3 text-sm focus:outline-none focus:border-brand-gold"
+                      className="w-full bg-background border border-border text-foreground px-4 py-3 text-sm focus:outline-none focus:border-brand-gold"
                     />
                   </div>
                 </div>
@@ -926,18 +940,18 @@ export default function AdminDashboard() {
 
               {/* Photo Uploads (Couverture, 5ml, 10ml) */}
               <div className="space-y-4">
-                <label className="text-xs uppercase tracking-wider text-white/80 block border-b border-white/10 pb-2">
+                <label className="text-xs uppercase tracking-wider text-white/80 block border-b border-border pb-2">
                   Photos du Parfum (Couverture, 5ml, 10ml)
                 </label>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {/* Photo 1: Couverture */}
-                  <div className="p-4 bg-white/5 border border-white/10 flex flex-col justify-between space-y-3">
+                  <div className="p-4 bg-white/5 border border-border flex flex-col justify-between space-y-3">
                     <span className="text-xs font-semibold text-brand-gold uppercase tracking-wider">
                       1. Photo Couverture (Carte) *
                     </span>
                     <div className="flex flex-col gap-2">
-                      <label className="w-full px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs uppercase tracking-widest cursor-pointer flex items-center justify-center gap-2 transition-colors">
+                      <label className="w-full px-3 py-2 bg-white/10 hover:bg-white/20 border border-border text-foreground text-xs uppercase tracking-widest cursor-pointer flex items-center justify-center gap-2 transition-colors">
                         <Upload className="w-3.5 h-3.5 text-brand-gold" />
                         <span>{uploadingImage ? "..." : "Télécharger"}</span>
                         <input type="file" accept="image/*" onChange={handleImageFileChange} className="hidden" />
@@ -947,7 +961,7 @@ export default function AdminDashboard() {
                         placeholder="URL photo..."
                         value={newPerfume.image}
                         onChange={(e) => setNewPerfume((prev) => ({ ...prev, image: e.target.value }))}
-                        className="w-full bg-black/50 border border-white/15 text-white px-3 py-1.5 text-xs focus:outline-none focus:border-brand-gold"
+                        className="w-full bg-background/50 border border-border text-foreground px-3 py-1.5 text-xs focus:outline-none focus:border-brand-gold"
                       />
                     </div>
                     {(imagePreview || newPerfume.image) && (
@@ -958,12 +972,12 @@ export default function AdminDashboard() {
                   </div>
 
                   {/* Photo 2: 5ml */}
-                  <div className="p-4 bg-white/5 border border-white/10 flex flex-col justify-between space-y-3">
+                  <div className="p-4 bg-white/5 border border-border flex flex-col justify-between space-y-3">
                     <span className="text-xs font-semibold text-brand-gold uppercase tracking-wider">
                       2. Photo Flacon 5ml
                     </span>
                     <div className="flex flex-col gap-2">
-                      <label className="w-full px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs uppercase tracking-widest cursor-pointer flex items-center justify-center gap-2 transition-colors">
+                      <label className="w-full px-3 py-2 bg-white/10 hover:bg-white/20 border border-border text-foreground text-xs uppercase tracking-widest cursor-pointer flex items-center justify-center gap-2 transition-colors">
                         <Upload className="w-3.5 h-3.5 text-brand-gold" />
                         <span>{uploadingImage5ml ? "..." : "Télécharger 5ml"}</span>
                         <input type="file" accept="image/*" onChange={handleImageFile5mlChange} className="hidden" />
@@ -973,7 +987,7 @@ export default function AdminDashboard() {
                         placeholder="URL photo 5ml..."
                         value={newPerfume.image5ml}
                         onChange={(e) => setNewPerfume((prev) => ({ ...prev, image5ml: e.target.value }))}
-                        className="w-full bg-black/50 border border-white/15 text-white px-3 py-1.5 text-xs focus:outline-none focus:border-brand-gold"
+                        className="w-full bg-background/50 border border-border text-foreground px-3 py-1.5 text-xs focus:outline-none focus:border-brand-gold"
                       />
                     </div>
                     {(imagePreview5ml || newPerfume.image5ml) && (
@@ -984,12 +998,12 @@ export default function AdminDashboard() {
                   </div>
 
                   {/* Photo 3: 10ml */}
-                  <div className="p-4 bg-white/5 border border-white/10 flex flex-col justify-between space-y-3">
+                  <div className="p-4 bg-white/5 border border-border flex flex-col justify-between space-y-3">
                     <span className="text-xs font-semibold text-brand-gold uppercase tracking-wider">
                       3. Photo Flacon 10ml
                     </span>
                     <div className="flex flex-col gap-2">
-                      <label className="w-full px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs uppercase tracking-widest cursor-pointer flex items-center justify-center gap-2 transition-colors">
+                      <label className="w-full px-3 py-2 bg-white/10 hover:bg-white/20 border border-border text-foreground text-xs uppercase tracking-widest cursor-pointer flex items-center justify-center gap-2 transition-colors">
                         <Upload className="w-3.5 h-3.5 text-brand-gold" />
                         <span>{uploadingImage10ml ? "..." : "Télécharger 10ml"}</span>
                         <input type="file" accept="image/*" onChange={handleImageFile10mlChange} className="hidden" />
@@ -999,7 +1013,7 @@ export default function AdminDashboard() {
                         placeholder="URL photo 10ml..."
                         value={newPerfume.image10ml}
                         onChange={(e) => setNewPerfume((prev) => ({ ...prev, image10ml: e.target.value }))}
-                        className="w-full bg-black/50 border border-white/15 text-white px-3 py-1.5 text-xs focus:outline-none focus:border-brand-gold"
+                        className="w-full bg-background/50 border border-border text-foreground px-3 py-1.5 text-xs focus:outline-none focus:border-brand-gold"
                       />
                     </div>
                     {(imagePreview10ml || newPerfume.image10ml) && (
@@ -1012,16 +1026,15 @@ export default function AdminDashboard() {
               </div>
 
               {/* Stock Availability */}
-              <div className="flex items-center gap-4 p-4 bg-white/5 border border-white/10">
-                <span className="text-xs uppercase tracking-wider text-white">Disponibilité initiale :</span>
+              <div className="flex items-center gap-4 p-4 bg-white/5 border border-border">
+                <span className="text-xs uppercase tracking-wider text-foreground">Disponibilité initiale :</span>
                 <button
                   type="button"
                   onClick={() => setNewPerfume((prev) => ({ ...prev, inStock: !prev.inStock }))}
-                  className={`px-4 py-2 text-xs uppercase tracking-widest font-medium transition-colors ${
-                    newPerfume.inStock
+                  className={`px-4 py-2 text-xs uppercase tracking-widest font-medium transition-colors ${newPerfume.inStock
                       ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
                       : "bg-rose-500/20 text-rose-300 border border-rose-500/40"
-                  }`}
+                    }`}
                 >
                   {newPerfume.inStock ? "✅ En stock" : "❌ Épuisé"}
                 </button>
@@ -1045,7 +1058,7 @@ export default function AdminDashboard() {
             <div className="mb-8 pb-4 border-b border-purple-500/20">
               <div className="flex items-center gap-3 mb-2">
                 <span className="text-2xl">🎁</span>
-                <h2 className="font-serif text-2xl text-white">Ajouter un Pack Exclusif</h2>
+                <h2 className="font-serif text-2xl text-foreground">Ajouter un Pack Exclusif</h2>
                 <span className="text-[10px] tracking-widest uppercase px-2 py-0.5 bg-purple-500/20 text-purple-300 border border-purple-500/30">Spécial</span>
               </div>
               <p className="text-white/60 text-xs leading-relaxed">
@@ -1064,7 +1077,7 @@ export default function AdminDashboard() {
                     placeholder="ex: Pack Prestige Nuit, Trio Découverte..."
                     value={newPack.name}
                     onChange={(e) => setNewPack((prev) => ({ ...prev, name: e.target.value }))}
-                    className="w-full bg-white/5 border border-white/15 text-white px-4 py-3 text-xs focus:outline-none focus:border-purple-400"
+                    className="w-full bg-white/5 border border-border text-foreground px-4 py-3 text-xs focus:outline-none focus:border-purple-400"
                   />
                 </div>
                 <div>
@@ -1074,7 +1087,7 @@ export default function AdminDashboard() {
                     placeholder="ex: Zakaria Fragrances"
                     value={newPack.brand}
                     onChange={(e) => setNewPack((prev) => ({ ...prev, brand: e.target.value }))}
-                    className="w-full bg-white/5 border border-white/15 text-white px-4 py-3 text-xs focus:outline-none focus:border-purple-400"
+                    className="w-full bg-white/5 border border-border text-foreground px-4 py-3 text-xs focus:outline-none focus:border-purple-400"
                   />
                 </div>
               </div>
@@ -1088,7 +1101,7 @@ export default function AdminDashboard() {
                   placeholder="ex: Un trio de décants soigneusement sélectionnés pour les amateurs de parfums boisés et épicés. Comprend Sauvage Dior, Bleu de Chanel et Aventus Creed..."
                   value={newPack.description}
                   onChange={(e) => setNewPack((prev) => ({ ...prev, description: e.target.value }))}
-                  className="w-full bg-white/5 border border-white/15 text-white px-4 py-3 text-xs focus:outline-none focus:border-purple-400 resize-none"
+                  className="w-full bg-white/5 border border-border text-foreground px-4 py-3 text-xs focus:outline-none focus:border-purple-400 resize-none"
                 />
               </div>
 
@@ -1100,7 +1113,7 @@ export default function AdminDashboard() {
                   placeholder="ex: Sauvage Dior 5ml + Phantom Paco Rabanne 5ml + Aventus Creed 5ml"
                   value={newPack.contents}
                   onChange={(e) => setNewPack((prev) => ({ ...prev, contents: e.target.value }))}
-                  className="w-full bg-white/5 border border-white/15 text-white px-4 py-3 text-xs focus:outline-none focus:border-purple-400"
+                  className="w-full bg-white/5 border border-border text-foreground px-4 py-3 text-xs focus:outline-none focus:border-purple-400"
                 />
               </div>
 
@@ -1116,7 +1129,7 @@ export default function AdminDashboard() {
                       placeholder="ex: 350"
                       value={newPack.packPrice}
                       onChange={(e) => setNewPack((prev) => ({ ...prev, packPrice: e.target.value }))}
-                      className="w-full bg-black border border-white/20 text-white px-4 py-3 text-sm focus:outline-none focus:border-purple-400"
+                      className="w-full bg-background border border-border text-foreground px-4 py-3 text-sm focus:outline-none focus:border-purple-400"
                     />
                   </div>
                   <div>
@@ -1126,7 +1139,7 @@ export default function AdminDashboard() {
                       placeholder="ex: Pack Exclusif, Best Value..."
                       value={newPack.badge}
                       onChange={(e) => setNewPack((prev) => ({ ...prev, badge: e.target.value }))}
-                      className="w-full bg-black border border-white/20 text-white px-4 py-3 text-sm focus:outline-none focus:border-purple-400"
+                      className="w-full bg-background border border-border text-foreground px-4 py-3 text-sm focus:outline-none focus:border-purple-400"
                     />
                   </div>
                 </div>
@@ -1136,7 +1149,7 @@ export default function AdminDashboard() {
               <div>
                 <label className="text-xs uppercase tracking-wider text-white/80 block mb-2">Photo du Pack</label>
                 <div className="flex flex-col sm:flex-row gap-4 items-center">
-                  <label className="w-full sm:w-auto px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs uppercase tracking-widest cursor-pointer flex items-center justify-center gap-2 transition-colors">
+                  <label className="w-full sm:w-auto px-6 py-3 bg-white/10 hover:bg-white/20 border border-border text-foreground text-xs uppercase tracking-widest cursor-pointer flex items-center justify-center gap-2 transition-colors">
                     <Upload className="w-4 h-4 text-purple-400" />
                     <span>{uploadingPackImage ? "Téléchargement..." : "Choisir une image..."}</span>
                     <input type="file" accept="image/*" onChange={handlePackImageFileChange} className="hidden" />
@@ -1147,7 +1160,7 @@ export default function AdminDashboard() {
                     placeholder="https://... ou /assets/images/..."
                     value={newPack.image}
                     onChange={(e) => setNewPack((prev) => ({ ...prev, image: e.target.value }))}
-                    className="flex-1 w-full bg-white/5 border border-white/15 text-white px-4 py-2.5 text-xs focus:outline-none focus:border-purple-400"
+                    className="flex-1 w-full bg-white/5 border border-border text-foreground px-4 py-2.5 text-xs focus:outline-none focus:border-purple-400"
                   />
                 </div>
                 {packImagePreview && (
@@ -1158,16 +1171,15 @@ export default function AdminDashboard() {
               </div>
 
               {/* Stock Availability */}
-              <div className="flex items-center gap-4 p-4 bg-white/5 border border-white/10">
-                <span className="text-xs uppercase tracking-wider text-white">Disponibilité initiale :</span>
+              <div className="flex items-center gap-4 p-4 bg-white/5 border border-border">
+                <span className="text-xs uppercase tracking-wider text-foreground">Disponibilité initiale :</span>
                 <button
                   type="button"
                   onClick={() => setNewPack((prev) => ({ ...prev, inStock: !prev.inStock }))}
-                  className={`px-4 py-2 text-xs uppercase tracking-widest font-medium transition-colors ${
-                    newPack.inStock
+                  className={`px-4 py-2 text-xs uppercase tracking-widest font-medium transition-colors ${newPack.inStock
                       ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
                       : "bg-rose-500/20 text-rose-300 border border-rose-500/40"
-                  }`}
+                    }`}
                 >
                   {newPack.inStock ? "✅ Disponible" : "❌ Épuisé"}
                 </button>
@@ -1176,7 +1188,7 @@ export default function AdminDashboard() {
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full py-4 bg-purple-600 hover:bg-purple-500 text-white font-medium uppercase tracking-[0.2em] text-xs transition-colors duration-300 shadow-xl border border-purple-400/30"
+                className="w-full py-4 bg-purple-600 hover:bg-purple-500 text-foreground font-medium uppercase tracking-[0.2em] text-xs transition-colors duration-300 shadow-xl border border-purple-400/30"
               >
                 🎁 Créer le Pack dans le Catalogue
               </button>
@@ -1188,45 +1200,40 @@ export default function AdminDashboard() {
         {activeTab === "inventory" && (
           <div>
             {/* Filter & Search Bar */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-between items-center mb-6 bg-white/[0.02] p-4 border border-white/10">
+            <div className="flex flex-col sm:flex-row gap-4 justify-between items-center mb-6 bg-white/[0.02] p-4 border border-border">
               <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0">
                 <button
                   onClick={() => setInventoryCategoryFilter("all")}
-                  className={`px-3 py-1.5 text-xs uppercase tracking-wider transition-all whitespace-nowrap ${
-                    inventoryCategoryFilter === "all" ? "bg-brand-gold text-brand-black font-semibold" : "bg-white/5 text-white/70"
-                  }`}
+                  className={`px-3 py-1.5 text-xs uppercase tracking-wider transition-all whitespace-nowrap ${inventoryCategoryFilter === "all" ? "bg-brand-gold text-brand-black font-semibold" : "bg-white/5 text-white/70"
+                    }`}
                 >
                   Tous ({products.length})
                 </button>
                 <button
                   onClick={() => setInventoryCategoryFilter("homme")}
-                  className={`px-3 py-1.5 text-xs uppercase tracking-wider transition-all whitespace-nowrap ${
-                    inventoryCategoryFilter === "homme" ? "bg-brand-gold text-brand-black font-semibold" : "bg-white/5 text-white/70"
-                  }`}
+                  className={`px-3 py-1.5 text-xs uppercase tracking-wider transition-all whitespace-nowrap ${inventoryCategoryFilter === "homme" ? "bg-brand-gold text-brand-black font-semibold" : "bg-white/5 text-white/70"
+                    }`}
                 >
                   Homme ({hommeProductsCount})
                 </button>
                 <button
                   onClick={() => setInventoryCategoryFilter("femme")}
-                  className={`px-3 py-1.5 text-xs uppercase tracking-wider transition-all whitespace-nowrap ${
-                    inventoryCategoryFilter === "femme" ? "bg-brand-gold text-brand-black font-semibold" : "bg-white/5 text-white/70"
-                  }`}
+                  className={`px-3 py-1.5 text-xs uppercase tracking-wider transition-all whitespace-nowrap ${inventoryCategoryFilter === "femme" ? "bg-brand-gold text-brand-black font-semibold" : "bg-white/5 text-white/70"
+                    }`}
                 >
                   Femme ({femmeProductsCount})
                 </button>
                 <button
                   onClick={() => setInventoryCategoryFilter("unisexe")}
-                  className={`px-3 py-1.5 text-xs uppercase tracking-wider transition-all whitespace-nowrap ${
-                    inventoryCategoryFilter === "unisexe" ? "bg-purple-500 text-white font-semibold" : "bg-white/5 text-white/70"
-                  }`}
+                  className={`px-3 py-1.5 text-xs uppercase tracking-wider transition-all whitespace-nowrap ${inventoryCategoryFilter === "unisexe" ? "bg-purple-500 text-foreground font-semibold" : "bg-white/5 text-white/70"
+                    }`}
                 >
                   Unisexe ({unisexeProductsCount})
                 </button>
                 <button
                   onClick={() => setInventoryCategoryFilter("pack")}
-                  className={`px-3 py-1.5 text-xs uppercase tracking-wider transition-all whitespace-nowrap ${
-                    inventoryCategoryFilter === "pack" ? "bg-purple-700 text-white font-semibold" : "bg-white/5 text-white/70"
-                  }`}
+                  className={`px-3 py-1.5 text-xs uppercase tracking-wider transition-all whitespace-nowrap ${inventoryCategoryFilter === "pack" ? "bg-purple-700 text-foreground font-semibold" : "bg-white/5 text-white/70"
+                    }`}
                 >
                   🎁 Packs ({packsCount})
                 </button>
@@ -1239,15 +1246,15 @@ export default function AdminDashboard() {
                   placeholder="Rechercher par nom..."
                   value={inventorySearchQuery}
                   onChange={(e) => setInventorySearchQuery(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 text-white pl-9 pr-4 py-1.5 text-xs focus:outline-none focus:border-brand-gold"
+                  className="w-full bg-white/5 border border-border text-foreground pl-9 pr-4 py-1.5 text-xs focus:outline-none focus:border-brand-gold"
                 />
               </div>
             </div>
 
             {/* Inventory Table */}
-            <div className="overflow-x-auto border border-white/10 bg-white/[0.02]">
+            <div className="overflow-x-auto border border-border bg-white/[0.02]">
               <table className="w-full text-left text-xs">
-                <thead className="bg-white/5 text-brand-gold uppercase tracking-wider font-mono border-b border-white/10">
+                <thead className="bg-white/5 text-brand-gold uppercase tracking-wider font-mono border-b border-border">
                   <tr>
                     <th className="p-4">Parfum</th>
                     <th className="p-4">Catégorie</th>
@@ -1265,30 +1272,43 @@ export default function AdminDashboard() {
                       <tr key={p.id} className="hover:bg-white/[0.03] transition-colors">
                         {/* Perfume Image & Name */}
                         <td className="p-4 flex items-center gap-3">
-                          <div className="relative w-12 h-12 bg-black border border-white/10 shrink-0">
-                            <Image src={p.image} alt={p.name} fill className="object-cover" />
+                          <div className="relative w-12 h-12 bg-background border border-border shrink-0 overflow-hidden">
+                            <Image src={isEditing && editImage ? editImage : p.image} alt={p.name} fill className="object-cover" />
                           </div>
-                          <div className="flex-1 min-w-[140px]">
+                          <div className="flex-1 min-w-[160px]">
                             {isEditing ? (
-                              <div className="space-y-1">
+                              <div className="space-y-1.5">
                                 <input
                                   type="text"
                                   value={editName}
                                   onChange={(e) => setEditName(e.target.value)}
                                   placeholder="Nom du parfum"
-                                  className="w-full bg-black border border-brand-gold text-white px-2 py-1 text-xs focus:outline-none"
+                                  className="w-full bg-background border border-brand-gold text-foreground px-2 py-1 text-xs focus:outline-none"
                                 />
                                 <input
                                   type="text"
                                   value={editBrand}
                                   onChange={(e) => setEditBrand(e.target.value)}
                                   placeholder="Marque"
-                                  className="w-full bg-black border border-white/30 text-white/70 px-2 py-1 text-[10px] focus:outline-none"
+                                  className="w-full bg-background border border-border text-white/70 px-2 py-1 text-[10px] focus:outline-none"
                                 />
+                                <div className="flex items-center gap-1">
+                                  <input
+                                    type="text"
+                                    value={editImage}
+                                    onChange={(e) => setEditImage(e.target.value)}
+                                    placeholder="URL de la photo"
+                                    className="flex-1 bg-background border border-border text-white/70 px-2 py-1 text-[10px] focus:outline-none"
+                                  />
+                                  <label className="cursor-pointer px-2 py-1 bg-white/10 hover:bg-white/20 border border-border text-[9px] uppercase tracking-wider text-foreground shrink-0">
+                                    📁 Uploader
+                                    <input type="file" accept="image/*" className="hidden" onChange={handleEditImageFileChange} />
+                                  </label>
+                                </div>
                               </div>
                             ) : (
                               <>
-                                <span className="font-serif text-sm text-white block">{p.name}</span>
+                                <span className="font-serif text-sm text-foreground block">{p.name}</span>
                                 <span className="text-[10px] text-white/50">{p.brand}</span>
                               </>
                             )}
@@ -1297,28 +1317,27 @@ export default function AdminDashboard() {
 
                         {/* Category */}
                         <td className="p-4">
-                          <span className={`px-2.5 py-1 text-[10px] uppercase tracking-wider border font-medium ${
-                            p.category === "homme"
+                          <span className={`px-2.5 py-1 text-[10px] uppercase tracking-wider border font-medium ${p.category === "homme"
                               ? "bg-blue-500/10 text-blue-300 border-blue-500/30"
                               : p.category === "femme"
-                              ? "bg-pink-500/10 text-pink-300 border-pink-500/30"
-                              : p.category === "unisexe"
-                              ? "bg-purple-500/10 text-purple-300 border-purple-500/30"
-                              : "bg-amber-500/10 text-amber-300 border-amber-500/30"
-                          }`}>
+                                ? "bg-pink-500/10 text-pink-300 border-pink-500/30"
+                                : p.category === "unisexe"
+                                  ? "bg-purple-500/10 text-purple-300 border-purple-500/30"
+                                  : "bg-amber-500/10 text-amber-300 border-amber-500/30"
+                            }`}>
                             {p.category === "pack" ? "🎁 Pack" : p.category}
                           </span>
                         </td>
 
                         {/* Price 5ml */}
-                        <td className="p-4 font-mono font-medium text-white">
+                        <td className="p-4 font-mono font-medium text-foreground">
                           {isEditing ? (
                             <input
                               type="number"
                               value={editPrice5ml}
                               onChange={(e) => setEditPrice5ml(e.target.value)}
                               placeholder="0 (inactif)"
-                              className="w-20 bg-black border border-brand-gold text-white px-2 py-1 text-xs focus:outline-none"
+                              className="w-20 bg-background border border-brand-gold text-foreground px-2 py-1 text-xs focus:outline-none"
                             />
                           ) : p.price5ml > 0 ? (
                             `${p.price5ml} DH`
@@ -1330,14 +1349,14 @@ export default function AdminDashboard() {
                         </td>
 
                         {/* Price 10ml */}
-                        <td className="p-4 font-mono font-medium text-white">
+                        <td className="p-4 font-mono font-medium text-foreground">
                           {isEditing ? (
                             <input
                               type="number"
                               value={editPrice10ml}
                               onChange={(e) => setEditPrice10ml(e.target.value)}
                               placeholder="0 (inactif)"
-                              className="w-20 bg-black border border-brand-gold text-white px-2 py-1 text-xs focus:outline-none"
+                              className="w-20 bg-background border border-brand-gold text-foreground px-2 py-1 text-xs focus:outline-none"
                             />
                           ) : p.price10ml > 0 ? (
                             `${p.price10ml} DH`
@@ -1352,11 +1371,10 @@ export default function AdminDashboard() {
                         <td className="p-4">
                           <button
                             onClick={() => handleToggleStock(p.id, p.inStock)}
-                            className={`flex items-center gap-2 px-3 py-1.5 text-[11px] uppercase tracking-wider font-medium border transition-colors ${
-                              p.inStock
+                            className={`flex items-center gap-2 px-3 py-1.5 text-[11px] uppercase tracking-wider font-medium border transition-colors ${p.inStock
                                 ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30"
                                 : "bg-rose-500/20 text-rose-300 border-rose-500/40 hover:bg-rose-500/30"
-                            }`}
+                              }`}
                           >
                             {p.inStock ? <ToggleRight className="w-4 h-4 text-emerald-400" /> : <ToggleLeft className="w-4 h-4 text-rose-400" />}
                             <span>{p.inStock ? "En Stock" : "Épuisé"}</span>
@@ -1376,7 +1394,7 @@ export default function AdminDashboard() {
                                 </button>
                                 <button
                                   onClick={() => setEditingId(null)}
-                                  className="px-2 py-1 border border-white/20 text-white/60 hover:text-white text-[10px] uppercase tracking-wider transition-colors"
+                                  className="px-2 py-1 border border-border text-white/60 hover:text-foreground text-[10px] uppercase tracking-wider transition-colors"
                                   title="Annuler"
                                 >
                                   Annuler
@@ -1390,8 +1408,9 @@ export default function AdminDashboard() {
                                   setEditBrand(p.brand || "");
                                   setEditPrice5ml(String(p.price5ml));
                                   setEditPrice10ml(String(p.price10ml));
+                                  setEditImage(p.image || "");
                                 }}
-                                className="p-2 border border-white/20 text-white/70 hover:text-white hover:border-brand-gold transition-colors"
+                                className="p-2 border border-border text-white/70 hover:text-foreground hover:border-brand-gold transition-colors"
                                 title="Modifier le parfum"
                               >
                                 <Edit className="w-3.5 h-3.5" />
@@ -1414,13 +1433,13 @@ export default function AdminDashboard() {
               </table>
             </div>
           </div>
-        ) }
+        )}
         {/* TAB 4: SUPPORT */}
         {activeTab === "support" && (
           <div className="max-w-4xl mx-auto space-y-6">
-            <div className="flex items-center justify-between bg-white/[0.02] border border-white/10 p-6 rounded-sm">
+            <div className="flex items-center justify-between bg-white/[0.02] border border-border p-6 rounded-sm">
               <div>
-                <h2 className="font-serif text-2xl text-white font-light">Messages du Support Client</h2>
+                <h2 className="font-serif text-2xl text-foreground font-light">Messages du Support Client</h2>
                 <p className="text-xs text-white/50 mt-1">
                   Consultez les demandes des clients en temps réel et répondez directement.
                 </p>
@@ -1432,7 +1451,7 @@ export default function AdminDashboard() {
                 </span>
                 <button
                   onClick={() => fetchSupport()}
-                  className="px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs rounded-sm transition-colors"
+                  className="px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-border text-foreground text-xs rounded-sm transition-colors"
                 >
                   Actualiser
                 </button>
@@ -1440,11 +1459,11 @@ export default function AdminDashboard() {
             </div>
 
             {supportLoading && supportMessages.length === 0 ? (
-              <div className="p-12 text-center text-white/50 border border-white/10 bg-white/[0.01]">
+              <div className="p-12 text-center text-white/50 border border-border bg-white/[0.01]">
                 <p className="animate-pulse text-sm">Chargement des messages...</p>
               </div>
             ) : supportMessages.length === 0 ? (
-              <div className="p-12 text-center border border-white/10 bg-white/[0.01] rounded-sm">
+              <div className="p-12 text-center border border-border bg-white/[0.01] rounded-sm">
                 <p className="text-white/40 text-sm font-serif">Aucun message de support pour le moment.</p>
                 <p className="text-xs text-white/30 mt-1">Les questions posées sur la page /support apparaîtront instantanément ici.</p>
               </div>
@@ -1455,20 +1474,18 @@ export default function AdminDashboard() {
                   return (
                     <div
                       key={msg.id}
-                      className={`p-5 rounded-sm border transition-all ${
-                        isClient
+                      className={`p-5 rounded-sm border transition-all ${isClient
                           ? "bg-white/[0.03] border-brand-gold/30 shadow-lg"
-                          : "bg-white/[0.01] border-white/10 ml-6"
-                      }`}
+                          : "bg-white/[0.01] border-border ml-6"
+                        }`}
                     >
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
                           <span
-                            className={`text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full ${
-                              isClient
+                            className={`text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full ${isClient
                                 ? "bg-brand-gold/20 text-brand-gold border border-brand-gold/30"
-                                : "bg-white/10 text-white/70 border border-white/20"
-                            }`}
+                                : "bg-white/10 text-white/70 border border-border"
+                              }`}
                           >
                             {isClient ? "👤 Client" : "👑 Vous (Support Admin)"}
                           </span>
@@ -1495,12 +1512,12 @@ export default function AdminDashboard() {
                       </p>
 
                       {isClient && (
-                        <div className="mt-4 pt-3 border-t border-white/10 flex gap-2">
+                        <div className="mt-4 pt-3 border-t border-border flex gap-2">
                           <input
                             id={`reply-${msg.id}`}
                             type="text"
                             placeholder="Tapez votre réponse au client..."
-                            className="flex-1 bg-black/60 border border-white/20 focus:border-brand-gold text-white text-xs px-3 py-2 rounded-sm focus:outline-none"
+                            className="flex-1 bg-background/60 border border-border focus:border-brand-gold text-foreground text-xs px-3 py-2 rounded-sm focus:outline-none"
                             onKeyDown={(e) => {
                               if (e.key === "Enter") {
                                 const el = e.currentTarget;
