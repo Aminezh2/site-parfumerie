@@ -75,6 +75,12 @@ export default function ProductDetailModal({
     onOrder(perfume, selectedSize, quantity);
   };
 
+  const isPromo = Boolean(
+    perfume.isPromo ||
+    (perfume.oldPrice5ml && perfume.oldPrice5ml > perfume.price5ml) ||
+    (perfume.oldPrice10ml && perfume.oldPrice10ml > perfume.price10ml)
+  );
+
   return (
     <div
       className="fixed inset-0 z-[220] flex items-center justify-center p-3 sm:p-5 md:p-8 overflow-y-auto bg-background/80 backdrop-blur-md animate-in fade-in duration-200"
@@ -115,10 +121,17 @@ export default function ProductDetailModal({
             <X className="w-4 h-4" />
           </button>
 
-          {/* 100% Original Badge */}
-          <div className="absolute top-3 left-3 z-30 bg-background/70 backdrop-blur-md px-2.5 py-1 rounded-full text-[9px] text-brand-gold border border-brand-gold/30 font-mono flex items-center gap-1.5">
-            <Award className="w-3 h-3 text-brand-gold" />
-            <span>100% Original</span>
+          {/* 100% Original & Promo Badge */}
+          <div className="absolute top-3 left-3 z-30 flex items-center gap-2 flex-wrap">
+            <div className="bg-background/70 backdrop-blur-md px-2.5 py-1 rounded-full text-[9px] text-brand-gold border border-brand-gold/30 font-mono flex items-center gap-1.5">
+              <Award className="w-3 h-3 text-brand-gold" />
+              <span>100% Original</span>
+            </div>
+            {isPromo && (
+              <span className="text-white text-[10px] sm:text-xs font-black uppercase tracking-wider px-3 py-1 rounded-lg bg-gradient-to-r from-red-600 via-rose-600 to-amber-500 shadow-[0_4px_20px_rgba(225,29,72,0.6)] border border-red-300/60 flex items-center gap-1 animate-pulse">
+                🔥 OFFRE PROMO
+              </span>
+            )}
           </div>
 
           {/* Stock Badge */}
@@ -205,8 +218,12 @@ export default function ProductDetailModal({
               <div className="grid grid-cols-2 gap-2">
                 {(["5ml", "10ml"] as const).map((size) => {
                   const price = size === "5ml" ? perfume.price5ml : perfume.price10ml;
+                  const oldPrice = size === "5ml" ? perfume.oldPrice5ml : perfume.oldPrice10ml;
                   const isFormatAvailable = (price || 0) > 0;
                   const isSelected = selectedSize === size;
+                  const hasPromo = Boolean(oldPrice && oldPrice > price);
+                  const discountPercent = hasPromo && oldPrice ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0;
+
                   return (
                     <button
                       key={size}
@@ -222,18 +239,30 @@ export default function ProductDetailModal({
                       }`}
                     >
                       <div>
-                        <div className="font-serif text-sm font-bold text-foreground flex items-center gap-1.5">
+                        <div className="font-serif text-sm font-bold text-foreground flex items-center gap-1.5 flex-wrap">
                           <span>{size}</span>
+                          {hasPromo && (
+                            <span className="text-[8px] font-extrabold uppercase text-white bg-gradient-to-r from-red-600 to-rose-500 px-1.5 py-0.5 rounded shadow-sm">
+                              -{discountPercent}% PROMO
+                            </span>
+                          )}
                           {!isFormatAvailable && (
                             <span className="text-[8px] uppercase tracking-wider px-1.5 py-0.5 bg-rose-500/20 text-rose-300 border border-rose-500/30 rounded font-sans">
                               Hors commande
                             </span>
                           )}
                         </div>
-                        <div className="font-mono text-brand-gold font-bold text-xs mt-0.5">
+                        <div className="font-mono text-xs mt-0.5 flex items-baseline gap-1.5 flex-wrap">
                           {isFormatAvailable ? (
                             <>
-                              {price} <span className="text-[9px] font-sans font-normal text-white/60">DH</span>
+                              {hasPromo && oldPrice ? (
+                                <span className="line-through text-red-400/80 decoration-red-500 decoration-2 text-xs font-bold">
+                                  {oldPrice} DH
+                                </span>
+                              ) : null}
+                              <span className={hasPromo ? "text-amber-300 font-black text-sm sm:text-base drop-shadow-[0_1px_5px_rgba(252,211,77,0.4)]" : "text-brand-gold font-bold"}>
+                                {price} <span className="text-[9px] font-sans font-bold text-white/70">DH</span>
+                              </span>
                             </>
                           ) : (
                             <span className="text-white/40 text-[10px] font-sans font-normal italic">Non disponible</span>

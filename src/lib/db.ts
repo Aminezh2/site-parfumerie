@@ -18,6 +18,9 @@ export interface PerfumeItem {
   baseNotes?: string;
   price5ml: number;
   price10ml: number;
+  oldPrice5ml?: number;  // Ancien prix 5ml (pour affichage PROMO barré)
+  oldPrice10ml?: number; // Ancien prix 10ml (pour affichage PROMO barré)
+  isPromo?: boolean;     // Indicateur de promotion
   inStock: boolean;
   createdAt: string;
 }

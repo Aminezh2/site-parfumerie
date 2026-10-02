@@ -9,7 +9,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import PerfumeCard from "@/components/ui/PerfumeCard";
 import OrderModal from "@/components/ui/OrderModal";
-import { Sparkles, ShieldCheck, Filter, Search, ArrowLeft } from "lucide-react";
+import { Sparkles, ShieldCheck, Search, ArrowLeft } from "lucide-react";
 
 interface CategoryShowcaseProps {
   category: "homme" | "femme" | "unisexe" | "pack" | "all";
@@ -28,7 +28,6 @@ export default function CategoryShowcase({
 }: CategoryShowcaseProps) {
   const [productsList, setProductsList] = useState<PerfumeItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [selectedFamily, setSelectedFamily] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   // Order Modal State
@@ -67,17 +66,13 @@ export default function CategoryShowcase({
     return item.category === category;
   });
 
-  // Unique olfactory families
-  const families = ["all", ...Array.from(new Set(categoryProducts.map((p) => p.family || "Boisé")))];
-
-  // Filtered by search and family
+  // Filtered by search query
   const filteredProducts = categoryProducts.filter((item) => {
-    const matchesFamily = selectedFamily === "all" || item.family === selectedFamily;
-    const matchesSearch =
+    return (
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (item.family && item.family.toLowerCase().includes(searchQuery.toLowerCase()));
-    return matchesFamily && matchesSearch;
+      (item.family && item.family.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
   });
 
   const openOrderModal = (item: PerfumeItem, size: "5ml" | "10ml", qty: number = 1) => {
@@ -135,29 +130,15 @@ export default function CategoryShowcase({
         </div>
       </section>
 
-      {/* Search & Filters Sticky Bar */}
+      {/* Search Sticky Bar */}
       <section className="py-4 sm:py-5 bg-[#0a0a0a]/90 border-b border-border sticky top-[68px] sm:top-[76px] z-40 backdrop-blur-md">
-        <div className="container mx-auto px-5 sm:px-8 md:px-12 flex flex-col md:flex-row gap-3.5 items-center justify-between">
-          {/* Family Filters */}
-          <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-1 md:pb-0 scrollbar-none">
-            <Filter className="w-4 h-4 text-brand-gold shrink-0 mr-1 hidden sm:block" />
-            {families.map((fam) => (
-              <button
-                key={fam}
-                onClick={() => setSelectedFamily(fam)}
-                className={`px-3.5 py-1.5 rounded-full text-xs tracking-wider uppercase whitespace-nowrap transition-all cursor-pointer ${
-                  selectedFamily === fam
-                    ? "bg-brand-gold text-brand-black font-bold shadow-md shadow-brand-gold/20"
-                    : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-foreground"
-                }`}
-              >
-                {fam === "all" ? "Toutes les Familles" : fam}
-              </button>
-            ))}
-          </div>
+        <div className="container mx-auto px-5 sm:px-8 md:px-12 flex items-center justify-between gap-4">
+          <span className="text-xs text-white/60 uppercase tracking-widest font-mono hidden sm:inline-block">
+            Collection {title}
+          </span>
 
           {/* Search Box */}
-          <div className="relative w-full md:w-80">
+          <div className="relative w-full sm:w-80">
             <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40" />
             <input
               type="text"
@@ -193,12 +174,11 @@ export default function CategoryShowcase({
               <p className="text-white/60 font-light mb-4">Aucun parfum ne correspond à votre recherche.</p>
               <button
                 onClick={() => {
-                  setSelectedFamily("all");
                   setSearchQuery("");
                 }}
                 className="px-6 py-2.5 bg-brand-gold text-brand-black text-xs uppercase tracking-widest font-semibold rounded-full hover:bg-white transition-colors cursor-pointer"
               >
-                Réinitialiser les filtres
+                Réinitialiser la recherche
               </button>
             </div>
           ) : (

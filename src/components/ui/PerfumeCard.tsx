@@ -19,6 +19,26 @@ export default function PerfumeCard({ item, onOrder, priority = false }: Perfume
   const minPrice = validPrices.length > 0 ? Math.min(...validPrices) : 0;
   const isAvailable = (item.inStock !== false) && validPrices.length > 0;
 
+  // Determine promo state and matching old price
+  const isPromo = Boolean(
+    item.isPromo ||
+    (item.oldPrice5ml && item.oldPrice5ml > item.price5ml) ||
+    (item.oldPrice10ml && item.oldPrice10ml > item.price10ml) ||
+    (item.badge && item.badge.toLowerCase().includes("promo"))
+  );
+
+  let oldMinPrice: number | undefined;
+  if (minPrice === item.price5ml && item.oldPrice5ml) {
+    oldMinPrice = item.oldPrice5ml;
+  } else if (minPrice === item.price10ml && item.oldPrice10ml) {
+    oldMinPrice = item.oldPrice10ml;
+  } else {
+    oldMinPrice = item.oldPrice5ml || item.oldPrice10ml;
+  }
+
+  const discountPercent = oldMinPrice && oldMinPrice > minPrice ? Math.round(((oldMinPrice - minPrice) / oldMinPrice) * 100) : 0;
+  const savingsDH = oldMinPrice && oldMinPrice > minPrice ? oldMinPrice - minPrice : 0;
+
   return (
     <>
       <div
@@ -50,9 +70,16 @@ export default function PerfumeCard({ item, onOrder, priority = false }: Perfume
           
           {/* Top Badges */}
           <div className="absolute top-0 left-0 right-0 z-10 p-3 sm:p-4 flex items-start justify-between gap-2">
-            <span className="text-brand-gold text-[9px] sm:text-xs tracking-widest uppercase font-mono font-bold bg-background/70 backdrop-blur-md px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md border border-brand-gold/30 shadow-sm">
-              {item.brand}
-            </span>
+            <div className="flex flex-col gap-1.5 items-start">
+              <span className="text-brand-gold text-[9px] sm:text-xs tracking-widest uppercase font-mono font-bold bg-background/80 backdrop-blur-md px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md border border-brand-gold/40 shadow-sm">
+                {item.brand}
+              </span>
+              {isPromo && (
+                <span className="text-white text-xs sm:text-sm font-black uppercase tracking-wider px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-lg bg-gradient-to-r from-red-600 via-rose-600 to-amber-500 shadow-[0_4px_20px_rgba(225,29,72,0.6)] border border-red-300/60 flex items-center gap-1.5 animate-pulse">
+                  🔥 {discountPercent > 0 ? `-${discountPercent}% PROMO` : "EN PROMO"}
+                </span>
+              )}
+            </div>
 
             {isAvailable ? (
               <span className="text-[9px] sm:text-xs tracking-wider uppercase px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md bg-emerald-500/80 text-foreground font-bold backdrop-blur-md flex items-center gap-1.5 shadow-sm">
@@ -68,7 +95,7 @@ export default function PerfumeCard({ item, onOrder, priority = false }: Perfume
         </div>
 
         {/* Bottom Card Content */}
-        <div className="flex flex-col flex-1 p-3 sm:p-5 bg-gradient-to-b from-transparent to-background/40">
+        <div className="flex flex-col flex-1 p-3 sm:p-5 bg-gradient-to-b from-transparent via-background/60 to-background">
           {/* Perfume Name */}
           <div className="mb-2">
             <h3 className="font-serif text-sm sm:text-lg md:text-xl text-foreground font-bold leading-tight group-hover:text-brand-gold transition-colors">
@@ -82,17 +109,29 @@ export default function PerfumeCard({ item, onOrder, priority = false }: Perfume
           {/* Price & Action Button */}
           <div className="pt-3 border-t border-border flex flex-col sm:flex-row sm:items-end justify-between gap-3">
             <div className="flex flex-col">
-              <span className="text-[9px] sm:text-[10px] text-white/50 uppercase tracking-widest font-mono mb-0.5">
-                {item.category === "pack" ? "Prix du Pack" : (minPrice > 0 ? "À partir de" : "Disponibilité")}
-              </span>
-              <div className="flex items-baseline gap-1">
+              <div className="flex items-center gap-1.5 mb-1">
+                <span className="text-[9px] sm:text-[10px] text-white/60 uppercase tracking-widest font-mono font-semibold">
+                  {item.category === "pack" ? "Prix du Pack" : (minPrice > 0 ? (isPromo ? "🔥 Offre Spéciale Promo" : "À partir de") : "Disponibilité")}
+                </span>
+                {isPromo && savingsDH > 0 && (
+                  <span className="text-[9px] sm:text-[10px] font-black text-emerald-300 uppercase px-2 py-0.5 bg-emerald-500/20 border border-emerald-500/50 rounded shadow-sm">
+                    Économisez {savingsDH} DH
+                  </span>
+                )}
+              </div>
+              <div className="flex items-baseline gap-2.5 flex-wrap">
+                {isPromo && oldMinPrice && oldMinPrice > minPrice && (
+                  <span className="line-through text-red-400/80 decoration-red-500 decoration-2 text-xs sm:text-sm md:text-base font-bold tracking-tight">
+                    {oldMinPrice} DH
+                  </span>
+                )}
                 {minPrice > 0 ? (
-                  <>
-                    <span className="font-serif text-xl sm:text-2xl font-bold text-brand-gold leading-none">
+                  <div className="flex items-baseline gap-1">
+                    <span className={`font-serif text-xl sm:text-2xl md:text-3xl font-black ${isPromo ? "text-amber-300 drop-shadow-[0_2px_10px_rgba(252,211,77,0.5)]" : "text-brand-gold"} leading-none`}>
                       {minPrice}
                     </span>
-                    <span className="text-[10px] sm:text-xs text-brand-gold/80 font-semibold uppercase">DH</span>
-                  </>
+                    <span className={`text-[10px] sm:text-xs font-extrabold uppercase ${isPromo ? "text-amber-300" : "text-brand-gold/80"}`}>DH</span>
+                  </div>
                 ) : (
                   <span className="text-rose-400 font-sans text-xs uppercase font-bold tracking-wider">
                     Hors commande

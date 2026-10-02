@@ -47,12 +47,15 @@ export default function AdminDashboard() {
     brand: "",
     category: "homme" as "homme" | "femme" | "unisexe",
     type: "Eau de Parfum",
-    family: "Boisé / Floral",
+    family: "Parfum Original",
     image: "",       // Couverture (carte)
     image5ml: "",   // Photo flacon 5ml
     image10ml: "",  // Photo flacon 10ml
     price5ml: "",
     price10ml: "",
+    oldPrice5ml: "",
+    oldPrice10ml: "",
+    isPromo: false,
     inStock: true,
     badge: "",
     description: "",
@@ -96,7 +99,12 @@ export default function AdminDashboard() {
   const [editBrand, setEditBrand] = useState<string>("");
   const [editPrice5ml, setEditPrice5ml] = useState<string>("");
   const [editPrice10ml, setEditPrice10ml] = useState<string>("");
+  const [editOldPrice5ml, setEditOldPrice5ml] = useState<string>("");
+  const [editOldPrice10ml, setEditOldPrice10ml] = useState<string>("");
+  const [editIsPromo, setEditIsPromo] = useState<boolean>(false);
   const [editImage, setEditImage] = useState<string>("");
+  const [editImage5ml, setEditImage5ml] = useState<string>("");
+  const [editImage10ml, setEditImage10ml] = useState<string>("");
 
   // Fetch Data from API
   const fetchData = async () => {
@@ -284,6 +292,9 @@ export default function AdminDashboard() {
           image: newPerfume.image || "/assets/images/dior.jpg",
           price5ml: p5,
           price10ml: p10,
+          oldPrice5ml: newPerfume.oldPrice5ml ? Number(newPerfume.oldPrice5ml) : undefined,
+          oldPrice10ml: newPerfume.oldPrice10ml ? Number(newPerfume.oldPrice10ml) : undefined,
+          isPromo: newPerfume.isPromo || Boolean(newPerfume.oldPrice5ml || newPerfume.oldPrice10ml),
         }),
       });
 
@@ -294,12 +305,15 @@ export default function AdminDashboard() {
           brand: "",
           category: "homme",
           type: "Eau de Parfum",
-          family: "Boisé / Floral",
+          family: "Parfum Original",
           image: "",
           image5ml: "",
           image10ml: "",
           price5ml: "",
           price10ml: "",
+          oldPrice5ml: "",
+          oldPrice10ml: "",
+          isPromo: false,
           inStock: true,
           badge: "",
           description: "",
@@ -419,6 +433,44 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleEditImage5mlFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      if (res.ok) {
+        const data = await res.json();
+        setEditImage5ml(data.url);
+        showNotification("Photo 5ml mise à jour !");
+      } else {
+        showNotification("Erreur d'upload 5ml", "error");
+      }
+    } catch {
+      showNotification("Erreur d'upload", "error");
+    }
+  };
+
+  const handleEditImage10mlFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      if (res.ok) {
+        const data = await res.json();
+        setEditImage10ml(data.url);
+        showNotification("Photo 10ml mise à jour !");
+      } else {
+        showNotification("Erreur d'upload 10ml", "error");
+      }
+    } catch {
+      showNotification("Erreur d'upload", "error");
+    }
+  };
+
   // Save Product Edits (Name, Brand, Prices, Image)
   const handleSaveProductEdit = async (id: string) => {
     const p5 = editPrice5ml ? Number(editPrice5ml) : 0;
@@ -438,7 +490,12 @@ export default function AdminDashboard() {
           brand: editBrand.trim(),
           price5ml: p5,
           price10ml: p10,
+          oldPrice5ml: editOldPrice5ml ? Number(editOldPrice5ml) : undefined,
+          oldPrice10ml: editOldPrice10ml ? Number(editOldPrice10ml) : undefined,
+          isPromo: editIsPromo,
           ...(editImage ? { image: editImage.trim() } : {}),
+          image5ml: editImage5ml ? editImage5ml.trim() : undefined,
+          image10ml: editImage10ml ? editImage10ml.trim() : undefined,
         }),
       });
 
@@ -938,6 +995,73 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
+              {/* Option PROMO / Réduction */}
+              <div className="p-4 bg-rose-950/20 border border-rose-500/30 rounded-sm space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base">🔥</span>
+                    <span className="text-rose-300 text-xs uppercase tracking-widest font-bold">
+                      Option Offre Promo / Réduction (Ancien Prix Barré)
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setNewPerfume((prev) => ({ ...prev, isPromo: !prev.isPromo }))}
+                    className={`px-3 py-1 text-xs uppercase tracking-wider font-semibold rounded transition-colors ${
+                      newPerfume.isPromo
+                        ? "bg-rose-600 text-white shadow-md shadow-rose-600/30"
+                        : "bg-white/10 text-white/60 hover:text-white"
+                    }`}
+                  >
+                    {newPerfume.isPromo ? "🔥 Produit en PROMO" : "Pas de Promo"}
+                  </button>
+                </div>
+
+                <p className="text-[11px] text-white/60 font-light leading-relaxed">
+                  Remplissez l&apos;ancien prix pour afficher automatiquement un ticket <strong className="text-rose-400">🔥 PROMO</strong> sur l&apos;article et barrer l&apos;ancien prix devant le nouveau prix pour inciter le client !
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-1">
+                  <div>
+                    <label className="text-xs uppercase text-white/70 block mb-1">
+                      Ancien Prix 5 ml (DH) <span className="text-white/40">(prix barré)</span>
+                    </label>
+                    <input
+                      type="number"
+                      placeholder="ex: 160 (si nouveau prix = 130)"
+                      value={newPerfume.oldPrice5ml}
+                      onChange={(e) =>
+                        setNewPerfume((prev) => ({
+                          ...prev,
+                          oldPrice5ml: e.target.value,
+                          isPromo: e.target.value ? true : prev.isPromo,
+                        }))
+                      }
+                      className="w-full bg-background border border-rose-500/30 text-foreground px-4 py-2.5 text-sm focus:outline-none focus:border-rose-400"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs uppercase text-white/70 block mb-1">
+                      Ancien Prix 10 ml (DH) <span className="text-white/40">(prix barré)</span>
+                    </label>
+                    <input
+                      type="number"
+                      placeholder="ex: 280 (si nouveau prix = 230)"
+                      value={newPerfume.oldPrice10ml}
+                      onChange={(e) =>
+                        setNewPerfume((prev) => ({
+                          ...prev,
+                          oldPrice10ml: e.target.value,
+                          isPromo: e.target.value ? true : prev.isPromo,
+                        }))
+                      }
+                      className="w-full bg-background border border-rose-500/30 text-foreground px-4 py-2.5 text-sm focus:outline-none focus:border-rose-400"
+                    />
+                  </div>
+                </div>
+              </div>
+
               {/* Photo Uploads (Couverture, 5ml, 10ml) */}
               <div className="space-y-4">
                 <label className="text-xs uppercase tracking-wider text-white/80 block border-b border-border pb-2">
@@ -1277,7 +1401,7 @@ export default function AdminDashboard() {
                           </div>
                           <div className="flex-1 min-w-[160px]">
                             {isEditing ? (
-                              <div className="space-y-1.5">
+                              <div className="space-y-2 min-w-[210px]">
                                 <input
                                   type="text"
                                   value={editName}
@@ -1292,18 +1416,59 @@ export default function AdminDashboard() {
                                   placeholder="Marque"
                                   className="w-full bg-background border border-border text-white/70 px-2 py-1 text-[10px] focus:outline-none"
                                 />
-                                <div className="flex items-center gap-1">
-                                  <input
-                                    type="text"
-                                    value={editImage}
-                                    onChange={(e) => setEditImage(e.target.value)}
-                                    placeholder="URL de la photo"
-                                    className="flex-1 bg-background border border-border text-white/70 px-2 py-1 text-[10px] focus:outline-none"
-                                  />
-                                  <label className="cursor-pointer px-2 py-1 bg-white/10 hover:bg-white/20 border border-border text-[9px] uppercase tracking-wider text-foreground shrink-0">
-                                    📁 Uploader
-                                    <input type="file" accept="image/*" className="hidden" onChange={handleEditImageFileChange} />
-                                  </label>
+                                
+                                {/* Photo Couverture */}
+                                <div className="flex flex-col gap-0.5">
+                                  <span className="text-[9px] text-brand-gold font-mono uppercase font-semibold">1. Photo Couverture</span>
+                                  <div className="flex items-center gap-1">
+                                    <input
+                                      type="text"
+                                      value={editImage}
+                                      onChange={(e) => setEditImage(e.target.value)}
+                                      placeholder="URL photo carte"
+                                      className="flex-1 bg-background border border-border text-white/70 px-1.5 py-0.5 text-[10px] focus:outline-none"
+                                    />
+                                    <label className="cursor-pointer px-1.5 py-0.5 bg-white/10 hover:bg-white/20 border border-border text-[9px] uppercase tracking-wider text-foreground shrink-0">
+                                      📁 Cover
+                                      <input type="file" accept="image/*" className="hidden" onChange={handleEditImageFileChange} />
+                                    </label>
+                                  </div>
+                                </div>
+
+                                {/* Photo 5ml */}
+                                <div className="flex flex-col gap-0.5">
+                                  <span className="text-[9px] text-brand-gold font-mono uppercase font-semibold">2. Photo Flacon 5ml</span>
+                                  <div className="flex items-center gap-1">
+                                    <input
+                                      type="text"
+                                      value={editImage5ml}
+                                      onChange={(e) => setEditImage5ml(e.target.value)}
+                                      placeholder="URL photo 5ml"
+                                      className="flex-1 bg-background border border-border text-white/70 px-1.5 py-0.5 text-[10px] focus:outline-none"
+                                    />
+                                    <label className="cursor-pointer px-1.5 py-0.5 bg-white/10 hover:bg-white/20 border border-border text-[9px] uppercase tracking-wider text-foreground shrink-0">
+                                      📁 5ml
+                                      <input type="file" accept="image/*" className="hidden" onChange={handleEditImage5mlFileChange} />
+                                    </label>
+                                  </div>
+                                </div>
+
+                                {/* Photo 10ml */}
+                                <div className="flex flex-col gap-0.5">
+                                  <span className="text-[9px] text-brand-gold font-mono uppercase font-semibold">3. Photo Flacon 10ml</span>
+                                  <div className="flex items-center gap-1">
+                                    <input
+                                      type="text"
+                                      value={editImage10ml}
+                                      onChange={(e) => setEditImage10ml(e.target.value)}
+                                      placeholder="URL photo 10ml"
+                                      className="flex-1 bg-background border border-border text-white/70 px-1.5 py-0.5 text-[10px] focus:outline-none"
+                                    />
+                                    <label className="cursor-pointer px-1.5 py-0.5 bg-white/10 hover:bg-white/20 border border-border text-[9px] uppercase tracking-wider text-foreground shrink-0">
+                                      📁 10ml
+                                      <input type="file" accept="image/*" className="hidden" onChange={handleEditImage10mlFileChange} />
+                                    </label>
+                                  </div>
                                 </div>
                               </div>
                             ) : (
@@ -1332,15 +1497,36 @@ export default function AdminDashboard() {
                         {/* Price 5ml */}
                         <td className="p-4 font-mono font-medium text-foreground">
                           {isEditing ? (
-                            <input
-                              type="number"
-                              value={editPrice5ml}
-                              onChange={(e) => setEditPrice5ml(e.target.value)}
-                              placeholder="0 (inactif)"
-                              className="w-20 bg-background border border-brand-gold text-foreground px-2 py-1 text-xs focus:outline-none"
-                            />
+                            <div className="flex flex-col gap-1">
+                              <span className="text-[9px] text-white/50">Nouveau 5ml</span>
+                              <input
+                                type="number"
+                                value={editPrice5ml}
+                                onChange={(e) => setEditPrice5ml(e.target.value)}
+                                placeholder="0"
+                                className="w-24 bg-background border border-brand-gold text-foreground px-2 py-1 text-xs focus:outline-none"
+                              />
+                              <span className="text-[9px] text-rose-300">Ancien (barré)</span>
+                              <input
+                                type="number"
+                                value={editOldPrice5ml}
+                                onChange={(e) => {
+                                  setEditOldPrice5ml(e.target.value);
+                                  if (e.target.value) setEditIsPromo(true);
+                                }}
+                                placeholder="Ancien 5ml"
+                                className="w-24 bg-background border border-rose-500/40 text-foreground px-2 py-1 text-xs focus:outline-none"
+                              />
+                            </div>
                           ) : p.price5ml > 0 ? (
-                            `${p.price5ml} DH`
+                            <div>
+                              <span>{p.price5ml} DH</span>
+                              {p.oldPrice5ml && p.oldPrice5ml > p.price5ml ? (
+                                <span className="block line-through text-white/40 text-[10px]">
+                                  {p.oldPrice5ml} DH
+                                </span>
+                              ) : null}
+                            </div>
                           ) : (
                             <span className="text-rose-400 font-sans text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-rose-500/10 border border-rose-500/20 rounded">
                               Hors commande
@@ -1351,15 +1537,36 @@ export default function AdminDashboard() {
                         {/* Price 10ml */}
                         <td className="p-4 font-mono font-medium text-foreground">
                           {isEditing ? (
-                            <input
-                              type="number"
-                              value={editPrice10ml}
-                              onChange={(e) => setEditPrice10ml(e.target.value)}
-                              placeholder="0 (inactif)"
-                              className="w-20 bg-background border border-brand-gold text-foreground px-2 py-1 text-xs focus:outline-none"
-                            />
+                            <div className="flex flex-col gap-1">
+                              <span className="text-[9px] text-white/50">Nouveau 10ml</span>
+                              <input
+                                type="number"
+                                value={editPrice10ml}
+                                onChange={(e) => setEditPrice10ml(e.target.value)}
+                                placeholder="0"
+                                className="w-24 bg-background border border-brand-gold text-foreground px-2 py-1 text-xs focus:outline-none"
+                              />
+                              <span className="text-[9px] text-rose-300">Ancien (barré)</span>
+                              <input
+                                type="number"
+                                value={editOldPrice10ml}
+                                onChange={(e) => {
+                                  setEditOldPrice10ml(e.target.value);
+                                  if (e.target.value) setEditIsPromo(true);
+                                }}
+                                placeholder="Ancien 10ml"
+                                className="w-24 bg-background border border-rose-500/40 text-foreground px-2 py-1 text-xs focus:outline-none"
+                              />
+                            </div>
                           ) : p.price10ml > 0 ? (
-                            `${p.price10ml} DH`
+                            <div>
+                              <span>{p.price10ml} DH</span>
+                              {p.oldPrice10ml && p.oldPrice10ml > p.price10ml ? (
+                                <span className="block line-through text-white/40 text-[10px]">
+                                  {p.oldPrice10ml} DH
+                                </span>
+                              ) : null}
+                            </div>
                           ) : (
                             <span className="text-rose-400 font-sans text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-rose-500/10 border border-rose-500/20 rounded">
                               Hors commande
@@ -1406,9 +1613,14 @@ export default function AdminDashboard() {
                                   setEditingId(p.id);
                                   setEditName(p.name);
                                   setEditBrand(p.brand || "");
-                                  setEditPrice5ml(String(p.price5ml));
-                                  setEditPrice10ml(String(p.price10ml));
+                                  setEditPrice5ml(String(p.price5ml || ""));
+                                  setEditPrice10ml(String(p.price10ml || ""));
+                                  setEditOldPrice5ml(p.oldPrice5ml ? String(p.oldPrice5ml) : "");
+                                  setEditOldPrice10ml(p.oldPrice10ml ? String(p.oldPrice10ml) : "");
+                                  setEditIsPromo(Boolean(p.isPromo || p.oldPrice5ml || p.oldPrice10ml));
                                   setEditImage(p.image || "");
+                                  setEditImage5ml(p.image5ml || "");
+                                  setEditImage10ml(p.image10ml || "");
                                 }}
                                 className="p-2 border border-border text-white/70 hover:text-foreground hover:border-brand-gold transition-colors"
                                 title="Modifier le parfum"

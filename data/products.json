@@ -123,15 +123,16 @@
     "type": "Eau de Parfum",
     "family": "Boisé / Floral",
     "image": "https://res.cloudinary.com/cm3rqapt/image/upload/v1790210657/original-vetiver.png.webp",
-    "image5ml": "https://res.cloudinary.com/cm3rqapt/image/upload/v1790210666/Perfume_and_travel_spray_bottles_20260924004403.jpg",
-    "image10ml": "https://res.cloudinary.com/cm3rqapt/image/upload/v1790210674/Emporio_Armani_perfume_and_decan__20260924004317.jpg",
+    "image5ml": "/uploads/perfume-1790972394392.jpg",
+    "image10ml": "/uploads/perfume-1790970967892.jpg",
     "description": "Parfum original authentique prélevé directement du flacon fabricant.",
     "price5ml": 50,
     "price10ml": 100,
     "inStock": true,
     "badge": "",
     "id": "perfume-1790263082426-rp4kg",
-    "createdAt": "2026-09-24T15:18:02.426Z"
+    "createdAt": "2026-09-24T15:18:02.426Z",
+    "isPromo": false
   },
   {
     "name": "28",
@@ -157,15 +158,16 @@
     "type": "Eau de Parfum",
     "family": "Boisé / Floral",
     "image": "https://res.cloudinary.com/cm3rqapt/image/upload/v1790210203/QW60cIq1jhaFBzECxoZOKMD4ui15NH54eymu21Do.webp",
-    "image5ml": "https://res.cloudinary.com/cm3rqapt/image/upload/v1790210227/Perfume_and_travel_spray_bottles_20260924003655.jpg",
-    "image10ml": "https://res.cloudinary.com/cm3rqapt/image/upload/v1790210210/Emporio_Armani_perfume_and_decan__20260924003613.jpg",
+    "image5ml": "/uploads/perfume-1790970303442.jpg",
+    "image10ml": "/uploads/perfume-1790970308231.jpg",
     "description": "Parfum original authentique prélevé directement du flacon fabricant.",
     "price5ml": 50,
     "price10ml": 100,
     "inStock": true,
     "badge": "",
     "id": "perfume-1790260723728-d0b1q",
-    "createdAt": "2026-09-24T14:38:43.728Z"
+    "createdAt": "2026-09-24T14:38:43.728Z",
+    "isPromo": false
   },
   {
     "name": "26",
@@ -209,14 +211,15 @@
     "family": "Boisé / Floral",
     "image": "https://res.cloudinary.com/cm3rqapt/image/upload/v1790209315/HDI77pn86LjD4LcvI2tMhKRiO4adv5XqGAtN0TS9.png.webp",
     "image5ml": "https://res.cloudinary.com/cm3rqapt/image/upload/v1790209382/Perfume_and_travel_spray_bottles_20260924002200.jpg",
-    "image10ml": "https://res.cloudinary.com/cm3rqapt/image/upload/v1790209376/Emporio_Armani_perfume_and_decan__20260924002243.jpg",
+    "image10ml": "/uploads/perfume-1790970934402.jpg",
     "description": "Parfum original authentique prélevé directement du flacon fabricant.",
     "price5ml": 50,
     "price10ml": 100,
     "inStock": true,
     "badge": "",
     "id": "perfume-1790260647699-7artw",
-    "createdAt": "2026-09-24T14:37:27.699Z"
+    "createdAt": "2026-09-24T14:37:27.699Z",
+    "isPromo": false
   },
   {
     "name": "23",
@@ -361,7 +364,7 @@
     "type": "Eau de Parfum",
     "family": "Boisé / Floral",
     "image": "https://res.cloudinary.com/cm3rqapt/image/upload/v1790206686/70829-media_2-0.jpg.webp",
-    "image5ml": "https://res.cloudinary.com/cm3rqapt/image/upload/v1790206815/Perfume_and_travel_spray_bottles_2K_20260923233956.jpg",
+    "image5ml": "/uploads/perfume-1790970031025.jpg",
     "image10ml": "https://res.cloudinary.com/cm3rqapt/image/upload/v1790206735/Emporio_Armani_perfume_and_decan__2K_20260923233837.jpg",
     "description": "Parfum original authentique prélevé directement du flacon fabricant.",
     "price5ml": 50,
@@ -369,7 +372,8 @@
     "inStock": true,
     "badge": "",
     "id": "perfume-1790260244907-5b99r",
-    "createdAt": "2026-09-24T14:30:44.907Z"
+    "createdAt": "2026-09-24T14:30:44.907Z",
+    "isPromo": false
   },
   {
     "name": "14",
@@ -377,7 +381,7 @@
     "category": "homme",
     "type": "Eau de Parfum",
     "family": "Boisé / Floral",
-    "image": "https://res.cloudinary.com/cm3rqapt/image/upload/v1790206410/Dior_homme_parfum_n_n_2048x.jpg.webp",
+    "image": "/uploads/perfume-1790970912087.webp",
     "image5ml": "https://res.cloudinary.com/cm3rqapt/image/upload/v1790206546/Perfume_and_travel_spray_bottles_2K_20260923233422.jpg",
     "image10ml": "https://res.cloudinary.com/cm3rqapt/image/upload/v1790206539/Emporio_Armani_perfume_and_decan__2K_20260923233533.jpg",
     "description": "Parfum original authentique prélevé directement du flacon fabricant.",
@@ -386,7 +390,8 @@
     "inStock": true,
     "badge": "",
     "id": "perfume-1790260214420-aj3o8",
-    "createdAt": "2026-09-24T14:30:14.420Z"
+    "createdAt": "2026-09-24T14:30:14.420Z",
+    "isPromo": false
   },
   {
     "name": "13",
@@ -428,7 +433,7 @@
     "category": "homme",
     "type": "Eau de Parfum",
     "family": "Boisé / Floral",
-    "image": "https://res.cloudinary.com/cm3rqapt/image/upload/v1790205572/armani_code_homme_eau_de_toilette_n_2048x.jpg.webp",
+    "image": "/uploads/perfume-1790970879744.webp",
     "image5ml": "https://res.cloudinary.com/cm3rqapt/image/upload/v1790205607/Perfume_and_travel_spray_bottles_2K_20260923231958.jpg",
     "image10ml": "https://res.cloudinary.com/cm3rqapt/image/upload/v1790205623/Emporio_Armani_perfume_and_decan__2K_20260923231854.jpg",
     "description": "Parfum original authentique prélevé directement du flacon fabricant.",
@@ -437,7 +442,8 @@
     "inStock": true,
     "badge": "",
     "id": "perfume-1790260125661-5al2c",
-    "createdAt": "2026-09-24T14:28:45.661Z"
+    "createdAt": "2026-09-24T14:28:45.661Z",
+    "isPromo": false
   },
   {
     "name": "9",
@@ -463,7 +469,7 @@
     "type": "Eau de Parfum",
     "family": "Boisé / Floral",
     "image": "https://res.cloudinary.com/cm3rqapt/image/upload/v1790204339/versace_eros_flame_sephora_-_Google_Search_-_10.jpg.webp",
-    "image5ml": "https://res.cloudinary.com/cm3rqapt/image/upload/v1790204352/Perfume_and_travel_spray_bottles_2K_20260923225854.jpg",
+    "image5ml": "/uploads/perfume-1790969774828.jpg",
     "image10ml": "https://res.cloudinary.com/cm3rqapt/image/upload/v1790204345/Emporio_Armani_perfume_and_decan__2K_20260923225820.jpg",
     "description": "Parfum original authentique prélevé directement du flacon fabricant.",
     "price5ml": 50,
@@ -471,7 +477,8 @@
     "inStock": true,
     "badge": "",
     "id": "perfume-1790260070108-6gu6g",
-    "createdAt": "2026-09-24T14:27:50.108Z"
+    "createdAt": "2026-09-24T14:27:50.108Z",
+    "isPromo": false
   },
   {
     "name": "7",
@@ -498,14 +505,15 @@
     "family": "Boisé / Floral",
     "image": "https://res.cloudinary.com/cm3rqapt/image/upload/v1790203784/109602-media_4.jpg.avif",
     "image5ml": "https://res.cloudinary.com/cm3rqapt/image/upload/v1790203895/Perfume_and_travel_spray_bottles_2K_20260923225111.jpg",
-    "image10ml": "https://res.cloudinary.com/cm3rqapt/image/upload/v1790203855/Emporio_Armani_perfume_and_decan__2K_20260923225001.jpg",
+    "image10ml": "/uploads/perfume-1790969761707.jpg",
     "description": "Parfum original authentique prélevé directement du flacon fabricant.",
     "price5ml": 50,
     "price10ml": 100,
     "inStock": true,
     "badge": "",
     "id": "perfume-1790260013005-xu7xm",
-    "createdAt": "2026-09-24T14:26:53.005Z"
+    "createdAt": "2026-09-24T14:26:53.005Z",
+    "isPromo": false
   },
   {
     "name": "5",
@@ -530,16 +538,19 @@
     "category": "homme",
     "type": "Eau de Parfum",
     "family": "Boisé / Floral",
-    "image": "https://res.cloudinary.com/cm3rqapt/image/upload/v1790203108/scandal-homme-le-parfum-8435415065207-3.jpg",
+    "image": "/uploads/perfume-1790969291184.webp",
     "image5ml": "https://res.cloudinary.com/cm3rqapt/image/upload/v1790203298/Perfume_and_travel_spray_bottles_2K_20260923224115.jpg",
     "image10ml": "https://res.cloudinary.com/cm3rqapt/image/upload/v1790203200/Emporio_Armani_perfume_and_decan__2K_20260923223920.jpg",
     "description": "Parfum original authentique prélevé directement du flacon fabricant.",
-    "price5ml": 50,
-    "price10ml": 100,
+    "price5ml": 40,
+    "price10ml": 80,
     "inStock": true,
     "badge": "",
     "id": "perfume-1790259946469-c91vs",
-    "createdAt": "2026-09-24T14:25:46.469Z"
+    "createdAt": "2026-09-24T14:25:46.469Z",
+    "isPromo": true,
+    "oldPrice5ml": 50,
+    "oldPrice10ml": 100
   },
   {
     "name": "3",

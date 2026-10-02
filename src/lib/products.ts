@@ -13,6 +13,9 @@ export interface Perfume {
   baseNotes: string;
   price5ml: number;
   price10ml: number;
+  oldPrice5ml?: number;
+  oldPrice10ml?: number;
+  isPromo?: boolean;
   rating: number;
   inStock: boolean;
 }
