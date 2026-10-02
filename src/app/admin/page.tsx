@@ -294,7 +294,11 @@ export default function AdminDashboard() {
           price10ml: p10,
           oldPrice5ml: newPerfume.oldPrice5ml ? Number(newPerfume.oldPrice5ml) : undefined,
           oldPrice10ml: newPerfume.oldPrice10ml ? Number(newPerfume.oldPrice10ml) : undefined,
-          isPromo: newPerfume.isPromo || Boolean(newPerfume.oldPrice5ml || newPerfume.oldPrice10ml),
+          isPromo: newPerfume.isPromo ||
+            Boolean(
+              (newPerfume.oldPrice5ml && newPerfume.price5ml) ||
+              (newPerfume.oldPrice10ml && newPerfume.price10ml)
+            ),
         }),
       });
 
@@ -1034,7 +1038,8 @@ export default function AdminDashboard() {
                         setNewPerfume((prev) => ({
                           ...prev,
                           oldPrice5ml: e.target.value,
-                          isPromo: e.target.value ? true : prev.isPromo,
+                          // Auto-enable promo only if new price 5ml is also filled
+                          isPromo: e.target.value && prev.price5ml ? true : prev.isPromo,
                         }))
                       }
                       className="w-full bg-background border border-rose-500/30 text-foreground px-4 py-2.5 text-sm focus:outline-none focus:border-rose-400"
@@ -1053,7 +1058,8 @@ export default function AdminDashboard() {
                         setNewPerfume((prev) => ({
                           ...prev,
                           oldPrice10ml: e.target.value,
-                          isPromo: e.target.value ? true : prev.isPromo,
+                          // Auto-enable promo only if new price 10ml is also filled
+                          isPromo: e.target.value && prev.price10ml ? true : prev.isPromo,
                         }))
                       }
                       className="w-full bg-background border border-rose-500/30 text-foreground px-4 py-2.5 text-sm focus:outline-none focus:border-rose-400"
@@ -1617,7 +1623,10 @@ export default function AdminDashboard() {
                                   setEditPrice10ml(String(p.price10ml || ""));
                                   setEditOldPrice5ml(p.oldPrice5ml ? String(p.oldPrice5ml) : "");
                                   setEditOldPrice10ml(p.oldPrice10ml ? String(p.oldPrice10ml) : "");
-                                  setEditIsPromo(Boolean(p.isPromo || p.oldPrice5ml || p.oldPrice10ml));
+                                  setEditIsPromo(Boolean(
+                                    p.isPromo &&
+                                    ((p.oldPrice5ml && p.price5ml) || (p.oldPrice10ml && p.price10ml))
+                                  ));
                                   setEditImage(p.image || "");
                                   setEditImage5ml(p.image5ml || "");
                                   setEditImage10ml(p.image10ml || "");

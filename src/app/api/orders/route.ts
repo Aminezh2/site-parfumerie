@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { getOrders, addOrder } from "@/lib/db";
+import { getOrders, addOrder, saveTelegramMessageId } from "@/lib/db";
 import { sanitizeInput, sanitizePhone, sanitizeNumber } from "@/lib/security";
+import { sendOrderNotification } from "@/lib/telegram";
 
 export async function GET() {
   try {
@@ -51,6 +52,20 @@ export async function POST(request: Request) {
       totalAmount,
       status: "En attente",
     });
+
+    // ── Send Telegram notification (non-blocking, checkout must not fail) ──
+    // Fire-and-forget with best-effort retry via the promise chain
+    sendOrderNotification(newOrder)
+      .then((messageId) => {
+        if (messageId) {
+          // Persist the Telegram message ID for future status-update edits
+          saveTelegramMessageId(newOrder.id, messageId);
+        }
+      })
+      .catch((err) => {
+        // Log but never throw — customer checkout is unaffected
+        console.error("[Telegram] Failed to send order notification:", err);
+      });
 
     return NextResponse.json(newOrder, { status: 201 });
   } catch {

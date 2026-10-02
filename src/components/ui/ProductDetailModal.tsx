@@ -184,9 +184,6 @@ export default function ProductDetailModal({
               {perfume.name}
             </h2>
             <div className="flex flex-wrap gap-1.5 pt-0.5">
-              <span className="text-[9px] uppercase tracking-wider font-mono px-2 py-0.5 rounded-full bg-white/5 text-white/60 border border-border">
-                {perfume.type || "Eau de Parfum"}
-              </span>
               <span className="text-[9px] uppercase tracking-wider font-mono px-2 py-0.5 rounded-full bg-brand-gold/10 text-brand-gold border border-brand-gold/25">
                 {perfume.category}
               </span>

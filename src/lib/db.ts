@@ -42,6 +42,8 @@ export interface OrderItem {
   totalAmount: number;
   status: "En attente" | "Confirmée" | "En cours de livraison" | "Livrée" | "Annulée";
   createdAt: string;
+  /** Telegram message ID for the notification — used to edit the message on status change */
+  telegramMessageId?: number;
 }
 
 const DATA_DIR = path.join(process.cwd(), "data");
@@ -305,6 +307,23 @@ export function updateOrderStatus(id: string, status: OrderItem["status"]): Orde
   saveOrders(orders);
   return orders[index];
 }
+
+/** Persists the Telegram message ID returned after sending the notification */
+export function saveTelegramMessageId(id: string, messageId: number): boolean {
+  const orders = getOrders();
+  const index = orders.findIndex((o) => o.id === id);
+  if (index === -1) return false;
+
+  orders[index].telegramMessageId = messageId;
+  return saveOrders(orders);
+}
+
+/** Returns a single order by ID */
+export function getOrderById(id: string): OrderItem | null {
+  const orders = getOrders();
+  return orders.find((o) => o.id === id) ?? null;
+}
+
 
 export function deleteOrder(id: string): boolean {
   const orders = getOrders();

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { updateOrderStatus, deleteOrder } from "@/lib/db";
+import { updateOrderStatus, deleteOrder, getOrderById } from "@/lib/db";
+import { updateOrderMessage } from "@/lib/telegram";
 
 export async function PATCH(
   request: Request,
@@ -18,6 +19,14 @@ export async function PATCH(
 
     if (!updated) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
+    }
+
+    // ── Sync Telegram message (best-effort, non-blocking) ──────────────────
+    // If the order has a linked Telegram message, update it to reflect new status
+    if (updated.telegramMessageId) {
+      updateOrderMessage(updated.telegramMessageId, updated).catch((err) => {
+        console.error("[Telegram] Failed to sync message on status update:", err);
+      });
     }
 
     return NextResponse.json(updated);
