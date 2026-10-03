@@ -18,12 +18,9 @@ export async function POST(request: Request) {
     // Require name, category, and at least one valid price (> 0) for 5ml or 10ml
     const p5 = price5ml ? Number(price5ml) : 0;
     const p10 = price10ml ? Number(price10ml) : 0;
-    const oldP5 = oldPrice5ml ? Number(oldPrice5ml) : undefined;
-    const oldP10 = oldPrice10ml ? Number(oldPrice10ml) : undefined;
-
-    if (!name || !category || (p5 <= 0 && p10 <= 0)) {
-      return NextResponse.json({ error: "Veuillez indiquer au moins le prix d'un format (5ml ou 10ml)" }, { status: 400 });
-    }
+    const oldP5 = (oldPrice5ml && Number(oldPrice5ml) > p5) ? Number(oldPrice5ml) : undefined;
+    const oldP10 = (oldPrice10ml && Number(oldPrice10ml) > p10) ? Number(oldPrice10ml) : undefined;
+    const hasPromo = Boolean(oldP5 || oldP10);
 
     const newProduct = addProduct({
       name,
@@ -39,7 +36,7 @@ export async function POST(request: Request) {
       price10ml: category === "pack" ? (p5 || p10) : p10,
       oldPrice5ml: oldP5,
       oldPrice10ml: oldP10,
-      isPromo: isPromo !== undefined ? Boolean(isPromo) : (Boolean(oldP5 || oldP10)),
+      isPromo: hasPromo,
       inStock: inStock !== undefined ? Boolean(inStock) : true,
       badge: badge || (category === "pack" ? "Pack Exclusif" : ""),
     });

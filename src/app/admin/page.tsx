@@ -283,6 +283,12 @@ export default function AdminDashboard() {
     }
 
     try {
+      const op5 = newPerfume.oldPrice5ml ? Number(newPerfume.oldPrice5ml) : 0;
+      const op10 = newPerfume.oldPrice10ml ? Number(newPerfume.oldPrice10ml) : 0;
+      const validOldPrice5ml = (op5 > 0 && p5 > 0 && op5 > p5) ? op5 : undefined;
+      const validOldPrice10ml = (op10 > 0 && p10 > 0 && op10 > p10) ? op10 : undefined;
+      const isPromoCalculated = Boolean(validOldPrice5ml || validOldPrice10ml);
+
       const res = await fetch("/api/products", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -292,13 +298,9 @@ export default function AdminDashboard() {
           image: newPerfume.image || "/assets/images/dior.jpg",
           price5ml: p5,
           price10ml: p10,
-          oldPrice5ml: newPerfume.oldPrice5ml ? Number(newPerfume.oldPrice5ml) : undefined,
-          oldPrice10ml: newPerfume.oldPrice10ml ? Number(newPerfume.oldPrice10ml) : undefined,
-          isPromo: newPerfume.isPromo ||
-            Boolean(
-              (newPerfume.oldPrice5ml && newPerfume.price5ml) ||
-              (newPerfume.oldPrice10ml && newPerfume.price10ml)
-            ),
+          oldPrice5ml: validOldPrice5ml,
+          oldPrice10ml: validOldPrice10ml,
+          isPromo: isPromoCalculated,
         }),
       });
 
@@ -485,6 +487,12 @@ export default function AdminDashboard() {
       return;
     }
 
+    const op5 = editOldPrice5ml ? Number(editOldPrice5ml) : 0;
+    const op10 = editOldPrice10ml ? Number(editOldPrice10ml) : 0;
+    const validOldPrice5ml = (op5 > 0 && p5 > 0 && op5 > p5) ? op5 : null;
+    const validOldPrice10ml = (op10 > 0 && p10 > 0 && op10 > p10) ? op10 : null;
+    const isPromoCalculated = Boolean(validOldPrice5ml || validOldPrice10ml);
+
     try {
       const res = await fetch(`/api/products/${id}`, {
         method: "PATCH",
@@ -494,9 +502,9 @@ export default function AdminDashboard() {
           brand: editBrand.trim(),
           price5ml: p5,
           price10ml: p10,
-          oldPrice5ml: editOldPrice5ml ? Number(editOldPrice5ml) : undefined,
-          oldPrice10ml: editOldPrice10ml ? Number(editOldPrice10ml) : undefined,
-          isPromo: editIsPromo,
+          oldPrice5ml: validOldPrice5ml,
+          oldPrice10ml: validOldPrice10ml,
+          isPromo: isPromoCalculated,
           ...(editImage ? { image: editImage.trim() } : {}),
           image5ml: editImage5ml ? editImage5ml.trim() : undefined,
           image10ml: editImage10ml ? editImage10ml.trim() : undefined,
@@ -1034,14 +1042,21 @@ export default function AdminDashboard() {
                       type="number"
                       placeholder="ex: 160 (si nouveau prix = 130)"
                       value={newPerfume.oldPrice5ml}
-                      onChange={(e) =>
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        const opVal = val ? Number(val) : 0;
+                        const p5Val = newPerfume.price5ml ? Number(newPerfume.price5ml) : 0;
+                        const op10Val = newPerfume.oldPrice10ml ? Number(newPerfume.oldPrice10ml) : 0;
+                        const p10Val = newPerfume.price10ml ? Number(newPerfume.price10ml) : 0;
+                        const hasPromo5 = opVal > 0 && p5Val > 0 && opVal > p5Val;
+                        const hasPromo10 = op10Val > 0 && p10Val > 0 && op10Val > p10Val;
+
                         setNewPerfume((prev) => ({
                           ...prev,
-                          oldPrice5ml: e.target.value,
-                          // Auto-enable promo only if new price 5ml is also filled
-                          isPromo: e.target.value && prev.price5ml ? true : prev.isPromo,
-                        }))
-                      }
+                          oldPrice5ml: val,
+                          isPromo: hasPromo5 || hasPromo10,
+                        }));
+                      }}
                       className="w-full bg-background border border-rose-500/30 text-foreground px-4 py-2.5 text-sm focus:outline-none focus:border-rose-400"
                     />
                   </div>
@@ -1054,14 +1069,21 @@ export default function AdminDashboard() {
                       type="number"
                       placeholder="ex: 280 (si nouveau prix = 230)"
                       value={newPerfume.oldPrice10ml}
-                      onChange={(e) =>
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        const opVal = val ? Number(val) : 0;
+                        const p10Val = newPerfume.price10ml ? Number(newPerfume.price10ml) : 0;
+                        const op5Val = newPerfume.oldPrice5ml ? Number(newPerfume.oldPrice5ml) : 0;
+                        const p5Val = newPerfume.price5ml ? Number(newPerfume.price5ml) : 0;
+                        const hasPromo10 = opVal > 0 && p10Val > 0 && opVal > p10Val;
+                        const hasPromo5 = op5Val > 0 && p5Val > 0 && op5Val > p5Val;
+
                         setNewPerfume((prev) => ({
                           ...prev,
-                          oldPrice10ml: e.target.value,
-                          // Auto-enable promo only if new price 10ml is also filled
-                          isPromo: e.target.value && prev.price10ml ? true : prev.isPromo,
-                        }))
-                      }
+                          oldPrice10ml: val,
+                          isPromo: hasPromo10 || hasPromo5,
+                        }));
+                      }}
                       className="w-full bg-background border border-rose-500/30 text-foreground px-4 py-2.5 text-sm focus:outline-none focus:border-rose-400"
                     />
                   </div>
@@ -1517,8 +1539,13 @@ export default function AdminDashboard() {
                                 type="number"
                                 value={editOldPrice5ml}
                                 onChange={(e) => {
-                                  setEditOldPrice5ml(e.target.value);
-                                  if (e.target.value) setEditIsPromo(true);
+                                  const val = e.target.value;
+                                  setEditOldPrice5ml(val);
+                                  const op5Val = val ? Number(val) : 0;
+                                  const p5Val = editPrice5ml ? Number(editPrice5ml) : 0;
+                                  const op10Val = editOldPrice10ml ? Number(editOldPrice10ml) : 0;
+                                  const p10Val = editPrice10ml ? Number(editPrice10ml) : 0;
+                                  setEditIsPromo(Boolean((op5Val > 0 && p5Val > 0 && op5Val > p5Val) || (op10Val > 0 && p10Val > 0 && op10Val > p10Val)));
                                 }}
                                 placeholder="Ancien 5ml"
                                 className="w-24 bg-background border border-rose-500/40 text-foreground px-2 py-1 text-xs focus:outline-none"
@@ -1557,8 +1584,13 @@ export default function AdminDashboard() {
                                 type="number"
                                 value={editOldPrice10ml}
                                 onChange={(e) => {
-                                  setEditOldPrice10ml(e.target.value);
-                                  if (e.target.value) setEditIsPromo(true);
+                                  const val = e.target.value;
+                                  setEditOldPrice10ml(val);
+                                  const op10Val = val ? Number(val) : 0;
+                                  const p10Val = editPrice10ml ? Number(editPrice10ml) : 0;
+                                  const op5Val = editOldPrice5ml ? Number(editOldPrice5ml) : 0;
+                                  const p5Val = editPrice5ml ? Number(editPrice5ml) : 0;
+                                  setEditIsPromo(Boolean((op10Val > 0 && p10Val > 0 && op10Val > p10Val) || (op5Val > 0 && p5Val > 0 && op5Val > p5Val)));
                                 }}
                                 placeholder="Ancien 10ml"
                                 className="w-24 bg-background border border-rose-500/40 text-foreground px-2 py-1 text-xs focus:outline-none"
@@ -1624,8 +1656,8 @@ export default function AdminDashboard() {
                                   setEditOldPrice5ml(p.oldPrice5ml ? String(p.oldPrice5ml) : "");
                                   setEditOldPrice10ml(p.oldPrice10ml ? String(p.oldPrice10ml) : "");
                                   setEditIsPromo(Boolean(
-                                    p.isPromo &&
-                                    ((p.oldPrice5ml && p.price5ml) || (p.oldPrice10ml && p.price10ml))
+                                    (p.oldPrice5ml && p.price5ml && p.oldPrice5ml > p.price5ml) ||
+                                    (p.oldPrice10ml && p.price10ml && p.oldPrice10ml > p.price10ml)
                                   ));
                                   setEditImage(p.image || "");
                                   setEditImage5ml(p.image5ml || "");

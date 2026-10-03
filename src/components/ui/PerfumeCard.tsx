@@ -19,21 +19,19 @@ export default function PerfumeCard({ item, onOrder, priority = false }: Perfume
   const minPrice = validPrices.length > 0 ? Math.min(...validPrices) : 0;
   const isAvailable = (item.inStock !== false) && validPrices.length > 0;
 
-  // Determine promo state and matching old price
-  const isPromo = Boolean(
-    item.isPromo ||
-    (item.oldPrice5ml && item.oldPrice5ml > item.price5ml) ||
-    (item.oldPrice10ml && item.oldPrice10ml > item.price10ml) ||
-    (item.badge && item.badge.toLowerCase().includes("promo"))
-  );
+  const hasPromo5ml = Boolean(item.oldPrice5ml && item.price5ml && item.oldPrice5ml > item.price5ml);
+  const hasPromo10ml = Boolean(item.oldPrice10ml && item.price10ml && item.oldPrice10ml > item.price10ml);
+  const isPromo = hasPromo5ml || hasPromo10ml;
 
   let oldMinPrice: number | undefined;
-  if (minPrice === item.price5ml && item.oldPrice5ml) {
+  if (minPrice === item.price5ml && hasPromo5ml) {
     oldMinPrice = item.oldPrice5ml;
-  } else if (minPrice === item.price10ml && item.oldPrice10ml) {
+  } else if (minPrice === item.price10ml && hasPromo10ml) {
     oldMinPrice = item.oldPrice10ml;
-  } else {
-    oldMinPrice = item.oldPrice5ml || item.oldPrice10ml;
+  } else if (hasPromo5ml) {
+    oldMinPrice = item.oldPrice5ml;
+  } else if (hasPromo10ml) {
+    oldMinPrice = item.oldPrice10ml;
   }
 
   const discountPercent = oldMinPrice && oldMinPrice > minPrice ? Math.round(((oldMinPrice - minPrice) / oldMinPrice) * 100) : 0;

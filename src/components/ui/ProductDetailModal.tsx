@@ -75,11 +75,9 @@ export default function ProductDetailModal({
     onOrder(perfume, selectedSize, quantity);
   };
 
-  const isPromo = Boolean(
-    perfume.isPromo ||
-    (perfume.oldPrice5ml && perfume.oldPrice5ml > perfume.price5ml) ||
-    (perfume.oldPrice10ml && perfume.oldPrice10ml > perfume.price10ml)
-  );
+  const hasPromo5ml = Boolean(perfume.oldPrice5ml && perfume.price5ml && perfume.oldPrice5ml > perfume.price5ml);
+  const hasPromo10ml = Boolean(perfume.oldPrice10ml && perfume.price10ml && perfume.oldPrice10ml > perfume.price10ml);
+  const isPromo = hasPromo5ml || hasPromo10ml;
 
   return (
     <div
