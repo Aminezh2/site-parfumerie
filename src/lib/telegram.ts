@@ -18,8 +18,20 @@ import { OrderItem } from "@/lib/db";
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN ?? "";
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID ?? "";
 const AUTHORIZED_USER_ID = process.env.TELEGRAM_AUTHORIZED_USER_ID ?? "";
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
+export function getSiteUrl(): string {
+  const envUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  if (envUrl && !envUrl.includes("railway.app") && !envUrl.includes("localhost")) {
+    return envUrl.replace(/\/$/, "");
+  }
+  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  return (envUrl || "http://localhost:3000").replace(/\/$/, "");
+}
 
 const TELEGRAM_API = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`;
 
@@ -143,7 +155,7 @@ function buildOrderMessage(order: OrderItem): string {
 
 function buildInlineKeyboard(order: OrderItem) {
   const id = order.id;
-  const adminUrl = `${SITE_URL}/admin`;
+  const adminUrl = `${getSiteUrl()}/admin`;
   const phone = order.customerPhone.replace(/\s/g, "");
 
   type InlineButton = { text: string; callback_data: string } | { text: string; url: string };
@@ -274,3 +286,47 @@ export function verifyWebhookSecret(secretHeader: string | null): boolean {
   if (!expected) return true; // Not configured → allow (dev)
   return secretHeader === expected;
 }
+
+/**
+ * Sets Telegram Webhook to point to the current site deployment.
+ */
+export async function setTelegramWebhook(customUrl?: string): Promise<{ ok: boolean; description?: string; url?: string }> {
+  if (!TELEGRAM_BOT_TOKEN) {
+    return { ok: false, description: "TELEGRAM_BOT_TOKEN non configuré" };
+  }
+
+  const base = customUrl || getSiteUrl();
+  const webhookUrl = `${base.replace(/\/$/, "")}/api/telegram/webhook`;
+  const secretToken = process.env.TELEGRAM_WEBHOOK_SECRET;
+
+  const payload: Record<string, unknown> = {
+    url: webhookUrl,
+    allowed_updates: ["message", "callback_query"],
+    drop_pending_updates: false,
+  };
+
+  if (secretToken) {
+    payload.secret_token = secretToken;
+  }
+
+  const result = await callTelegramApi("setWebhook", payload);
+  return {
+    ok: result.ok,
+    description: result.description || (result.ok ? "Webhook configuré avec succès" : "Erreur"),
+    url: webhookUrl,
+  };
+}
+
+/**
+ * Gets Telegram Webhook current info.
+ */
+export async function getTelegramWebhookInfo(): Promise<Record<string, unknown>> {
+  if (!TELEGRAM_BOT_TOKEN) return { ok: false, description: "Token bot non configuré" };
+  try {
+    const res = await fetch(`${TELEGRAM_API}/getWebhookInfo`, { cache: "no-store" });
+    return await res.json();
+  } catch (err) {
+    return { ok: false, error: String(err) };
+  }
+}
+

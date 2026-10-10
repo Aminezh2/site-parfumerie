@@ -112,7 +112,7 @@ export async function POST(request: Request) {
 
     // 3. Handle "contact" action (no DB change, just send phone link)
     if (action === "contact") {
-      const order = getOrderById(orderId);
+      const order = await getOrderById(orderId);
       if (!order) {
         await answerCallbackQuery(query.id, "❌ Commande introuvable.", true);
         return NextResponse.json({ ok: true });
@@ -135,7 +135,7 @@ export async function POST(request: Request) {
     }
 
     // 5. Fetch order from DB (never trust client-supplied status)
-    const order = getOrderById(orderId);
+    const order = await getOrderById(orderId);
     if (!order) {
       await answerCallbackQuery(query.id, "❌ Commande introuvable.", true);
       return NextResponse.json({ ok: true });
@@ -152,7 +152,7 @@ export async function POST(request: Request) {
     }
 
     // 7. Update DB via existing updateOrderStatus function
-    const updated = updateOrderStatus(orderId, targetStatus);
+    const updated = await updateOrderStatus(orderId, targetStatus);
     if (!updated) {
       await answerCallbackQuery(query.id, "❌ Erreur de mise à jour.", true);
       return NextResponse.json({ ok: true });
@@ -219,7 +219,8 @@ export async function POST(request: Request) {
 // ─── Command handlers ─────────────────────────────────────────────────────────
 
 async function handleOrdersCommand() {
-  const orders = getOrders().slice(0, 10);
+  const allOrders = await getOrders();
+  const orders = allOrders.slice(0, 10);
   if (orders.length === 0) {
     await sendAdminMessage("📭 Aucune commande trouvée\\.");
     return;
@@ -239,7 +240,8 @@ async function handleOrdersCommand() {
 }
 
 async function handlePendingCommand() {
-  const pending = getOrders().filter((o) => o.status === "En attente");
+  const allOrders = await getOrders();
+  const pending = allOrders.filter((o) => o.status === "En attente");
 
   const esc = (s: string) =>
     s.replace(/([_*[\]()~`>#+\-=|{}.!\\])/g, "\\$1");
@@ -260,7 +262,7 @@ async function handlePendingCommand() {
 }
 
 async function handleStatsCommand() {
-  const orders = getOrders();
+  const orders = await getOrders();
   const today = new Date().toDateString();
 
   const todayOrders = orders.filter(

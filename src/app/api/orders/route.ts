@@ -5,9 +5,10 @@ import { sendOrderNotification } from "@/lib/telegram";
 
 export async function GET() {
   try {
-    const orders = getOrders();
+    const orders = await getOrders();
     return NextResponse.json(orders);
-  } catch {
+  } catch (err) {
+    console.error("[Orders API] Failed to fetch orders:", err);
     return NextResponse.json({ error: "Failed to fetch orders" }, { status: 500 });
   }
 }
@@ -37,7 +38,7 @@ export async function POST(request: Request) {
     const cleanQty = Math.max(1, Math.floor(sanitizeNumber(quantity, 1)));
     const totalAmount = cleanPrice * cleanQty;
 
-    const newOrder = addOrder({
+    const newOrder = await addOrder({
       customerName: sanitizeInput(customerName),
       customerPhone: sanitizePhone(customerPhone),
       customerCity: sanitizeInput(customerCity) || "Non spécifiée",
@@ -53,22 +54,21 @@ export async function POST(request: Request) {
       status: "En attente",
     });
 
-    // ── Send Telegram notification (non-blocking, checkout must not fail) ──
-    // Fire-and-forget with best-effort retry via the promise chain
-    sendOrderNotification(newOrder)
-      .then((messageId) => {
-        if (messageId) {
-          // Persist the Telegram message ID for future status-update edits
-          saveTelegramMessageId(newOrder.id, messageId);
-        }
-      })
-      .catch((err) => {
-        // Log but never throw — customer checkout is unaffected
-        console.error("[Telegram] Failed to send order notification:", err);
-      });
+    // ── Send Telegram notification (Awaited with try/catch for Vercel serverless) ──
+    try {
+      const messageId = await sendOrderNotification(newOrder);
+      if (messageId) {
+        newOrder.telegramMessageId = messageId;
+        await saveTelegramMessageId(newOrder.id, messageId);
+      }
+    } catch (telegramErr) {
+      console.error("[Telegram] Error during order notification dispatch:", telegramErr);
+      // Checkout succeeds even if Telegram experiences network issues
+    }
 
     return NextResponse.json(newOrder, { status: 201 });
-  } catch {
+  } catch (err) {
+    console.error("[Orders API] Failed to create order:", err);
     return NextResponse.json({ error: "Failed to create order" }, { status: 500 });
   }
 }

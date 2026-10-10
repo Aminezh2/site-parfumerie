@@ -8,7 +8,7 @@ export async function PATCH(
   try {
     const { id } = await params;
     const body = await request.json();
-    const updated = updateProduct(id, body);
+    const updated = await updateProduct(id, body);
 
     if (!updated) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
@@ -16,6 +16,7 @@ export async function PATCH(
 
     return NextResponse.json(updated);
   } catch (error) {
+    console.error("[Products API] Failed to update product:", error);
     return NextResponse.json({ error: "Failed to update product" }, { status: 500 });
   }
 }
@@ -26,7 +27,7 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    const success = deleteProduct(id);
+    const success = await deleteProduct(id);
 
     if (!success) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
@@ -34,6 +35,7 @@ export async function DELETE(
 
     return NextResponse.json({ message: "Product deleted successfully" });
   } catch (error) {
+    console.error("[Products API] Failed to delete product:", error);
     return NextResponse.json({ error: "Failed to delete product" }, { status: 500 });
   }
 }

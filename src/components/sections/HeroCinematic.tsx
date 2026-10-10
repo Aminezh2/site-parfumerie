@@ -66,10 +66,11 @@ export default function HeroCinematic() {
       <video
         ref={videoRef}
         className="absolute inset-0 w-full h-full object-cover opacity-80"
-        src="/assets/video/Perfume_bottle_rotating_on_pedestal_202609011326.mp4"
+        src="https://res.cloudinary.com/cm3rqapt/video/upload/v1791644416/Perfume_bottle_rotating_on_pedestal_202609011326.mp4"
         muted
         playsInline
         preload="metadata"
+        crossOrigin="anonymous"
       // poster="/assets/images/perfume1.jpg" // We could use a poster
       />
 

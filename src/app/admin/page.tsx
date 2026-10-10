@@ -32,7 +32,7 @@ import {
 } from "lucide-react";
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState<"orders" | "add-product" | "add-pack" | "inventory" | "support">("orders");
+  const [activeTab, setActiveTab] = useState<"orders" | "add-product" | "add-pack" | "inventory" | "support" | "integrations">("orders");
 
   const [products, setProducts] = useState<PerfumeItem[]>([]);
   const [orders, setOrders] = useState<OrderItem[]>([]);
@@ -40,6 +40,14 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState<boolean>(true);
   const [supportLoading, setSupportLoading] = useState<boolean>(false);
   const [notification, setNotification] = useState<{ message: string; type: "success" | "error" } | null>(null);
+
+  // Integrations state (Telegram & Supabase)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [telegramStatus, setTelegramStatus] = useState<any>(null);
+  const [telegramLoading, setTelegramLoading] = useState(false);
+  const [customWebhookUrl, setCustomWebhookUrl] = useState("");
+  const [supabaseSyncLoading, setSupabaseSyncLoading] = useState(false);
+  const [supabaseInfo, setSupabaseInfo] = useState<{ configured: boolean } | null>(null);
 
   // Form State for Adding Perfume
   const [newPerfume, setNewPerfume] = useState({
@@ -146,6 +154,89 @@ export default function AdminDashboard() {
         fetchSupport(true);
       }, 3500);
       return () => clearInterval(interval);
+    }
+  }, [activeTab]);
+
+  const fetchIntegrations = async () => {
+    setTelegramLoading(true);
+    try {
+      const resTel = await fetch("/api/telegram/setup-webhook?action=info");
+      if (resTel.ok) {
+        const data = await resTel.json();
+        setTelegramStatus(data);
+        if (data.siteUrl && !customWebhookUrl) {
+          setCustomWebhookUrl(data.siteUrl);
+        }
+      }
+      const resSupa = await fetch("/api/admin/seed-supabase");
+      if (resSupa.ok) {
+        const data = await resSupa.json();
+        setSupabaseInfo({ configured: Boolean(data.supabaseConfigured) });
+      }
+    } catch {
+      // ignore
+    } finally {
+      setTelegramLoading(false);
+    }
+  };
+
+  const handleSetWebhook = async () => {
+    setTelegramLoading(true);
+    try {
+      const target = customWebhookUrl.trim();
+      const query = target ? `?url=${encodeURIComponent(target)}` : "";
+      const res = await fetch(`/api/telegram/setup-webhook${query}`);
+      const data = await res.json();
+      if (data.success || data.result?.ok) {
+        showNotification("Webhook Telegram connecté avec succès !");
+        fetchIntegrations();
+      } else {
+        showNotification(data.result?.description || data.error || "Erreur configuration webhook", "error");
+      }
+    } catch {
+      showNotification("Erreur de connexion", "error");
+    } finally {
+      setTelegramLoading(false);
+    }
+  };
+
+  const handleTestTelegramNotification = async () => {
+    try {
+      const res = await fetch("/api/telegram/setup-webhook?action=test");
+      const data = await res.json();
+      if (data.ok) {
+        showNotification("Notification de test envoyée sur votre Telegram !");
+      } else {
+        showNotification(data.error || "Erreur d'envoi Telegram", "error");
+      }
+    } catch {
+      showNotification("Erreur de test Telegram", "error");
+    }
+  };
+
+  const handleSeedSupabaseProducts = async () => {
+    if (!confirm("Voulez-vous synchroniser les 34 produits vers Supabase maintenant ?")) return;
+    setSupabaseSyncLoading(true);
+    try {
+      const res = await fetch("/api/admin/seed-supabase", { method: "POST" });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showNotification(data.message || "Produits synchronisés avec succès !");
+        fetchData();
+        fetchIntegrations();
+      } else {
+        showNotification(data.error || "Erreur de synchronisation", "error");
+      }
+    } catch {
+      showNotification("Erreur serveur lors de la synchronisation", "error");
+    } finally {
+      setSupabaseSyncLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === "integrations") {
+      fetchIntegrations();
     }
   }, [activeTab]);
 
@@ -761,6 +852,16 @@ export default function AdminDashboard() {
           >
             <MessageSquare className="w-4 h-4" />
             <span>💬 Support</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("integrations")}
+            className={`px-6 py-4 text-xs uppercase tracking-[0.2em] font-medium transition-all flex items-center gap-2 border-b-2 whitespace-nowrap ${activeTab === "integrations"
+                ? "border-emerald-400 text-emerald-400 bg-emerald-400/5 font-semibold"
+                : "border-transparent text-white/60 hover:text-foreground"
+              }`}
+          >
+            <ShieldCheck className="w-4 h-4" />
+            <span>⚡ Intégrations &amp; Vercel</span>
           </button>
         </div>
 
@@ -1803,6 +1904,165 @@ export default function AdminDashboard() {
           </div>
         )}
 
+        {/* TAB: INTÉGRATIONS & VERCEL */}
+        {activeTab === "integrations" && (
+          <div className="space-y-8 animate-in fade-in duration-300">
+            {/* Header info */}
+            <div className="bg-white/[0.02] border border-border p-6 rounded-xl">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  <ShieldCheck className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="font-serif text-xl sm:text-2xl text-foreground font-bold">
+                    Paramètres &amp; Synchronisation Vercel
+                  </h2>
+                  <p className="text-white/60 text-xs">
+                    Gérez la liaison de votre Bot Telegram et la base de données Supabase pour un fonctionnement optimal en production.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Card 1: Telegram Bot & Webhook */}
+              <div className="bg-white/[0.02] border border-border p-6 rounded-xl space-y-6">
+                <div className="flex items-center justify-between border-b border-border pb-4">
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-2xl">🤖</span>
+                    <div>
+                      <h3 className="font-serif text-lg font-bold text-foreground">Bot Telegram</h3>
+                      <p className="text-xs text-white/50">Gestion des commandes par boutons interactifs</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={fetchIntegrations}
+                    className="p-2 text-white/60 hover:text-foreground hover:bg-white/5 rounded-lg transition-colors"
+                    title="Rafraîchir statut Telegram"
+                  >
+                    <RefreshCw className={`w-4 h-4 ${telegramLoading ? "animate-spin" : ""}`} />
+                  </button>
+                </div>
+
+                {/* Telegram Status Info */}
+                <div className="space-y-3 bg-black/40 border border-border p-4 rounded-lg text-xs font-mono">
+                  <div className="flex items-center justify-between">
+                    <span className="text-white/50">Statut Webhook Telegram :</span>
+                    <span className={telegramStatus?.telegramWebhookInfo?.result?.url ? "text-emerald-400 font-bold" : "text-amber-400 font-bold"}>
+                      {telegramStatus?.telegramWebhookInfo?.result?.url ? "Actif & Connecté" : "Non configuré"}
+                    </span>
+                  </div>
+
+                  <div className="pt-2 border-t border-white/10 space-y-1">
+                    <div className="text-white/50">URL Actuelle chez Telegram :</div>
+                    <div className="text-white/90 break-all bg-white/5 p-2 rounded text-[11px]">
+                      {telegramStatus?.telegramWebhookInfo?.result?.url || "Aucun webhook enregistré"}
+                    </div>
+                  </div>
+
+                  {telegramStatus?.telegramWebhookInfo?.result?.last_error_message && (
+                    <div className="pt-2 border-t border-rose-500/20 text-rose-300">
+                      ⚠️ Dernière erreur Telegram: {telegramStatus.telegramWebhookInfo.result.last_error_message}
+                    </div>
+                  )}
+                </div>
+
+                {/* Form to set Webhook URL */}
+                <div className="space-y-3">
+                  <label className="text-xs text-white/80 uppercase tracking-wider block font-semibold">
+                    Lier le Webhook au domaine de votre site (Vercel) :
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="url"
+                      placeholder="https://votre-projet.vercel.app"
+                      value={customWebhookUrl}
+                      onChange={(e) => setCustomWebhookUrl(e.target.value)}
+                      className="flex-1 bg-white/5 border border-border rounded-lg text-foreground px-3.5 py-2.5 text-xs placeholder:text-white/30 focus:outline-none focus:border-brand-gold font-mono"
+                    />
+                    <button
+                      onClick={handleSetWebhook}
+                      disabled={telegramLoading}
+                      className="px-4 py-2.5 bg-brand-gold text-brand-black hover:bg-white text-xs uppercase tracking-wider font-bold rounded-lg transition-colors cursor-pointer shrink-0"
+                    >
+                      {telegramLoading ? "Liaison..." : "Lier Webhook"}
+                    </button>
+                  </div>
+                  <p className="text-[11px] text-white/50">
+                    Cliquer sur &quot;Lier Webhook&quot; enregistre l&apos;URL <code className="text-brand-gold">/api/telegram/webhook</code> auprès de l&apos;API Telegram avec votre secret token.
+                  </p>
+                </div>
+
+                {/* Test button */}
+                <div className="pt-4 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3">
+                  <span className="text-xs text-white/60">Tester la réception d&apos;alertes :</span>
+                  <button
+                    onClick={handleTestTelegramNotification}
+                    className="w-full sm:w-auto px-4 py-2 bg-white/10 hover:bg-white/20 text-foreground text-xs uppercase tracking-wider font-semibold rounded-lg transition-colors cursor-pointer"
+                  >
+                    🔔 Envoyer un message de test
+                  </button>
+                </div>
+              </div>
+
+              {/* Card 2: Supabase Database Sync */}
+              <div className="bg-white/[0.02] border border-border p-6 rounded-xl space-y-6">
+                <div className="flex items-center justify-between border-b border-border pb-4">
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-2xl">⚡</span>
+                    <div>
+                      <h3 className="font-serif text-lg font-bold text-foreground">Base de Données Supabase</h3>
+                      <p className="text-xs text-white/50">Stockage PostgreSQL persistant pour Vercel</p>
+                    </div>
+                  </div>
+                  <span
+                    className={`px-2.5 py-1 text-[11px] font-mono uppercase rounded-full border ${
+                      supabaseInfo?.configured
+                        ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
+                        : "bg-amber-500/20 text-amber-300 border-amber-500/40"
+                    }`}
+                  >
+                    {supabaseInfo?.configured ? "Connecté" : "En attente de clés"}
+                  </span>
+                </div>
+
+                <div className="space-y-3 bg-black/40 border border-border p-4 rounded-lg text-xs leading-relaxed">
+                  <p className="text-white/80">
+                    Sur Vercel, le stockage de fichiers locaux est éphémère. Supabase permet de sauvegarder toutes les commandes, les modifications de stock et les messages support de manière 100% permanente.
+                  </p>
+                  <div className="pt-2 border-t border-white/10 text-[11px] text-white/60 space-y-1">
+                    <div>1. Exécutez le script <code className="text-brand-gold">supabase_schema.sql</code> dans votre SQL Editor Supabase.</div>
+                    <div>2. Ajoutez dans vos variables Vercel :</div>
+                    <div className="font-mono bg-white/5 p-2 rounded text-emerald-300">
+                      NEXT_PUBLIC_SUPABASE_URL<br />
+                      NEXT_PUBLIC_SUPABASE_ANON_KEY
+                    </div>
+                  </div>
+                </div>
+
+                {/* Sync Products Button */}
+                <div className="space-y-3 pt-2">
+                  <label className="text-xs text-white/80 uppercase tracking-wider block font-semibold">
+                    Importer le catalogue vers Supabase :
+                  </label>
+                  <button
+                    onClick={handleSeedSupabaseProducts}
+                    disabled={supabaseSyncLoading}
+                    className="w-full py-3 bg-emerald-500/20 border border-emerald-500/40 hover:bg-emerald-500/30 text-emerald-200 font-bold text-xs uppercase tracking-widest rounded-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <RefreshCw className={`w-4 h-4 ${supabaseSyncLoading ? "animate-spin" : ""}`} />
+                    <span>
+                      {supabaseSyncLoading ? "Synchronisation en cours..." : "Importer les 34 Parfums vers Supabase"}
+                    </span>
+                  </button>
+                  <p className="text-[11px] text-white/50">
+                    Insère automatiquement l&apos;intégralité des 34 parfums existants et leurs images Cloudinary dans votre table Supabase.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
       </main>
     </div>

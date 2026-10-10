@@ -36,7 +36,7 @@ export default function DecantSelectionSection() {
             className="relative border cursor-pointer overflow-hidden group bg-background border-border hover:border-brand-gold/70 transition-colors duration-500 rounded-2xl min-h-[420px] md:min-h-[480px]"
           >
             <Image
-              src="/assets/images/man_category.jpeg"
+              src="https://res.cloudinary.com/cm3rqapt/image/upload/v1791644942/man_category.jpg"
               alt="Collection Homme"
               fill
               className="object-cover object-center transition-transform duration-[1200ms] ease-out group-hover:scale-110 opacity-60 group-hover:opacity-75"
@@ -71,7 +71,7 @@ export default function DecantSelectionSection() {
             className="relative border cursor-pointer overflow-hidden group bg-background border-border hover:border-brand-gold/70 transition-colors duration-500 rounded-2xl min-h-[420px] md:min-h-[480px]"
           >
             <Image
-              src="/assets/images/women_category.jpeg"
+              src="https://res.cloudinary.com/cm3rqapt/image/upload/v1791645056/women_category.jpg"
               alt="Collection Femme"
               fill
               className="object-cover object-center transition-transform duration-[1200ms] ease-out group-hover:scale-110 opacity-60 group-hover:opacity-75"
@@ -106,7 +106,7 @@ export default function DecantSelectionSection() {
             className="relative border cursor-pointer overflow-hidden group bg-background border-border hover:border-brand-gold/70 transition-colors duration-500 rounded-2xl min-h-[420px] md:min-h-[480px]"
           >
             <Image
-              src="/assets/images/1.jpeg"
+              src="https://res.cloudinary.com/cm3rqapt/image/upload/v1791645124/1.jpg"
               alt="Packs Découverte & Coffrets"
               fill
               className="object-cover object-center transition-transform duration-[1200ms] ease-out group-hover:scale-110 opacity-60 group-hover:opacity-75"
