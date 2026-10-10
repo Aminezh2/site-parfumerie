@@ -4,6 +4,7 @@ import { supabase, isSupabaseConfigured } from "@/lib/supabaseClient";
 export async function GET() {
   const status: Record<string, unknown> = {
     supabaseConfigured: isSupabaseConfigured(),
+    supabaseUrl: process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "not set",
     env: {
       SUPABASE_URL: process.env.SUPABASE_URL ? "✅ Set" : (process.env.NEXT_PUBLIC_SUPABASE_URL ? "✅ Set (NEXT_PUBLIC)" : "❌ Missing"),
       SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY ? "✅ Set" : (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? "✅ Set (NEXT_PUBLIC)" : "❌ Missing"),
