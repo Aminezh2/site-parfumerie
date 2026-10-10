@@ -19,6 +19,7 @@ export function isSupabaseConfigured(): boolean {
 }
 
 // Client for server-side operations only (API routes)
+// Credentials come exclusively from environment variables — never hardcode them here
 export const supabase: SupabaseClient = createClient(
   supabaseUrl || "https://placeholder.supabase.co",
   supabaseKey || "placeholder-anon-key",
