@@ -87,3 +87,17 @@ CREATE POLICY "auth_all_orders" ON public.orders FOR ALL TO authenticated USING 
 -- Support: tout autoriser
 CREATE POLICY "anon_all_support" ON public.support_messages FOR ALL TO anon USING (true) WITH CHECK (true);
 CREATE POLICY "auth_all_support" ON public.support_messages FOR ALL TO authenticated USING (true) WITH CHECK (true);
+
+-- ============================================================
+-- PERMISSIONS SQL (GRANT) — Obligatoire pour PostgREST / Supabase API
+-- ============================================================
+GRANT USAGE ON SCHEMA public TO anon, authenticated, service_role;
+GRANT ALL ON TABLE public.products TO anon, authenticated, service_role;
+GRANT ALL ON TABLE public.orders TO anon, authenticated, service_role;
+GRANT ALL ON TABLE public.support_messages TO anon, authenticated, service_role;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role;
+
+-- ============================================================
+-- FORCER LE RAFRAÎCHISSEMENT DU CACHE POSTGREST
+-- ============================================================
+NOTIFY pgrst, 'reload schema';
