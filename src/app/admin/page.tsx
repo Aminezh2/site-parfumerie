@@ -2034,8 +2034,8 @@ export default function AdminDashboard() {
                     <div>1. Exécutez le script <code className="text-brand-gold">supabase_schema.sql</code> dans votre SQL Editor Supabase.</div>
                     <div>2. Ajoutez dans vos variables Vercel :</div>
                     <div className="font-mono bg-white/5 p-2 rounded text-emerald-300">
-                      NEXT_PUBLIC_SUPABASE_URL<br />
-                      NEXT_PUBLIC_SUPABASE_ANON_KEY
+                      SUPABASE_URL<br />
+                      SUPABASE_ANON_KEY
                     </div>
                   </div>
                 </div>
@@ -2052,11 +2052,11 @@ export default function AdminDashboard() {
                   >
                     <RefreshCw className={`w-4 h-4 ${supabaseSyncLoading ? "animate-spin" : ""}`} />
                     <span>
-                      {supabaseSyncLoading ? "Synchronisation en cours..." : "Importer les 34 Parfums vers Supabase"}
+                      {supabaseSyncLoading ? "Synchronisation en cours..." : `Importer les ${products.length} Parfums vers Supabase`}
                     </span>
                   </button>
                   <p className="text-[11px] text-white/50">
-                    Insère automatiquement l&apos;intégralité des 34 parfums existants et leurs images Cloudinary dans votre table Supabase.
+                    Insère automatiquement l&apos;intégralité des {products.length} parfums existants et leurs images Cloudinary dans votre table Supabase.
                   </p>
                 </div>
               </div>

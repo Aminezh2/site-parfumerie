@@ -7,7 +7,7 @@ export async function GET() {
     supabaseConfigured: isSupabaseConfigured(),
     message: isSupabaseConfigured()
       ? "Supabase est configuré. Utilisez POST pour synchroniser les produits."
-      : "Supabase n'est pas encore configuré avec NEXT_PUBLIC_SUPABASE_URL et NEXT_PUBLIC_SUPABASE_ANON_KEY.",
+      : "Supabase n'est pas encore configuré avec SUPABASE_URL et SUPABASE_ANON_KEY.",
   });
 }
 
@@ -17,7 +17,7 @@ export async function POST() {
       return NextResponse.json(
         {
           error:
-            "Supabase n'est pas configuré. Veuillez définir NEXT_PUBLIC_SUPABASE_URL et NEXT_PUBLIC_SUPABASE_ANON_KEY.",
+            "Supabase n'est pas configuré. Veuillez définir SUPABASE_URL et SUPABASE_ANON_KEY dans les variables Vercel.",
         },
         { status: 400 }
       );
