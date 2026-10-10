@@ -18,7 +18,7 @@ export function isSupabaseConfigured(): boolean {
   );
 }
 
-// Client for server-side and client-side operations
+// Client for server-side operations only (API routes)
 export const supabase: SupabaseClient = createClient(
   supabaseUrl || "https://placeholder.supabase.co",
   supabaseKey || "placeholder-anon-key",
