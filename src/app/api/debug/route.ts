@@ -4,10 +4,15 @@ import { supabase, isSupabaseConfigured } from "@/lib/supabaseClient";
 export async function GET() {
   const status: Record<string, unknown> = {
     supabaseConfigured: isSupabaseConfigured(),
-    supabaseUrl: process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "not set",
+    supabaseUrl:
+      process.env.CUSTOM_SUPABASE_URL ||
+      process.env.SUPABASE_URL ||
+      process.env.NEXT_PUBLIC_SUPABASE_URL ||
+      "not set",
     env: {
+      CUSTOM_SUPABASE_URL: process.env.CUSTOM_SUPABASE_URL ? "✅ Set" : "Non défini",
       SUPABASE_URL: process.env.SUPABASE_URL ? "✅ Set" : (process.env.NEXT_PUBLIC_SUPABASE_URL ? "✅ Set (NEXT_PUBLIC)" : "❌ Missing"),
-      SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY ? "✅ Set" : (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? "✅ Set (NEXT_PUBLIC)" : "❌ Missing"),
+      SUPABASE_ANON_KEY: (process.env.CUSTOM_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY) ? "✅ Set" : "❌ Missing",
       TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN ? "✅ Set" : "❌ Missing",
       TELEGRAM_CHAT_ID: process.env.TELEGRAM_CHAT_ID ? "✅ Set" : "❌ Missing",
     },

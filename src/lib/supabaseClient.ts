@@ -1,8 +1,13 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
-// Server-side only — no NEXT_PUBLIC_ prefix needed
-const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+// Server-side only — support CUSTOM_ prefix if SUPABASE_URL is locked by Vercel integration
+const supabaseUrl =
+  process.env.CUSTOM_SUPABASE_URL ||
+  process.env.SUPABASE_URL ||
+  process.env.NEXT_PUBLIC_SUPABASE_URL ||
+  "";
 const supabaseKey =
+  process.env.CUSTOM_SUPABASE_ANON_KEY ||
   process.env.SUPABASE_SERVICE_ROLE_KEY ||
   process.env.SUPABASE_ANON_KEY ||
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
